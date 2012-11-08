@@ -11,4 +11,12 @@ public class Device {
 		this.deviceID = id;
 		this.handle = handle;
 	}
+
+	public String getName() {
+		return name;
+	}
+	public int getDeviceID() {
+		return deviceID;
+	}
+
 }
