@@ -1,7 +1,7 @@
 package uk.ac.cam.jk510.part2project.gui;
 
 import uk.ac.cam.jk510.part2project.R;
-import uk.ac.cam.jk510.part2project.map.MapDrawer;
+import uk.ac.cam.jk510.part2project.graphics.MapDrawer;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;

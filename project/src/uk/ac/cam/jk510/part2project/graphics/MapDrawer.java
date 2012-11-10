@@ -1,4 +1,4 @@
-package uk.ac.cam.jk510.part2project.map;
+package uk.ac.cam.jk510.part2project.graphics;
 
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.content.Context;
@@ -10,24 +10,9 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.view.View;
 
-public class MapDrawerTest extends View {
+public class MapDrawer extends View {
 	Paint line = new Paint();
 	Paint vertices = new Paint();
-	
-	//Path used instead
-	@Deprecated
-	private void drawSmoothLines(Canvas canvas, float[] pts, Paint linePaint) {
-		canvas.drawLines(pts, linePaint);
-		
-		float radius = linePaint.getStrokeWidth()/2;
-		Paint vertexPaint = new Paint();
-		vertexPaint.setColor(linePaint.getColor());
-		//strokeWidth is already 1 by default
-		
-		for(int i=0; i+1<pts.length; i+=2) {
-			canvas.drawCircle(pts[i], pts[i+1], radius, vertexPaint);
-		}
-	}
 	
 	private Path createPath(char[] x, char[] y) throws InvalidDataPointException {
 		if(x.length!=y.length) {throw new InvalidDataPointException();}
@@ -40,7 +25,7 @@ public class MapDrawerTest extends View {
 		return path;
 	}
 
-	public MapDrawerTest(Context context) {
+	public MapDrawer(Context context) {
 		super(context);
 		line.setStrokeWidth(Config.getMapLineThickness());
 		line.setStyle(Paint.Style.STROKE);
