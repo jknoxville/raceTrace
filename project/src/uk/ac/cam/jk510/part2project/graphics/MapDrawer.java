@@ -3,6 +3,8 @@ package uk.ac.cam.jk510.part2project.graphics;
 import java.util.ArrayList;
 
 import uk.ac.cam.jk510.part2project.session.Device;
+import uk.ac.cam.jk510.part2project.session.Session;
+import uk.ac.cam.jk510.part2project.session.SessionManager;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -18,7 +20,9 @@ public class MapDrawer extends View {
 	Paint vertices = new Paint();
 	ArrayList<DevicePath> devicePathList;
 	//TODO initialise this list for all the devices.
-	ArrayList<Path> devicePaths;
+	ArrayList<Path> pathsToDraw;
+	Session session;
+	ArrayList<Device> devices;
 
 	public MapDrawer(Context context) {
 		super(context);
@@ -27,44 +31,59 @@ public class MapDrawer extends View {
 		line.setColor(Color.BLACK);
 		vertices.setStyle(Paint.Style.FILL);
 		vertices.setColor(Color.BLACK);
+		
+		session = SessionManager.getSession();
+		devices = session.getDevices();
 	}
 	
 	private void updateDeviceTrail(Device device) {
 		DevicePath dp = devicePathList.get(device.getDeviceID());
-		devicePaths.add(device.getDeviceID(), dp.makePath());
+		pathsToDraw.add(device.getDeviceID(), dp.makePath());
 		
 	}
 
 	@Override
 	public void onDraw(Canvas canvas) {
 		
-//		float[] pts = {0,0,20,20,20,20,20,50,20,50,100,100,100,100,150,130,150,130,50,250,50,250,200,500};
-//		drawSmoothLines(canvas, pts, line);
-		
-//		Path path = new Path();
-//		path.lineTo(20,20);
-//		path.lineTo(20,50);
-//		path.lineTo(100,100);
-//		path.lineTo(150,130);
-//		path.lineTo(50,250);
-//		path.lineTo(200,500);
-//		canvas.drawPath(path, line);
-		
-		char[] x = {20,20,100,150,50,78,56,200};
-		char[] y = {20,50,100,130,250,33,67,5};
 		RectF bounds = new RectF();
-		System.err.println("here");
-		Path path = new Path();
+		int cHeight = canvas.getHeight();
+		int cWidth = canvas.getWidth();
+		float pTop = 0;
+		float pBottom = 0;
+		float pLeft = 0;
+		float pRight = 0;
+		
+		//iterate through all the paths to draw, getting the maximum top, bottom, left and right values
+		for(Path path: pathsToDraw) {
+			path.computeBounds(bounds, true);
+			float t = bounds.top;
+			float b = bounds.bottom;
+			float l = bounds.left;
+			float r = bounds.right;
+			pTop = t>pTop ? t : pTop;
+			pBottom = b>pBottom ? b : pBottom;
+			pLeft = l>pLeft ? l : pLeft;
+			pRight = r>pRight ? r : pRight;
+		}
+		//calculate the overall bounds of the paths together
+		float pHeight = pBottom - pTop;
+		float pWidth = pRight - pLeft;
+		
+		
+		for(Path path : pathsToDraw) {
+			canvas.drawPath(path, line);
+			
+		}
+		
+		//TODO make sure the whole scaling thing is done in the right order (probably before drawing to canvas)
+		//make protocol manager to drive the whole thing. A real simple single user one, where the sessionManager just doensnt do anything.
 		
 		
 		
 		System.err.println("here here");
 		path.computeBounds(bounds, true);
 		System.err.println("here3");
-		int cHeight = canvas.getHeight();
-		int cWidth = canvas.getWidth();
-		float pHeight = bounds.height();
-		float pWidth = bounds.width();
+
 		Matrix mat = new Matrix();
 		float yScale = cHeight/pHeight;
 		float xScale = cWidth/pWidth;

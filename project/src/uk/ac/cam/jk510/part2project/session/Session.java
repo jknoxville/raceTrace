@@ -4,17 +4,21 @@ import java.util.ArrayList;
 
 public class Session {
 	
-	private static Session session;
+	private Session session;
 	
-	private ArrayList<Device> deviceList;
+	private ArrayList<Device> devices;
 	private Keys keys;
 	
 	public String[] getDeviceNames() {
-		String[] names = new String[deviceList.size()];
-		for(Device d: deviceList) {
+		String[] names = new String[devices.size()];
+		for(Device d: devices) {
 			names[d.getDeviceID()] = d.getName();
 		}
 		return names;
+	}
+	
+	public ArrayList<Device> getDevices() {
+		return devices;
 	}
 	
 }
