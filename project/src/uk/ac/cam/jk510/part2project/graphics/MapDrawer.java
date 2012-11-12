@@ -1,5 +1,8 @@
 package uk.ac.cam.jk510.part2project.graphics;
 
+import java.util.ArrayList;
+
+import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,17 +16,9 @@ import android.view.View;
 public class MapDrawer extends View {
 	Paint line = new Paint();
 	Paint vertices = new Paint();
-	
-	private Path createPath(char[] x, char[] y) throws InvalidDataPointException {
-		if(x.length!=y.length) {throw new InvalidDataPointException();}
-		
-		Path path = new Path();
-		path.moveTo(x[0], y[0]);
-		for(int i=1; i<x.length; i++) {
-			path.lineTo(x[i], y[i]);
-		}
-		return path;
-	}
+	ArrayList<DevicePath> devicePathList;
+	//TODO initialise this list for all the devices.
+	ArrayList<Path> devicePaths;
 
 	public MapDrawer(Context context) {
 		super(context);
@@ -32,6 +27,12 @@ public class MapDrawer extends View {
 		line.setColor(Color.BLACK);
 		vertices.setStyle(Paint.Style.FILL);
 		vertices.setColor(Color.BLACK);
+	}
+	
+	private void updateDeviceTrail(Device device) {
+		DevicePath dp = devicePathList.get(device.getDeviceID());
+		devicePaths.add(device.getDeviceID(), dp.makePath());
+		
 	}
 
 	@Override
@@ -52,27 +53,26 @@ public class MapDrawer extends View {
 		char[] x = {20,20,100,150,50,78,56,200};
 		char[] y = {20,50,100,130,250,33,67,5};
 		RectF bounds = new RectF();
-		try {			System.err.println("here");
-			Path path = createPath(x,y);
-			System.err.println("here here");
-			path.computeBounds(bounds, true);
-			System.err.println("here3");
-			int cHeight = canvas.getHeight();
-			int cWidth = canvas.getWidth();
-			float pHeight = bounds.height();
-			float pWidth = bounds.width();
-			Matrix mat = new Matrix();
-			float yScale = cHeight/pHeight;
-			float xScale = cWidth/pWidth;
-			System.err.println("xScale: "+xScale+" yScale: "+yScale);
-			mat.setScale(xScale*0.9f, yScale*0.9f);
-			path.offset(-bounds.left, -bounds.top);
-			path.transform(mat);
-			canvas.drawPath(path, line);
-		} catch (InvalidDataPointException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.err.println("here");
+		Path path = new Path();
+		
+		
+		
+		System.err.println("here here");
+		path.computeBounds(bounds, true);
+		System.err.println("here3");
+		int cHeight = canvas.getHeight();
+		int cWidth = canvas.getWidth();
+		float pHeight = bounds.height();
+		float pWidth = bounds.width();
+		Matrix mat = new Matrix();
+		float yScale = cHeight/pHeight;
+		float xScale = cWidth/pWidth;
+		System.err.println("xScale: "+xScale+" yScale: "+yScale);
+		mat.setScale(xScale*0.9f, yScale*0.9f);
+		path.offset(-bounds.left, -bounds.top);
+		path.transform(mat);
+		canvas.drawPath(path, line);
 
 	}
 	
