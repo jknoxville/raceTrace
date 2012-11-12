@@ -1,6 +1,7 @@
 package uk.ac.cam.jk510.part2project.graphics;
 
-import java.util.TreeMap;
+import java.util.Map.Entry;
+import uk.ac.cam.jk510.part2project.openjdk.TreeMap;
 
 public abstract class DevicePath {
 
@@ -10,6 +11,7 @@ public abstract class DevicePath {
 		//Check it's not here already, which it shouldn't be.
 		assert(!pathCache.containsKey(index));
 		
-		pathCache.floorEntry(index);
+		pathCache.floorKey(index);
 	}
+	
 }
