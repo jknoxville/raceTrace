@@ -23,6 +23,7 @@ public class MapDrawer extends View {
 	ArrayList<Path> pathsToDraw;
 	Session session;
 	ArrayList<Device> devices;
+	boolean[] pathIsNew;
 
 	public MapDrawer(Context context) {
 		super(context);
@@ -34,6 +35,8 @@ public class MapDrawer extends View {
 		
 		session = SessionManager.getSession();
 		devices = session.getDevices();
+		pathsToDraw = new ArrayList<Path>();
+		pathIsNew = new boolean[devices.size()];
 	}
 	
 	private void updateDeviceTrail(Device device) {
@@ -69,29 +72,24 @@ public class MapDrawer extends View {
 		float pHeight = pBottom - pTop;
 		float pWidth = pRight - pLeft;
 		
-		
-		for(Path path : pathsToDraw) {
-			canvas.drawPath(path, line);
-			
-		}
-		
-		//TODO make sure the whole scaling thing is done in the right order (probably before drawing to canvas)
-		//make protocol manager to drive the whole thing. A real simple single user one, where the sessionManager just doensnt do anything.
-		
-		
-		
-		System.err.println("here here");
-		path.computeBounds(bounds, true);
-		System.err.println("here3");
-
+		//Construct scaling matrix
 		Matrix mat = new Matrix();
 		float yScale = cHeight/pHeight;
 		float xScale = cWidth/pWidth;
 		System.err.println("xScale: "+xScale+" yScale: "+yScale);
 		mat.setScale(xScale*0.9f, yScale*0.9f);
-		path.offset(-bounds.left, -bounds.top);
-		path.transform(mat);
-		canvas.drawPath(path, line);
+		
+		for(Path path : pathsToDraw) {
+			//if this path is new, scale it
+			if(pathIsNew[pathsToDraw.indexOf(path)]) {
+			path.offset(-bounds.left, -bounds.top);
+			path.transform(mat);
+			}
+			canvas.drawPath(path, line);
+		}
+		
+		//TODO make sure the whole scaling thing is done in the right order (probably before drawing to canvas)
+		//make protocol manager to drive the whole thing. A real simple single user one, where the sessionManager just doensnt do anything.
 
 	}
 	
