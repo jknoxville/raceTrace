@@ -1,6 +1,7 @@
 package uk.ac.cam.jk510.part2project.gui;
 
 import uk.ac.cam.jk510.part2project.R;
+import uk.ac.cam.jk510.part2project.session.Session;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.view.View;
 
 public class NewSessionActivity extends Activity {
 
+	Session session;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,7 +25,7 @@ public class NewSessionActivity extends Activity {
     }
     
     //called when session set-up is successful
-    public void onSetupComplete(View view) {
+    public void onSetupComplete(View view) throws IllegalAccessException, InstantiationException, Exception {
     	Intent intent = new Intent(this, MapDisplayScreen.class);
     	startActivity(intent);
     }

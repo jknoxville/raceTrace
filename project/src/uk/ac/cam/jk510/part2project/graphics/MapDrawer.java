@@ -25,7 +25,7 @@ public class MapDrawer extends View {
 	ArrayList<Device> devices;
 	boolean[] pathIsNew;
 
-	public MapDrawer(Context context) {
+	public MapDrawer(Context context, Session session) throws IllegalAccessException, InstantiationException {
 		super(context);
 		line.setStrokeWidth(Config.getMapLineThickness());
 		line.setStyle(Paint.Style.STROKE);
@@ -33,7 +33,7 @@ public class MapDrawer extends View {
 		vertices.setStyle(Paint.Style.FILL);
 		vertices.setColor(Color.BLACK);
 		
-		session = SessionManager.getSession();
+		this.session = session;
 		devices = session.getDevices();
 		pathsToDraw = new ArrayList<Path>();
 		pathIsNew = new boolean[devices.size()];

@@ -14,7 +14,8 @@ public class Device {
 		this.name = name;
 		this.deviceID = id;
 		this.handle = handle;
-		this.history = (DeviceHistory) (protocol.deviceHistoryClass).newInstance();
+		//this.history = (DeviceHistory) (protocol.deviceHistoryClass).newInstance();
+		this.history = DeviceHistory.newHistory();
 	}
 
 	public String getName() {

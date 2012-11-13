@@ -2,6 +2,8 @@ package uk.ac.cam.jk510.part2project.gui;
 
 
 import uk.ac.cam.jk510.part2project.R;
+import uk.ac.cam.jk510.part2project.protocol.SessionEnum;
+import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,8 +25,15 @@ public class NewOldSession extends Activity {
     }
     
     //go to set up session screen
-    public void newSession(View view) {
-    	Intent intent = new Intent(this, NewSessionActivity.class);
+    public void newSession(View view) throws Exception {
+    	Class newSessionActivity;
+    	SessionEnum sesh = Config.getSesh();
+    	switch(sesh) {
+    		case singleUser: newSessionActivity = NewSessionActivitySingleUser.class;
+    		break;
+    		default: throw new Exception();
+    	}
+    	Intent intent = new Intent(this, newSessionActivity);
     	startActivity(intent);
     }
 }

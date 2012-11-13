@@ -9,6 +9,12 @@ public class Session {
 	private ArrayList<Device> devices;
 	private Keys keys;
 	
+	protected Session(ArrayList<Device> devices, Keys keys) {
+		super();
+		this.devices = devices;
+		this.keys = keys;
+	}
+	
 	public String[] getDeviceNames() {
 		String[] names = new String[devices.size()];
 		for(Device d: devices) {

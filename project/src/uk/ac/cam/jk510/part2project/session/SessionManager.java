@@ -2,10 +2,11 @@ package uk.ac.cam.jk510.part2project.session;
 
 public abstract class SessionManager {
 
-	private static Session session;
-	public abstract void newSession();
+	protected static Session session;
+	public abstract void newSession() throws IllegalAccessException, InstantiationException;
 
-	public static Session getSession() {
+	public static Session getSession() throws IllegalAccessException, InstantiationException {
+		assert(session != null);
 		return session;
 	}
 

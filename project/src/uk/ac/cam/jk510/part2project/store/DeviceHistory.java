@@ -3,6 +3,8 @@ package uk.ac.cam.jk510.part2project.store;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
+
 public abstract class DeviceHistory {
 	
 	private int blockSize;
@@ -57,5 +59,11 @@ public abstract class DeviceHistory {
 	
 	protected void emptyNewPoints() {
 		newPoints.clear();
+	}
+
+	public static DeviceHistory newHistory() {
+		ProtocolManager mgr = ProtocolManager.getProtocolManager();
+		HistoryType historyType = mgr.getHistoryType();
+		return null;
 	}
 }
