@@ -6,12 +6,12 @@ import java.util.Set;
 import uk.ac.cam.jk510.part2project.openjdk.TreeMap;
 import android.graphics.Path;
 
-public abstract class DevicePath {
+public class DevicePath {
 
-	private TreeMap<Integer, Segment> pathCache;
+	private TreeMap<Integer, Segment> pathCache = new TreeMap<Integer, Segment>();
 
-	protected void add(int index, int x, int y) throws Exception {
-		//Check it's not here already, which it shouldn't be.
+	protected void add(int index, int x, int y) {
+		//Check it's not here already, which it shouldn't be, because teh filtering is done by PositionStore
 		assert(!pathCache.containsKey(index));
 
 		Entry<Integer, Segment> gapEntry = pathCache.floorEntry(index);

@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import uk.ac.cam.jk510.part2project.protocol.Protocol;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
 import uk.ac.cam.jk510.part2project.settings.Config;
+import uk.ac.cam.jk510.part2project.store.Coords;
+import uk.ac.cam.jk510.part2project.store.CoordsTXYA;
+import uk.ac.cam.jk510.part2project.store.DataPointPresentException;
+import uk.ac.cam.jk510.part2project.store.IncompatibleCoordsException;
+import uk.ac.cam.jk510.part2project.store.PositionStore;
 
 public class SessionManagerSingleUser extends SessionManager {
 

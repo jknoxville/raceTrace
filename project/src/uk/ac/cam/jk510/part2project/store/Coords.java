@@ -6,6 +6,7 @@ public abstract class Coords {
 	
 	protected int[] coords;
 	int lClock;	//the logical clock value the coordinate represents. (ie distance along path)
+	public CoordsType coordsType;
 	
 	public int getSize() {
 		return coords.length;

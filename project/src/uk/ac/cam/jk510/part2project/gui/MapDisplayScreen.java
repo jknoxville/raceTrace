@@ -5,6 +5,7 @@ import uk.ac.cam.jk510.part2project.graphics.MapDrawer;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionManager;
+import uk.ac.cam.jk510.part2project.store.PositionStore;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,6 +23,7 @@ public class MapDisplayScreen extends Activity {
         MapDrawer mapDrawer = null;
 		try {
 			mapDrawer = ProtocolManager.initialiseMapDrawer(this);
+			ProtocolManager.testInputData();
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

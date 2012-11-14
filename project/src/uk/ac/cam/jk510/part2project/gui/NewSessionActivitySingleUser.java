@@ -13,6 +13,7 @@ public class NewSessionActivitySingleUser extends NewSessionActivity {
 		//TODO make this a new thread
 		SessionManager smgr = new SessionManagerSingleUser();
 		smgr.newSession();
+		System.err.println("about to init PM");	//debug
 		//TODO make this a new thread
 		ProtocolManager.initialiseProtocolManager(smgr.getSession());
 		Intent intent = new Intent(this, MapDisplayScreen.class);

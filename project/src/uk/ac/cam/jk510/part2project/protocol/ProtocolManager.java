@@ -1,20 +1,43 @@
 package uk.ac.cam.jk510.part2project.protocol;
 
 import uk.ac.cam.jk510.part2project.graphics.MapDrawer;
+import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
-import uk.ac.cam.jk510.part2project.store.HistoryType;
+import uk.ac.cam.jk510.part2project.store.Coords;
+import uk.ac.cam.jk510.part2project.store.CoordsTXYA;
+import uk.ac.cam.jk510.part2project.store.IncompatibleCoordsException;
+import uk.ac.cam.jk510.part2project.store.PositionStore;
 import android.content.Context;
 
 public abstract class ProtocolManager {
 	
 	private static ProtocolManager mgr;
 	protected static Session session;
-	protected static HistoryType historyType;
 	
 	public static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
 			mgr = newProtocolManager(session);
+			if(mgr == null) {
+			System.err.println("at initialiseProtocolManager mgr is null");	//debug
+			} else {
+				System.err.println("at initialiseProtocolManager mgr is not null");	//debug
+			}
 		return mgr;
+	}
+	
+	public static void testInputData() {
+		//TODO remove the following test data
+		//adds some random data for test
+		Device me = session.getDevices().get(0);
+		for(int i=0; i<100; i++) {
+			Coords coords = new CoordsTXYA(i, (int)Math.random()*100, (int)Math.random()*100, (int)Math.random()*100);
+			try {
+				PositionStore.insert(me, coords);
+			} catch (IncompatibleCoordsException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private static ProtocolManager newProtocolManager(Session sess) throws Exception {
@@ -35,10 +58,6 @@ public abstract class ProtocolManager {
 		MapDrawer mapDrawer = new MapDrawer(context, session);
 		mapDrawer.setBackgroundColor(Config.getBackgroundColor());
 		return mapDrawer;
-	}
-	
-	public static HistoryType getHistoryType() {
-		return historyType;
 	}
 
 }

@@ -1,6 +1,7 @@
 package uk.ac.cam.jk510.part2project.gui;
 
 import uk.ac.cam.jk510.part2project.R;
+import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.session.Session;
 import android.app.Activity;
 import android.content.Intent;
@@ -26,7 +27,7 @@ public class NewSessionActivity extends Activity {
     
     //called when session set-up is successful
     public void onSetupComplete(View view) throws IllegalAccessException, InstantiationException, Exception {
-    	Intent intent = new Intent(this, MapDisplayScreen.class);
+    	Intent intent = new Intent(this, MapDisplayScreen.class);    	
     	startActivity(intent);
     }
     

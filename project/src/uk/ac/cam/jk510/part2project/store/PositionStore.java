@@ -9,7 +9,7 @@ public class PositionStore {
 
 	//private ArrayList<DeviceHistory> masterHistory;
 	private static PositionStore instance;
-	private LinkedList<PositionStoreSubscriber> subscribers;
+	private static LinkedList<PositionStoreSubscriber> subscribers = new LinkedList<PositionStoreSubscriber>();
 
 	private PositionStore() {
 		//Singleton Pattern, private constructor
@@ -21,8 +21,12 @@ public class PositionStore {
 		}
 		return instance;
 	}
+	
+	public static Coords getCoord(Device d, int index) {
+		return d.getHistory().getCoord(index);
+	}
 
-	public void insert(Device device, Coords coords) throws IncompatibleCoordsException {
+	public static void insert(Device device, Coords coords) throws IncompatibleCoordsException {
 
 		try {
 			//insert into the deviceHistory object, this method also adds it to it's newPoints.
@@ -38,17 +42,20 @@ public class PositionStore {
 		}
 	}
 
-	private void notifyObservers(Device d) {
+	//called whenever any device gets some new points.
+	private static void notifyObservers(Device d) {
 		for(PositionStoreSubscriber s : subscribers) {
-			((PositionStoreSubscriber) s).notifyOfUpdate(d.getHistory().getNewPoints());
+			s.notifyOfUpdate(d, d.getHistory().getNewPoints());
 		}
 	}
 
-	public void subscribeToUpdates(PositionStoreSubscriber s) {
+	//externally called by other objects wanting to subscribe
+	public static void subscribeToUpdates(PositionStoreSubscriber s) {
 		subscribers.add(s);
 	}
 
-	private boolean updateReady(Device d) {
+	//Boolean query that returns true when there is significant number of new points to justify plotting.
+	private static boolean updateReady(Device d) {
 		//notify subscribers whenever a device has any new points.
 		boolean result = (d.getHistory().getNewPoints().size()>0);
 		return result;
