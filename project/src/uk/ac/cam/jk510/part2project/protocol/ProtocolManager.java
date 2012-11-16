@@ -30,13 +30,14 @@ public abstract class ProtocolManager {
 		//adds some random data for test
 		Device me = session.getDevices().get(0);
 		for(int i=0; i<100; i++) {
-			Coords coords = new CoordsTXYA(i, (int)Math.random()*100, (int)Math.random()*100, (int)Math.random()*100);
+			Coords coords = new CoordsTXYA(i, (int) (Math.random()*100), (int) (Math.random()*100), (int) (Math.random()*100));
 			try {
 				PositionStore.insert(me, coords);
 			} catch (IncompatibleCoordsException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			System.err.println("Finished inputting test data");
 		}
 	}
 	

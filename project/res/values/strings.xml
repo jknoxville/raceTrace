@@ -10,6 +10,7 @@
     <string name="new_session_text">This Screen will set up a new session</string>
     <string name="title_activity_map_display_screen">MapDisplayScreen</string>
     <string name="skip">Skip</string>
+    <string name="addTestData">Add random datapoints</string>
     <string name="title_activity_new_session_activity_single_user">NewSessionActivitySingleUser</string>
 
 </resources>

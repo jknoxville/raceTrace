@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Session {
 	
-	private Session session;
+	private static Session session;
 	
 	private ArrayList<Device> devices;
 	private Keys keys;
@@ -13,6 +13,12 @@ public class Session {
 		super();
 		this.devices = devices;
 		this.keys = keys;
+		session = this;
+	}
+	
+	public static Session getSession() {
+		assert(session != null);
+		return session;
 	}
 	
 	public String[] getDeviceNames() {

@@ -28,7 +28,7 @@ public class DeviceHistoryXYA extends DeviceHistory {
 	}
 	
 	public DeviceHistoryXYA() {
-		
+		super();
 		coordsType = CoordsType.TXYA;
 		
 		blockSize = Config.getArrayBlockSize();

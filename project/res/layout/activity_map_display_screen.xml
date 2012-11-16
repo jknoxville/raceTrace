@@ -1,14 +1,21 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
+    
+        <Button
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:text="@string/addTestData"
+	    android:onClick="addTestData"
+	    />
+        
+        <uk.ac.cam.jk510.part2project.graphics.MapDrawer
+            android:id="@+id/mapDrawer"
+            android:layout_width="fill_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/hello_world"
-        tools:context=".MapDisplayScreen" />
-
-</RelativeLayout>
+</LinearLayout>

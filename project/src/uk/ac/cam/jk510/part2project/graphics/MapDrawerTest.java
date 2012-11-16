@@ -8,6 +8,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.util.AttributeSet;
 import android.view.View;
 
 public class MapDrawerTest extends View {
@@ -41,6 +42,15 @@ public class MapDrawerTest extends View {
 	}
 
 	public MapDrawerTest(Context context) {
+		super(context);
+		line.setStrokeWidth(Config.getMapLineThickness());
+		line.setStyle(Paint.Style.STROKE);
+		line.setColor(Color.BLACK);
+		vertices.setStyle(Paint.Style.FILL);
+		vertices.setColor(Color.BLACK);
+	}
+	
+	public MapDrawerTest(Context context, AttributeSet att) {
 		super(context);
 		line.setStrokeWidth(Config.getMapLineThickness());
 		line.setStyle(Paint.Style.STROKE);

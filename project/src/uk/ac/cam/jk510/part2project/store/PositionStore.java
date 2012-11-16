@@ -44,9 +44,11 @@ public class PositionStore {
 
 	//called whenever any device gets some new points.
 	private static void notifyObservers(Device d) {
+		LinkedList<Integer> newPoints = d.getHistory().getNewPoints();
 		for(PositionStoreSubscriber s : subscribers) {
-			s.notifyOfUpdate(d, d.getHistory().getNewPoints());
+			s.notifyOfUpdate(d, newPoints);
 		}
+		d.getHistory().emptyNewPoints();
 	}
 
 	//externally called by other objects wanting to subscribe
