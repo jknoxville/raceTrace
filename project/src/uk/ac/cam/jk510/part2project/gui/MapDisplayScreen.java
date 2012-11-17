@@ -61,7 +61,7 @@ public class MapDisplayScreen extends Activity {
     		//do nothing
     	} else {
     		ProtocolManager.testInputData();
-    		testDataUsed = true;
+    		//testDataUsed = true;
     	}
     	
     }

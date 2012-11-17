@@ -5,8 +5,12 @@ import java.util.ArrayList;
 public abstract class Coords {
 	
 	protected int[] coords;
-	int lClock;	//the logical clock value the coordinate represents. (ie distance along path)
+	protected int lClock;	//the logical clock value the coordinate represents. (ie distance along path)
 	public CoordsType coordsType;
+	
+	public int getLClock() {
+		return lClock;
+	}
 	
 	public int getSize() {
 		return coords.length;

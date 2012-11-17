@@ -11,8 +11,11 @@ public class DevicePath {
 	private TreeMap<Integer, Segment> pathCache = new TreeMap<Integer, Segment>();
 
 	protected void add(int index, int x, int y) {
-		//Check it's not here already, which it shouldn't be, because teh filtering is done by PositionStore
+		//Check it's not here already, which it shouldn't be, because the filtering is done by PositionStore
 		assert(!pathCache.containsKey(index));
+		if(pathCache.containsKey(index)) {
+			System.err.println("dupliate key");
+		}
 		assert(index>0);
 
 		System.err.println("Now inserting index: "+index+" size: "+pathCache.size()+" firstkey: "+pathCache.firstKey());	//debug
@@ -33,7 +36,7 @@ public class DevicePath {
 
 			//add point to previous segment
 			Entry prevEntry = pathCache.lowerEntry(index);
-//			CompleteSegment prev = (CompleteSegment) pathCache.lowerEntry(index).getValue();
+			//			CompleteSegment prev = (CompleteSegment) pathCache.lowerEntry(index).getValue();
 			//if there is a previous segment, add this point to it.
 			if(!(prevEntry == null)) {
 				CompleteSegment prev = (CompleteSegment) prevEntry.getValue();
@@ -43,7 +46,7 @@ public class DevicePath {
 				assert(index == 0);
 				Path path = new Path();
 				path.moveTo(x, y);
-				CompleteSegment comp = new CompleteSegment(path);
+				CompleteSegment comp = new CompleteSegment(x, y, path);
 				pathCache.put(index, comp);
 			}
 		}
@@ -52,19 +55,25 @@ public class DevicePath {
 		else {
 			//first half gap
 			pathCache.put(gapEntry.getKey(), gap);
-			
+
 			//make single item path containing this point
 			Path newPath = new Path();
-			newPath.lineTo(x, y);
-			CompleteSegment seg = new CompleteSegment(newPath);
+			newPath.moveTo(x, y);
+			CompleteSegment seg = new CompleteSegment(x, y, newPath);
 			pathCache.put(index, seg);
-			
-			//if theres space after it, add a gap
-			if(pathCache.higherKey(index)==index+1) {
-				//no gap required
-			} else {
-				//insert gap
+
+			//check for null, if so, then this is the highest segment yet.
+			if(pathCache.higherKey(index)==null) {
 				pathCache.put(index+1, gap);
+			} else {
+
+				//if theres space after it, add a gap
+				if(pathCache.higherKey(index)==index+1) {
+					//no gap required
+				} else {
+					//insert gap
+					pathCache.put(index+1, gap);
+				}
 			}
 		}
 	}
@@ -76,14 +85,14 @@ public class DevicePath {
 		pathCache = new TreeMap<Integer, Segment>();
 		pathCache.put(0, new GapSegment());
 		System.err.println("just put 0 in, first key is "+pathCache.firstKey());
-		
+
 	}
 
 	public Path makePath() {
 		System.out.println("makePath()");//debug
 		Set<Entry<Integer, Segment>> entrySet = pathCache.entrySet();
 		Path entirePath = new Path();
-		
+
 		System.out.println("makePath() 2");//debug
 		//iterate through all Segments in order, adding them to the path
 		int position = -1;
@@ -91,19 +100,36 @@ public class DevicePath {
 		System.out.println("makePath() before loop");//debug
 		entry = pathCache.firstEntry();	// entry = first entry
 		//while there are higher entries, store them in entry and execute loop:
+		boolean firstCompleteSegment = true;	//this flag is set so the first complete segment can be identified and
+												//that a line isnt drawn from the origin.
 		while(entry!=null) {
-			
+
 			Segment segment = entry.getValue();
-			
+
 			//add the entries path to entirePath if its not a gap:
 			if(segment instanceof CompleteSegment) {
+				if(!firstCompleteSegment) {
+					entirePath.lineTo(((CompleteSegment)segment).getStartx(), ((CompleteSegment)segment).getStarty());
+				} else {
+					firstCompleteSegment = false;
+				}
 				entirePath.addPath(((CompleteSegment)segment).path);
+			} else {
+				//if it is a gap, add a line from current point to start of next path, if there is a next path, otherwise dont
+				Entry nextEntry = pathCache.higherEntry(entry.getKey());
+				if(nextEntry == null) {
+					//no need to draw line since this is the last point
+				} else {
+					CompleteSegment nextSegment = (CompleteSegment) nextEntry.getValue();
+					//entirePath.lineTo(nextSegment.getStartx(), nextSegment.getStarty());
+				}
+				
 			}
 			entry = pathCache.higherEntry(entry.getKey());
 		}
-		
+
 		System.out.println("makePath() after loop");//debug
-		
+
 		return entirePath;
 	}
 

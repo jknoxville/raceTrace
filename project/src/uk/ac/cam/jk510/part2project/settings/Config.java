@@ -8,7 +8,8 @@ import android.graphics.Color;
 
 public class Config {
 
-	private static int MapLineThickness = 5;
+	private static final int MinUpdateRedrawSize = 1;
+	private static int MapLineThickness = 2;
 	private static int arrayBlockSize = 600;		// At 1 per second, thats 10 mins per chunk
 	private static int arrayIndexFrequency = 10;	// Finest granularity of points. In samples per 10 sec.
 	private static String name = "John";
@@ -44,6 +45,9 @@ public class Config {
 	}
 	public static HistoryType getHistoryType() {
 		return historyType;
+	}
+	public static int getMinUpdateRedrawSize() {
+		return MinUpdateRedrawSize;
 	}
 
 }

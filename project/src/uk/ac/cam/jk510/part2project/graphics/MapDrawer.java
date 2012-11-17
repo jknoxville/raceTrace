@@ -69,7 +69,6 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		for(Device d: devices) {
 			devicePathList.add(d.getDeviceID(), new DevicePath());
 		}
-		
 		PositionStore.subscribeToUpdates(this);
 	}
 	
@@ -77,12 +76,13 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		DevicePath dp = devicePathList.get(device.getDeviceID());
 		pathsToDraw[device.getDeviceID()] = dp.makePath();	//replace existing path
 		pathIsNew[device.getDeviceID()] = true;
+		invalidate();
 
 	}
 
 	@Override
 	public void onDraw(Canvas canvas) {
-		
+
 		int cHeight = canvas.getHeight();
 		int cWidth = canvas.getWidth();
 		float pTop = 0;
@@ -118,8 +118,9 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		
 		float yScale = cHeight/pHeight;
 		float xScale = cWidth/pWidth;
+		float scale = yScale<xScale ? yScale : xScale;	//scale = min(xScale, yScale)
 		System.err.println("xScale: "+xScale+" yScale: "+yScale);	//debug
-		mat.setScale(xScale*0.9f, yScale*0.9f);
+		mat.setScale(scale*0.9f, scale*0.9f);	//TODO bad hardcoding here - shouldnt even need to be done???
 		int device = 0;
 		for(Path path : pathsToDraw) {
 			

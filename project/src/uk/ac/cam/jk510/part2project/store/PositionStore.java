@@ -3,6 +3,7 @@ package uk.ac.cam.jk510.part2project.store;
 import java.util.LinkedList;
 
 import uk.ac.cam.jk510.part2project.session.Device;
+import uk.ac.cam.jk510.part2project.settings.Config;
 
 
 public class PositionStore {
@@ -59,7 +60,7 @@ public class PositionStore {
 	//Boolean query that returns true when there is significant number of new points to justify plotting.
 	private static boolean updateReady(Device d) {
 		//notify subscribers whenever a device has any new points.
-		boolean result = (d.getHistory().getNewPoints().size()>0);
+		boolean result = (d.getHistory().getNewPoints().size()>=Config.getMinUpdateRedrawSize());
 		return result;
 	}
 }

@@ -25,7 +25,7 @@ public abstract class DeviceHistory {
 		}
 		
 		//if index is not within range of currently allocated arrays then allocate until it is.
-		int index = coords.lClock;
+		int index = coords.getLClock();
 		System.err.println(this);	//debug
 		System.err.println(listOfIntLists);	//debug
 		while(!(index<historyLength())) {
@@ -42,7 +42,10 @@ public abstract class DeviceHistory {
 		
 		//Check to see if already have data for this time range.
 		if(dataPointPresentList.get(arrayNumber)[offset]) {
+			System.err.println("Datapoint already present");	//debug
 			throw new DataPointPresentException();
+		} else {
+			System.err.println("Datapoint not present");	//debug
 		}
 		
 		// Let i = the coordinate dimension. Store each coordinate in corresponding array.
@@ -50,6 +53,8 @@ public abstract class DeviceHistory {
 			ArrayList<int[]> l = listOfIntLists.get(i);
 			l.get(arrayNumber)[offset] = coords.getCoord(i);
 		}
+		//Set dataPointPresent value to true
+		dataPointPresentList.get(arrayNumber)[offset] = true;
 		
 		//Add point to device's newPoints list
 		newPoints.add(index);
