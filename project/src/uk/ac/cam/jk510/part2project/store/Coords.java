@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public abstract class Coords {
 	
-	protected int[] coords;
+	protected float[] coords;
 	protected int lClock;	//the logical clock value the coordinate represents. (ie distance along path)
 	public CoordsType coordsType;
 	
@@ -15,7 +15,7 @@ public abstract class Coords {
 	public int getSize() {
 		return coords.length;
 	}
-	public int getCoord(int dimension) {
+	public float getCoord(int dimension) {
 		return coords[dimension];
 	}
 	

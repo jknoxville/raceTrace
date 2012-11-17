@@ -5,20 +5,20 @@ import android.graphics.Path;
 public class CompleteSegment extends Segment {
 
 	protected Path path;
-	private int starty;
-	private int startx;
+	private float starty;
+	private float startx;
 	
-	public CompleteSegment(int startx, int starty, Path path) {
+	public CompleteSegment(float x, float y, Path path) {
 		super();
-		this.startx = startx;
-		this.starty = starty;
+		this.startx = x;
+		this.starty = y;
 		this.path = path;
 	}
 	
-	public int getStartx() {
+	public float getStartx() {
 		return startx;
 	}
-	public int getStarty() {
+	public float getStarty() {
 		return starty;
 	}
 }

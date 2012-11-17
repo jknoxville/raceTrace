@@ -9,8 +9,8 @@ import uk.ac.cam.jk510.part2project.settings.Config;
 public abstract class DeviceHistory {
 	
 	protected int blockSize;
-	//listOfIntLists contains all of the int Lists used, so that they can be iterated through to update all lists.
-	protected ArrayList<ArrayList<int[]>> listOfIntLists;
+	//listOfLists contains all of the float Lists used, so that they can be iterated through to update all lists.
+	protected ArrayList<ArrayList<float[]>> listOfLists;
 	protected ArrayList<boolean[]> dataPointPresentList;
 	protected LinkedList<Integer> newPoints;
 	protected CoordsType coordsType;
@@ -27,11 +27,11 @@ public abstract class DeviceHistory {
 		//if index is not within range of currently allocated arrays then allocate until it is.
 		int index = coords.getLClock();
 		System.err.println(this);	//debug
-		System.err.println(listOfIntLists);	//debug
+		System.err.println(listOfLists);	//debug
 		while(!(index<historyLength())) {
 			System.err.println("Allocating new block, index: "+index+" historyLength: "+historyLength());	//debug
-			for(ArrayList<int[]> l: listOfIntLists) {
-				l.add(new int[blockSize]);
+			for(ArrayList<float[]> l: listOfLists) {
+				l.add(new float[blockSize]);
 			}
 			dataPointPresentList.add(new boolean[blockSize]);
 		}
@@ -50,7 +50,7 @@ public abstract class DeviceHistory {
 		
 		// Let i = the coordinate dimension. Store each coordinate in corresponding array.
 		for(int i = 0; i<coords.getSize(); i++) {
-			ArrayList<int[]> l = listOfIntLists.get(i);
+			ArrayList<float[]> l = listOfLists.get(i);
 			l.get(arrayNumber)[offset] = coords.getCoord(i);
 		}
 		//Set dataPointPresent value to true

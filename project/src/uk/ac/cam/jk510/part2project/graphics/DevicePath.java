@@ -10,7 +10,7 @@ public class DevicePath {
 
 	private TreeMap<Integer, Segment> pathCache = new TreeMap<Integer, Segment>();
 
-	protected void add(int index, int x, int y) {
+	protected void add(int index, float x, float y) {
 		//Check it's not here already, which it shouldn't be, because the filtering is done by PositionStore
 		assert(!pathCache.containsKey(index));
 		if(pathCache.containsKey(index)) {

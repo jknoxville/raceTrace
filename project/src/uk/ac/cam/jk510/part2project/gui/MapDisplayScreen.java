@@ -2,12 +2,16 @@ package uk.ac.cam.jk510.part2project.gui;
 
 import uk.ac.cam.jk510.part2project.R;
 import uk.ac.cam.jk510.part2project.graphics.MapDrawer;
+import uk.ac.cam.jk510.part2project.location.GPSDriver;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;
+import android.content.Context;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.TextView;
 
 public class MapDisplayScreen extends Activity {
 	MapDrawer mapDrawer;
@@ -38,16 +42,15 @@ public class MapDisplayScreen extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_map_display_screen);
-        
-//        mapDrawer = new MapDrawer(this);
-//        mapDrawer.setBackgroundColor(Color.WHITE);
-        
-		//the folling call is now deprecated
-		//mapDrawer = ProtocolManager.initialiseMapDrawer(this);
+		
+		setContentView(R.layout.activity_map_display_screen);
+		
 		mapDrawer = (MapDrawer) findViewById(R.id.mapDrawer);
-		//ProtocolManager.testInputData();
-        setContentView(R.layout.activity_map_display_screen);
+		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		TextView info = (TextView) findViewById(R.id.mapScreenInfo);
+		GPSDriver.init(locationManager, info);
+		
+        
     }
 
     @Override

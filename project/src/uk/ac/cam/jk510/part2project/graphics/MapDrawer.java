@@ -29,8 +29,11 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 	Session session = SessionManager.getSession();
 	ArrayList<Device> devices;
 	boolean[] pathIsNew;
+	
 	RectF bounds = new RectF();
 	Matrix mat = new Matrix();
+	int cHeight;
+	int cWidth;
 
 	@Deprecated
 	public MapDrawer(Context context, Session session) throws IllegalAccessException, InstantiationException {
@@ -61,6 +64,8 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		vertices.setStyle(Paint.Style.FILL);
 		vertices.setColor(Color.BLACK);
 		this.setBackgroundColor(Config.getBackgroundColor());
+		cHeight = this.getHeight();
+		cWidth = this.getWidth();	//get view's dimensions for scaling.
 		
 		session = Session.getSession();
 		devices = session.getDevices();
@@ -83,8 +88,9 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 	@Override
 	public void onDraw(Canvas canvas) {
 
-		int cHeight = canvas.getHeight();
-		int cWidth = canvas.getWidth();
+//		int cHeight = canvas.getHeight();
+//		int cWidth = canvas.getWidth();
+
 		float pTop = 0;
 		float pBottom = 0;
 		float pLeft = 0;
@@ -155,7 +161,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		for(Integer index: newPoints) {
 			System.err.println("Now adding index: "+index+" from newPoints");//debug
 			Coords coords = PositionStore.getCoord(d, index);
-			dp.add(index, coords.getCoord(1), coords.getCoord(2));
+			dp.add(index, coords.getCoord(0), coords.getCoord(1));
 		}
 		//itake care of PathIsNew and pathsToDraw
 		updateDeviceTrail(d);

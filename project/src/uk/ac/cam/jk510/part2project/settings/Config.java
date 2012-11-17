@@ -18,6 +18,9 @@ public class Config {
 	private static SessionEnum sesh = SessionEnum.singleUser;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
+	
+	private static final int gpsUpdateTime = 0;
+	private static final int gpsUpdateDistance = 0;
 
 	public static int getMapLineThickness() {
 		return MapLineThickness;
@@ -48,6 +51,12 @@ public class Config {
 	}
 	public static int getMinUpdateRedrawSize() {
 		return MinUpdateRedrawSize;
+	}
+	public static int getGPSUpdateTime() {
+		return gpsUpdateTime;
+	}
+	public static int getGPSUpdateDistance() {
+		return gpsUpdateDistance;
 	}
 
 }
