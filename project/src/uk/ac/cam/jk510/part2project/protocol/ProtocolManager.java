@@ -28,7 +28,7 @@ public abstract class ProtocolManager {
 	public static void testInputData() {
 		//TODO remove the following test data
 		//adds some random data for test
-		Device me = session.getDevices().get(0);
+		Device me = session.getThisDevice();
 		for(int i=0; i<1; i++) {
 			Coords coords = new CoordsTXYA((int) (Math.random()*100), (int) (Math.random()*100), (int) (Math.random()*100), (int) (Math.random()*100));
 			try {

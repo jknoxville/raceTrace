@@ -108,6 +108,7 @@ public class DevicePath {
 
 			//add the entries path to entirePath if its not a gap:
 			if(segment instanceof CompleteSegment) {
+				//TODO add optimization that doesn't draw path if its a signle element path
 				if(!firstCompleteSegment) {
 					entirePath.lineTo(((CompleteSegment)segment).getStartx(), ((CompleteSegment)segment).getStarty());
 				} else {

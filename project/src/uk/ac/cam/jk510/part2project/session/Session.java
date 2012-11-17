@@ -8,17 +8,23 @@ public class Session {
 	
 	private ArrayList<Device> devices;
 	private Keys keys;
+	private static Device me;
 	
 	protected Session(ArrayList<Device> devices, Keys keys) {
 		super();
 		this.devices = devices;
 		this.keys = keys;
 		session = this;
+		me = devices.get(0);
 	}
 	
 	public static Session getSession() {
 		assert(session != null);
 		return session;
+	}
+	
+	public static Device getThisDevice() {
+		return me;
 	}
 	
 	public String[] getDeviceNames() {

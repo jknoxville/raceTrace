@@ -20,7 +20,7 @@ public class NewSessionActivitySingleUser extends NewSessionActivity {
 		//TODO make this a new thread
 		ProtocolManager.initialiseProtocolManager(smgr.getSession());
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		new GPSDriver(locationManager);
+		GPSDriver.init(locationManager);
 		Intent intent = new Intent(this, MapDisplayScreen.class);
 		startActivity(intent);
 	}
