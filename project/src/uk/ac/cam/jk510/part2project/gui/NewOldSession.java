@@ -27,15 +27,33 @@ public class NewOldSession extends Activity {
     }
     
     //go to set up session screen
-    public void newSession(View view) throws Exception {
-    	Class newSessionActivity;
-    	SessionEnum sesh = Config.getSesh();
-    	switch(sesh) {
-    		case singleUser: newSessionActivity = NewSessionActivitySingleUser.class;
-    		break;
-    		default: throw new Exception();
-    	}
-    	Intent intent = new Intent(this, newSessionActivity);
-    	startActivity(intent);
+    public void newSession(final View view) throws Exception {
+    	final Context context = this;
+    	new Thread(new Runnable() {
+    		public void run() {
+    			final Class newSessionActivity;
+    			SessionEnum sesh = Config.getSesh();
+    			switch(sesh) {
+    			case singleUser: newSessionActivity = NewSessionActivitySingleUser.class;
+    			break;
+    			default: try {
+						throw new Exception();
+					} catch (Exception e) {
+						// TODO Do something if not an enum value?
+						newSessionActivity = null;
+						e.printStackTrace();
+					}
+    			}
+    			
+    			view.post(new Runnable() {
+    				public void run() {
+    					Intent intent = new Intent(context, newSessionActivity);
+    					startActivity(intent);
+    				}
+    			});
+    		}
+    	}).start();
+
+    	
     }
 }

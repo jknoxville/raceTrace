@@ -9,26 +9,61 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 
-public class NewSessionActivity extends Activity {
+public abstract class NewSessionActivity extends Activity {
 
 	Session session;
-	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_session);
-    }
+	Exception exception;
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_new_session, menu);
-        return true;
-    }
-    
-    //called when session set-up is successful
-    public void onSetupComplete(View view) throws IllegalAccessException, InstantiationException, Exception {
-    	Intent intent = new Intent(this, MapDisplayScreen.class);    	
-    	startActivity(intent);
-    }
-    
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_new_session);
+
+		setUpSessionThread(); //is to be done in new thread, from here, instead of being done in onSetupComplete
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_new_session, menu);
+		return true;
+	}
+
+	//This method spawns a new thread and sets it running setUpSession().
+	//When finished setUpSession(), it calls onSetupComplete()
+	protected void setUpSessionThread() {
+		new Thread(new Runnable() {
+
+			public void run() {
+				try {
+					setUpSession();
+				} catch (IllegalAccessException e) {
+					recordException(e);
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					recordException(e);
+					e.printStackTrace();
+				}
+				//onSetupComplete();
+				//commented out because currently called by UI TODO which is why it has View view in arguments.
+				catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+
+	private void recordException(Exception e) {
+		exception = e;
+	}
+
+	protected abstract void setUpSession() throws Exception;
+
+	//called when session set-up is successful
+	//in this case called when skip button is pressed
+	public void onSetupComplete(View view) throws Exception {
+		Intent intent = new Intent(this, MapDisplayScreen.class);    	
+		startActivity(intent);
+	}
+
 }
