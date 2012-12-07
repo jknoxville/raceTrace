@@ -13,15 +13,16 @@ public abstract class NewSessionActivity extends Activity {
 
 	Session session;
 	Exception exception;
+	static NewSessionActivity newSessionActivity;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_new_session);
-
-		setUpSessionThread(); //is to be done in new thread, from here, instead of being done in onSetupComplete
-	}
-
+//	@Override
+//	public void onCreate(Bundle savedInstanceState) {
+//		super.onCreate(savedInstanceState);
+//		setContentView(R.layout.activity_new_session);
+//
+//		setUpSessionThread(); //is to be done in new thread, from here, instead of being done in onSetupComplete
+//	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_new_session, menu);
@@ -30,12 +31,14 @@ public abstract class NewSessionActivity extends Activity {
 
 	//This method spawns a new thread and sets it running setUpSession().
 	//When finished setUpSession(), it calls onSetupComplete()
-	protected void setUpSessionThread() {
+	final protected void setUpSessionThread() {
+		newSessionActivity = this;	//sets up static link so this activity can be closed by another
 		new Thread(new Runnable() {
 
 			public void run() {
 				try {
 					setUpSession();
+					
 				} catch (IllegalAccessException e) {
 					recordException(e);
 					e.printStackTrace();
@@ -62,6 +65,7 @@ public abstract class NewSessionActivity extends Activity {
 	//called when session set-up is successful
 	//in this case called when skip button is pressed
 	public void onSetupComplete(View view) throws Exception {
+		ProtocolManager.initialiseProtocolManager(Session.getSession());
 		Intent intent = new Intent(this, MapDisplayScreen.class);    	
 		startActivity(intent);
 	}

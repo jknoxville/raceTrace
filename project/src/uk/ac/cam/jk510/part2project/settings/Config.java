@@ -15,7 +15,7 @@ public class Config {
 	private static String name = "John";
 	private static int bgColor = Color.WHITE;
 	private static Proto protocol = Proto.singleUser;
-	private static SessionEnum sesh = SessionEnum.singleUser;
+	private static SessionEnum sesh = SessionEnum.bluetooth;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
 	

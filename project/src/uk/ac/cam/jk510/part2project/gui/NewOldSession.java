@@ -36,6 +36,8 @@ public class NewOldSession extends Activity {
     			switch(sesh) {
     			case singleUser: newSessionActivity = NewSessionActivitySingleUser.class;
     			break;
+    			case bluetooth: newSessionActivity = SMBTserverorclient.class;
+    			break;
     			default: try {
 						throw new Exception();
 					} catch (Exception e) {
@@ -45,6 +47,7 @@ public class NewOldSession extends Activity {
 					}
     			}
     			
+    			//get UI thread to advance
     			view.post(new Runnable() {
     				public void run() {
     					Intent intent = new Intent(context, newSessionActivity);

@@ -26,35 +26,33 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 	ArrayList<DevicePath> devicePathList = new ArrayList<DevicePath>();
 	//TODO initialise this list for all the devices.
 	Path[] pathsToDraw;
-	Session session = SessionManager.getSession();
+	Session session = Session.getSession();
 	ArrayList<Device> devices;
 	boolean[] pathIsNew;
 	
 	RectF bounds = new RectF();
 	Matrix mat = new Matrix();
-	int cHeight;
-	int cWidth;
 
-	@Deprecated
-	public MapDrawer(Context context, Session session) throws IllegalAccessException, InstantiationException {
-		super(context);
-		line.setStrokeWidth(Config.getMapLineThickness());
-		line.setStyle(Paint.Style.STROKE);
-		line.setColor(Color.BLACK);
-		vertices.setStyle(Paint.Style.FILL);
-		vertices.setColor(Color.BLACK);
-		
-		this.session = session;
-		devices = session.getDevices();
-		pathsToDraw = new Path[devices.size()];
-		pathIsNew = new boolean[devices.size()];
-		devicePathList = new ArrayList<DevicePath>();
-		for(Device d: devices) {
-			devicePathList.add(d.getDeviceID(), new DevicePath());
-		}
-		
-		PositionStore.subscribeToUpdates(this);
-	}
+//	@Deprecated
+//	public MapDrawer(Context context, Session session) throws IllegalAccessException, InstantiationException {
+//		super(context);
+//		line.setStrokeWidth(Config.getMapLineThickness());
+//		line.setStyle(Paint.Style.STROKE);
+//		line.setColor(Color.BLACK);
+//		vertices.setStyle(Paint.Style.FILL);
+//		vertices.setColor(Color.BLACK);
+//		
+//		this.session = session;
+//		devices = session.getDevices();
+//		pathsToDraw = new Path[devices.size()];
+//		pathIsNew = new boolean[devices.size()];
+//		devicePathList = new ArrayList<DevicePath>();
+//		for(Device d: devices) {
+//			devicePathList.add(d.getDeviceID(), new DevicePath());
+//		}
+//		
+//		PositionStore.subscribeToUpdates(this);
+//	}
 	
 	public MapDrawer(Context context, AttributeSet att) throws IllegalAccessException, InstantiationException {
 		super(context);
@@ -64,9 +62,11 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		vertices.setStyle(Paint.Style.FILL);
 		vertices.setColor(Color.BLACK);
 		this.setBackgroundColor(Config.getBackgroundColor());
-		cHeight = this.getHeight();
-		cWidth = this.getWidth();	//get view's dimensions for scaling.
-		
+		reset();
+	}
+	
+	//Resets all state to new state GCing the old state, should be called whenever a new session starts.
+	public void reset() {
 		session = Session.getSession();
 		devices = session.getDevices();
 		pathsToDraw = new Path[devices.size()];
@@ -96,7 +96,8 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		float pLeft = 0;
 		float pRight = 0;
 		
-		
+		int cHeight = canvas.getHeight();
+		int cWidth = canvas.getWidth();
 		
 		//iterate through all the paths to draw, getting the maximum top, bottom, left and right values
 		for(Path path: pathsToDraw) {
@@ -120,7 +121,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		float pHeight = pBottom - pTop;
 		float pWidth = pRight - pLeft;
 		System.err.println("pHeight: "+pHeight+" pWidth: "+pWidth);	//debug
-		System.err.println("cHeight: "+cHeight+" cWidth: "+cWidth);	//debug
+		System.err.println("cHeight: "+cHeight+" cWidth: "+cWidth+"but canvasHeight: "+canvas.getHeight());	//debug
 		
 		float yScale = cHeight/pHeight;
 		float xScale = cWidth/pWidth;

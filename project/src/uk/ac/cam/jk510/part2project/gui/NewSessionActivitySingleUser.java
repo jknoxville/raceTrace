@@ -3,6 +3,7 @@ package uk.ac.cam.jk510.part2project.gui;
 import uk.ac.cam.jk510.part2project.R;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.protocol.SessionEnum;
+import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionManager;
 import uk.ac.cam.jk510.part2project.session.SessionManagerSingleUser;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -29,20 +30,18 @@ public class NewSessionActivitySingleUser extends NewSessionActivity {
 	
 	@Override
 	public void onSetupComplete(View view) throws Exception {
-		
+		ProtocolManager.initialiseProtocolManager(Session.getSession());
 		//advance to next activity
 		Intent intent = new Intent(this, MapDisplayScreen.class);
-		startActivity(intent);
+		startActivityForResult(intent, 0);
 	}
 
 	@Override
 	protected void setUpSession() throws Exception {
-		// TODO Auto-generated method stub
+		// Create Session state:
 		SessionManager smgr = new SessionManagerSingleUser();
-		smgr.newSession();
-		System.err.println("about to init PM");	//debug
-		//TODO make this a new thread
-		ProtocolManager.initialiseProtocolManager(smgr.getSession());
+		smgr.newSession(this);
+		System.err.println("Finished setUpSession()");	//debug
 		
 	}
 

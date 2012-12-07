@@ -14,8 +14,10 @@ public class Session {
 		super();
 		this.devices = devices;
 		this.keys = keys;
-		session = this;
 		me = devices.get(0);
+		
+		session = this;
+		System.err.println("just saved Session.session: "+session);	//debug
 	}
 	
 	public static Session getSession() {

@@ -56,10 +56,11 @@ public abstract class ProtocolManager {
 		return mgr;
 	}
 
-	public static MapDrawer initialiseMapDrawer(Context context) throws IllegalAccessException, InstantiationException {
-		MapDrawer mapDrawer = new MapDrawer(context, session);
-		mapDrawer.setBackgroundColor(Config.getBackgroundColor());
-		return mapDrawer;
-	}
+//	@Deprecated
+//	public static MapDrawer initialiseMapDrawer(Context context) throws IllegalAccessException, InstantiationException {
+//		MapDrawer mapDrawer = new MapDrawer(context, session);
+//		mapDrawer.setBackgroundColor(Config.getBackgroundColor());
+//		return mapDrawer;
+//	}
 
 }

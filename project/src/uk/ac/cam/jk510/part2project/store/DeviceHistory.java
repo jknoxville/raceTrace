@@ -85,10 +85,10 @@ public abstract class DeviceHistory {
 	}
 
 	public static DeviceHistory newHistory() {
-		ProtocolManager mgr = ProtocolManager.getProtocolManager();
-		if(mgr == null) {//debug
-			System.err.println("mgr is null");
-		}
+//		ProtocolManager mgr = ProtocolManager.getProtocolManager();
+//		if(mgr == null) {//debug
+//			System.err.println("mgr is null");
+//		}
 		HistoryType historyType = Config.getHistoryType();
 		DeviceHistory history = null;
 		switch(historyType) {

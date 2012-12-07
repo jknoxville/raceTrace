@@ -22,7 +22,7 @@ public class PositionStore {
 		}
 		return instance;
 	}
-	
+
 	public static Coords getCoord(Device d, int index) {
 		return d.getHistory().getCoord(index);
 	}
@@ -54,7 +54,9 @@ public class PositionStore {
 
 	//externally called by other objects wanting to subscribe
 	public static void subscribeToUpdates(PositionStoreSubscriber s) {
-		subscribers.add(s);
+		if(!subscribers.contains(s)) {
+			subscribers.add(s);
+		}
 	}
 
 	//Boolean query that returns true when there is significant number of new points to justify plotting.

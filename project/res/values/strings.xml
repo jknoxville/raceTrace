@@ -12,5 +12,12 @@
     <string name="skip">Skip</string>
     <string name="addTestData">Add random datapoints</string>
     <string name="title_activity_new_session_activity_single_user">NewSessionActivitySingleUser</string>
+    <string name="title_activity_smbtserverorclient">SMBTserverorclient</string>
+
+    <!-- Session Set up -->
+    <string name="button_be_server">I am the boss</string>
+    <string name="button_be_client">I am not the boss</string>
+    <string name="title_activity_session_setup">SessionSetupActivity</string>
+    <string name="session_setup">Session Setup</string>
 
 </resources>
