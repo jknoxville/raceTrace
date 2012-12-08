@@ -14,10 +14,12 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class SessionSetupActivity extends Activity {
 
 	static ListView selectedPlayers;
+	static TextView progressList;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,36 +33,25 @@ public class SessionSetupActivity extends Activity {
         ArrayAdapter<String> listAdapter = new ArrayAdapter(this, R.layout.select_player_row, pairedList);
         selectedPlayers.setAdapter(listAdapter);
         
-        populateList(pairedList);	//Add bluetooth names to the list driving the ListView
+        SessionManagerBluetooth.populateList(pairedList);	//Add bluetooth names to the list driving the ListView
         
     }
     
     public void onDone(View view) {
 
+    	SessionManagerBluetooth.updateSelection(selectedPlayers);
     	
-    	System.out.println("10th element: "+selectedPlayers.getCheckedItemPositions().get(10));
-    	System.out.println("size: "+selectedPlayers.getCheckedItemPositions().size());
+    	setContentView(R.layout.bluetooth_progress_layout);
+    	//destroy previous lists / adapters
+    	
+    	progressList = (TextView) findViewById(R.id.progressList);
+    	SessionManagerBluetooth.spawnBluetoothSetupThread();
+    	
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_session_setup, menu);
         return true;
-    }
-    
-    private void populateList(final ArrayList<String> list) {
-    	//run in seperate thread:
-    	new Thread(new Runnable() {
-
-			public void run() {
-				BluetoothDevice[] devices = SessionManagerBluetooth.getPairedBTDevices();
-				for (BluetoothDevice device: devices) {
-					list.add(device.getName());
-				}
-			}
-		}).start();
-    	
-    	
-    	
     }
 }

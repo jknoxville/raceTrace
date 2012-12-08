@@ -21,6 +21,8 @@ public class Config {
 	
 	private static final int gpsUpdateTime = 0;
 	private static final int gpsUpdateDistance = 0;
+	
+	private static final String UUIDString = "813a5774-b0a5-96d2-8a96e3d2fcdd";
 
 	public static int getMapLineThickness() {
 		return MapLineThickness;
@@ -57,6 +59,9 @@ public class Config {
 	}
 	public static int getGPSUpdateDistance() {
 		return gpsUpdateDistance;
+	}
+	public static String getUUIDString() {
+		return UUIDString;
 	}
 
 }

@@ -18,9 +18,10 @@ public final class R {
         public static final int done_button=0x7f070006;
         public static final int mapDrawer=0x7f070000;
         public static final int mapScreenInfo=0x7f070001;
-        public static final int menu_settings=0x7f070008;
+        public static final int menu_settings=0x7f070009;
         public static final int progressBar1=0x7f070003;
-        public static final int rowTextView=0x7f070007;
+        public static final int progressList=0x7f070007;
+        public static final int rowTextView=0x7f070008;
         public static final int scan_button=0x7f070005;
         public static final int selected_players=0x7f070004;
         public static final int textView1=0x7f070002;
@@ -32,7 +33,9 @@ public final class R {
         public static final int activity_new_session_activity_single_user=0x7f030003;
         public static final int activity_session_setup=0x7f030004;
         public static final int activity_smbtserverorclient=0x7f030005;
-        public static final int select_player_row=0x7f030006;
+        public static final int bluetooth_progress_layout=0x7f030006;
+        public static final int bluetooth_progress_row=0x7f030007;
+        public static final int select_player_row=0x7f030008;
     }
     public static final class menu {
         public static final int activity_map_display_screen=0x7f060000;
