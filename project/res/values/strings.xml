@@ -18,6 +18,8 @@
     <string name="button_be_server">I am the boss</string>
     <string name="button_be_client">I am not the boss</string>
     <string name="title_activity_session_setup">SessionSetupActivity</string>
-    <string name="session_setup">Session Setup</string>
+    <string name="selected_players_list">Current players:</string>
+    <string name="scan_button">Scan for more devices</string>
+    <string name="done">Done</string>
 
 </resources>

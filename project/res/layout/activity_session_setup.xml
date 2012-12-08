@@ -1,14 +1,36 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/session_setup"
+        android:text="@string/selected_players_list"
         tools:context=".SessionSetupActivity" />
+    
+    <ListView 
+        android:id="@+id/selected_players"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:choiceMode="multipleChoice"
+        ></ListView>
+    
+    <Button
+        android:id="@+id/scan_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/scan_button"
+        ></Button>
+    
+    <Button
+        android:id="@+id/done_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/done"
+        android:onClick="onDone"
+        ></Button>
 
-</RelativeLayout>
+</LinearLayout>
