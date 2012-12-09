@@ -25,16 +25,15 @@ public class SessionSetupActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_session_setup);
-        SessionManagerBluetooth.setUpBluetooth(this);
+        SessionManagerBluetooth.switchOnBluetooth(this);
+        
         selectedPlayers = (ListView) findViewById(R.id.selected_players);
-        
         ArrayList<String> pairedList = new ArrayList<String>();
-        
-        ArrayAdapter<String> listAdapter = new ArrayAdapter(this, R.layout.select_player_row, pairedList);
-        selectedPlayers.setAdapter(listAdapter);
         
         SessionManagerBluetooth.populateList(pairedList);	//Add bluetooth names to the list driving the ListView
         
+        ArrayAdapter<String> listAdapter = new ArrayAdapter(this, R.layout.select_player_row, pairedList);
+        selectedPlayers.setAdapter(listAdapter);
     }
     
     public void onDone(View view) {
@@ -45,7 +44,7 @@ public class SessionSetupActivity extends Activity {
     	//destroy previous lists / adapters
     	
     	progressList = (TextView) findViewById(R.id.progressList);
-    	SessionManagerBluetooth.spawnBluetoothSetupThread();
+    	SessionManagerBluetooth.spawnMasterBluetoothSetupThread();
     	
     }
 

@@ -22,7 +22,7 @@ public class Config {
 	private static final int gpsUpdateTime = 0;
 	private static final int gpsUpdateDistance = 0;
 	
-	private static final String UUIDString = "813a5774-b0a5-96d2-8a96e3d2fcdd";
+	private static final String UUIDString = "fa87c0d0-afac-11de-8a39-0800200c9a66";
 
 	public static int getMapLineThickness() {
 		return MapLineThickness;

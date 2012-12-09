@@ -32,6 +32,7 @@ public class SMBTserverorclient extends Activity {
 	}
 
 	public void beClient(View view) {
-
+		Intent toSetupSession = new Intent(this, SessionSetupSlaveActivity.class);
+		startActivity(toSetupSession);
 	}
 }

@@ -8,14 +8,17 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 
+import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.util.SparseBooleanArray;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class SessionManagerBluetooth extends SessionManager {
 
@@ -44,7 +47,7 @@ public class SessionManagerBluetooth extends SessionManager {
 
 	}
 
-	public static void setUpBluetooth(Activity activity) {
+	public static void switchOnBluetooth(Activity activity) {
 		if(bluetoothAdapter == null) {
 			System.err.println("Bluetoot not supported on device");	//TODO proper error reporting
 		}
@@ -56,10 +59,11 @@ public class SessionManagerBluetooth extends SessionManager {
 
 	public static void populateList(final ArrayList<String> list) {
 		//run in seperate thread:
-		new Thread(new Runnable() {
+		/*
+		new Thread(new Runnable() {	//TODO should be done in thread
 
 			public void run() {
-
+*/
 				Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
 				deviceList = new ArrayList<BluetoothDevice>();
 				//iterate through all paired devices, adding them to a linkedlist, also add their name to list.
@@ -67,8 +71,8 @@ public class SessionManagerBluetooth extends SessionManager {
 					deviceList.add(device);
 					list.add(device.getName());
 				}
-			}
-		}).start();
+			//}
+		//}).start();
 	}
 
 	public static ArrayList<BluetoothDevice> getPairedBTDevices() {
@@ -100,7 +104,7 @@ public class SessionManagerBluetooth extends SessionManager {
 		}).start();
 	}
 
-	public static void spawnBluetoothSetupThread() {
+	public static void spawnMasterBluetoothSetupThread() {
 		//run in seperate thread:
 		new Thread(new Runnable() {
 
@@ -116,8 +120,7 @@ public class SessionManagerBluetooth extends SessionManager {
 					try {
 						bluetoothAdapter.cancelDiscovery();	//to speed up connection
 
-						System.out.println(UUID.randomUUID().toString());
-						BluetoothSocket sock = device.createRfcommSocketToServiceRecord(UUID.fromString(UUID.randomUUID().toString()));
+						BluetoothSocket sock = device.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
 						sock.connect();
 
 						//Send Master info, and then request slave's info
@@ -129,8 +132,8 @@ public class SessionManagerBluetooth extends SessionManager {
 
 						sock.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println("Error connecting to "+device.getName());
+						continue;
 					}
 				}
 			}
@@ -138,11 +141,67 @@ public class SessionManagerBluetooth extends SessionManager {
 	}
 	
 	private static void sendMyAddressInfo(OutputStream os) {
+		/*
+		 * name
+		 * ip address
+		 */
+		try {
+		String name = Config.getName();
+		byte[] nameData = name.getBytes("UTF-16LE");
+		String ip = DataConnectionManager.getMyIP();
+		System.out.println(ip);
+		os.write(nameData);
+		} catch (Exception e) {
+			System.out.println("Exception occured");
+		}
+	}
+	
+	private static String receiveAddressInfo(InputStream is) {
+		
+		//TODO overflow size etc
+		byte[] buffer = new byte[100];
+		try {
+			is.read(buffer);
+			String string = new String(buffer, "UTF-16LE");
+			System.out.println(string);
+			return string;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "error";
+		}
 		
 	}
 	
-	private static void receiveAddressInfo(InputStream is) {
-		
+	public static void listenForMaster() {
+
+	}
+	
+	public static void spawnSlaveBluetoothSetupThread(final TextView tv) {
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					bluetoothAdapter.cancelDiscovery();	//to speed up connection
+					
+					BluetoothServerSocket serverSock = bluetoothAdapter.listenUsingRfcommWithServiceRecord(Config.getName(), UUID.fromString(Config.getUUIDString()));
+					BluetoothSocket sock = serverSock.accept();
+					serverSock.close();	//close server socket but not bluetooth socket
+					
+					//Receive Master info, and then send slave's info
+					InputStream inputStream = sock.getInputStream();
+					tv.setText(receiveAddressInfo(inputStream));
+					
+					OutputStream outputStream = sock.getOutputStream();
+					sendMyAddressInfo(outputStream);
+					
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		}).start();
 	}
 
 }

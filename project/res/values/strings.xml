@@ -21,5 +21,6 @@
     <string name="selected_players_list">Current players:</string>
     <string name="scan_button">Scan for more devices</string>
     <string name="done">Done</string>
+    <string name="title_activity_session_setup_slave">SessionSetupSlaveActivity</string>
 
 </resources>
