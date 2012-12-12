@@ -13,10 +13,9 @@ public class DevicePath {
 	protected void add(int index, float x, float y) {
 		//Check it's not here already, which it shouldn't be, because the filtering is done by PositionStore
 		assert(!pathCache.containsKey(index));
-		if(pathCache.containsKey(index)) {
-			System.err.println("dupliate key");
+		if(pathCache.containsKey(index) && pathCache.get(index) instanceof CompleteSegment) {
+			System.err.println("ERROR: duplicate key at DevicePath.add()");
 		}
-		assert(index>0);
 
 		System.err.println("Now inserting index: "+index+" size: "+pathCache.size()+" firstkey: "+pathCache.firstKey());	//debug
 		Entry<Integer, Segment> gapEntry = pathCache.floorEntry(index);
@@ -84,7 +83,7 @@ public class DevicePath {
 		super();
 		pathCache = new TreeMap<Integer, Segment>();
 		pathCache.put(0, new GapSegment());
-		System.err.println("just put 0 in, first key is "+pathCache.firstKey());
+		System.err.println("just initialised DevicePath");
 
 	}
 
@@ -113,7 +112,9 @@ public class DevicePath {
 					entirePath.lineTo(((CompleteSegment)segment).getStartx(), ((CompleteSegment)segment).getStarty());
 				} else {
 					firstCompleteSegment = false;
+					entirePath.moveTo(((CompleteSegment)segment).getStartx(), ((CompleteSegment)segment).getStarty());	//TODO this is a fix. wasnt in original.
 				}
+				
 				entirePath.addPath(((CompleteSegment)segment).path);
 			} else {
 				//if it is a gap, add a line from current point to start of next path, if there is a next path, otherwise dont

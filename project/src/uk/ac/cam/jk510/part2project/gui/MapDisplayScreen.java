@@ -6,6 +6,7 @@ import uk.ac.cam.jk510.part2project.R;
 import uk.ac.cam.jk510.part2project.graphics.MapDrawer;
 import uk.ac.cam.jk510.part2project.location.GPSDriver;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
+import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -93,6 +94,11 @@ public class MapDisplayScreen extends Activity {
     		//testDataUsed = true;
     	}
     	
+    }
+    
+    private static int testDataDeviceNumber() {
+    	//return index of last device
+    	return (Session.getSession()).numDevices() - 1;
     }
     
 }

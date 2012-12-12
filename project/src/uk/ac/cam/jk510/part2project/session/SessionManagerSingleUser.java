@@ -18,8 +18,8 @@ public class SessionManagerSingleUser extends SessionManager {
 		devices.add(me);
 		//Using null for keys since its single user and no comms needed.
 		
-		//static session object has been moved to Session class
-		session = new Session(devices, null);
+		//this constructor saves static link to this instance from Session class
+		new Session(devices, null);
 
 	}
 

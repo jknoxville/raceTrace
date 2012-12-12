@@ -14,6 +14,8 @@ public class Config {
 	private static int arrayIndexFrequency = 10;	// Finest granularity of points. In samples per 10 sec.
 	private static String name = "John";
 	private static int bgColor = Color.WHITE;
+	private static int[] colors = {Color.BLUE, Color.GREEN, Color.RED};	//TODO add more colours
+	
 	private static Proto protocol = Proto.singleUser;
 	private static SessionEnum sesh = SessionEnum.bluetooth;
 	private static CoordsType coordsType = CoordsType.TXYA;
@@ -62,6 +64,9 @@ public class Config {
 	}
 	public static String getUUIDString() {
 		return UUIDString;
+	}
+	public static int getColor(int p) {
+		return colors[p];
 	}
 
 }

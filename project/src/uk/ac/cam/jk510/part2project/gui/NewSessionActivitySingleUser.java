@@ -27,14 +27,6 @@ public class NewSessionActivitySingleUser extends NewSessionActivity {
 		getMenuInflater().inflate(R.menu.activity_new_session_activity_single_user, menu);
 		return true;
 	}
-	
-	@Override
-	public void onSetupComplete(View view) throws Exception {
-		ProtocolManager.initialiseProtocolManager(Session.getSession());
-		//advance to next activity
-		Intent intent = new Intent(this, MapDisplayScreen.class);
-		startActivityForResult(intent, 0);
-	}
 
 	@Override
 	protected void setUpSession() throws Exception {

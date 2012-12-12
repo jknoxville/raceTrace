@@ -16,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SessionSetupActivity extends Activity {
+public class SessionSetupActivity extends NewSessionActivity {
 
 	static ListView selectedPlayers;
 	static TextView progressList;
@@ -53,4 +53,10 @@ public class SessionSetupActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_session_setup, menu);
         return true;
     }
+
+	@Override
+	protected void setUpSession() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

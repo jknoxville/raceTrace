@@ -59,4 +59,10 @@ public class NewOldSession extends Activity {
 
     	
     }
+    
+    public void loadSession(View view) {
+    	Intent intent = new Intent(this, NewSessionActivityPredefined.class);
+		startActivity(intent);
+    }
+    
 }

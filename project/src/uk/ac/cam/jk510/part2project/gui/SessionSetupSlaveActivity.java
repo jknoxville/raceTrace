@@ -9,7 +9,7 @@ import android.app.Activity;
 import android.view.Menu;
 import android.widget.TextView;
 
-public class SessionSetupSlaveActivity extends Activity {
+public class SessionSetupSlaveActivity extends NewSessionActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,4 +28,10 @@ public class SessionSetupSlaveActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_session_setup_slave, menu);
         return true;
     }
+
+	@Override
+	protected void setUpSession() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }

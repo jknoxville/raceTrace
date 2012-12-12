@@ -22,5 +22,6 @@
     <string name="scan_button">Scan for more devices</string>
     <string name="done">Done</string>
     <string name="title_activity_session_setup_slave">SessionSetupSlaveActivity</string>
+    <string name="title_activity_new_session_activity_predefined">NewSessionActivityPredefined</string>
 
 </resources>

@@ -1,5 +1,6 @@
 package uk.ac.cam.jk510.part2project.session;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -63,15 +64,15 @@ public class SessionManagerBluetooth extends SessionManager {
 		new Thread(new Runnable() {	//TODO should be done in thread
 
 			public void run() {
-*/
-				Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
-				deviceList = new ArrayList<BluetoothDevice>();
-				//iterate through all paired devices, adding them to a linkedlist, also add their name to list.
-				for(BluetoothDevice device: devices) {
-					deviceList.add(device);
-					list.add(device.getName());
-				}
-			//}
+		 */
+		Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+		deviceList = new ArrayList<BluetoothDevice>();
+		//iterate through all paired devices, adding them to a linkedlist, also add their name to list.
+		for(BluetoothDevice device: devices) {
+			deviceList.add(device);
+			list.add(device.getName());
+		}
+		//}
 		//}).start();
 	}
 
@@ -119,6 +120,10 @@ public class SessionManagerBluetooth extends SessionManager {
 				for(BluetoothDevice device: selectedList) {
 					try {
 						bluetoothAdapter.cancelDiscovery();	//to speed up connection
+						
+						
+						String ip = DataConnectionManager.getMyIP();
+						System.out.println("My ip address: "+ip);	//debug
 
 						BluetoothSocket sock = device.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
 						sock.connect();
@@ -126,7 +131,7 @@ public class SessionManagerBluetooth extends SessionManager {
 						//Send Master info, and then request slave's info
 						OutputStream outputStream = sock.getOutputStream();
 						sendMyAddressInfo(outputStream);
-						
+
 						InputStream inputStream = sock.getInputStream();
 						receiveAddressInfo(inputStream);
 
@@ -139,25 +144,44 @@ public class SessionManagerBluetooth extends SessionManager {
 			}
 		}).start();
 	}
-	
+
 	private static void sendMyAddressInfo(OutputStream os) {
 		/*
 		 * name
 		 * ip address
 		 */
 		try {
-		String name = Config.getName();
-		byte[] nameData = name.getBytes("UTF-16LE");
-		String ip = DataConnectionManager.getMyIP();
-		System.out.println(ip);
-		os.write(nameData);
+			String name = Config.getName();
+			byte[] nameData = name.getBytes("UTF-16LE");
+			String ip = DataConnectionManager.getMyIP();
+			
+			System.out.println("My ip address: "+ip);	//debug
+			
+			byte[] ipData = ip.getBytes("UTF-16LE");
+
+			for(int i=0; i<nameData.length; i++) {
+				if(nameData[i]==Byte.MAX_VALUE) {
+					System.out.println("Warning, incorrect encoding in SessionManagerBluetooth");
+				}
+			}
+			for(int i=0; i<ipData.length; i++) {
+				if(ipData[i]==Byte.MAX_VALUE) {
+					System.out.println("Warning, incorrect encoding in SessionManagerBluetooth");
+				}
+			}
+			byte[] data = new byte[nameData.length+ipData.length+1];
+			System.arraycopy(nameData, 0, data, 0, nameData.length);
+			data[nameData.length] = Byte.MAX_VALUE;	//seperator between values
+			System.arraycopy(ipData, 0, data, nameData.length+1, ipData.length);
+			System.out.println(ip);
+			os.write(nameData);
 		} catch (Exception e) {
 			System.out.println("Exception occured");
 		}
 	}
-	
+
 	private static String receiveAddressInfo(InputStream is) {
-		
+
 		//TODO overflow size etc
 		byte[] buffer = new byte[100];
 		try {
@@ -170,38 +194,64 @@ public class SessionManagerBluetooth extends SessionManager {
 			e.printStackTrace();
 			return "error";
 		}
-		
+
 	}
-	
+
 	public static void listenForMaster() {
 
 	}
-	
+
 	public static void spawnSlaveBluetoothSetupThread(final TextView tv) {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
 					bluetoothAdapter.cancelDiscovery();	//to speed up connection
 					
+					String ip = DataConnectionManager.getMyIP();
+					System.out.println("My ip address: "+ip);	//debug
+
 					BluetoothServerSocket serverSock = bluetoothAdapter.listenUsingRfcommWithServiceRecord(Config.getName(), UUID.fromString(Config.getUUIDString()));
 					BluetoothSocket sock = serverSock.accept();
-					serverSock.close();	//close server socket but not bluetooth socket
-					
+
 					//Receive Master info, and then send slave's info
 					InputStream inputStream = sock.getInputStream();
 					tv.setText(receiveAddressInfo(inputStream));
-					
+
 					OutputStream outputStream = sock.getOutputStream();
 					sendMyAddressInfo(outputStream);
-					
-					
+					//close connection while master fetches data from the other devices
+					sock.close();
+
+					//open new connection
+					sock = serverSock.accept();
+					//wait for package
+					awaitPackage(inputStream);
+
+
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 		}).start();
+	}
+
+	private static void awaitPackage(InputStream in) throws IOException {
+		DataInputStream din = new DataInputStream(in);
+		int length;
+		byte[] buffer = new byte[1000];
+		int offset = 0;
+		String name;
+		String ipAddress;
+		while((name = din.readUTF()) != null) {
+			ipAddress = din.readUTF();
+			
+			
+		}
+		
+		//construct session object.
+		new Session(null, null);
 	}
 
 }

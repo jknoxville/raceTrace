@@ -26,14 +26,20 @@ public abstract class ProtocolManager {
 	}
 	
 	public static void testInputData() {
+		for (int dev=0; dev<session.numDevices(); dev++) {
+			testInputData(dev);
+		}
+	}
+	
+	public static void testInputData(int device) {
 		//TODO remove the following test data
 		//adds some random data for test
-		Device me = session.getThisDevice();
+		Device lastDev = session.getDevice(device);
 		for(int i=0; i<1; i++) {
-			Coords coords = new CoordsTXYA((int) (Math.random()*100), (int) (Math.random()*100), (int) (Math.random()*100), (int) (Math.random()*100));
+			Coords coords = new CoordsTXYA((int) (Math.random()*100), (int) (Math.random()*100)+712026, (int) (Math.random()*100)+9828785, (int) (Math.random()*100));
 			try {
 				System.err.println("now inserting index: "+coords.getLClock());	//debug
-				PositionStore.insert(me, coords);
+				PositionStore.insert(lastDev, coords);
 			} catch (IncompatibleCoordsException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

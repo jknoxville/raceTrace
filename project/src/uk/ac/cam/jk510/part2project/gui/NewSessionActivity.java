@@ -63,8 +63,9 @@ public abstract class NewSessionActivity extends Activity {
 	protected abstract void setUpSession() throws Exception;
 
 	//called when session set-up is successful
-	//in this case called when skip button is pressed
 	public void onSetupComplete(View view) throws Exception {
+		
+		//TODO new thread?:
 		ProtocolManager.initialiseProtocolManager(Session.getSession());
 		Intent intent = new Intent(this, MapDisplayScreen.class);    	
 		startActivity(intent);

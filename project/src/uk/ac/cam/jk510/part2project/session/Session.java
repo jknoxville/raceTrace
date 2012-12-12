@@ -29,6 +29,10 @@ public class Session {
 		return me;
 	}
 	
+	public Device getDevice(int n) {
+		return devices.get(n);
+	}
+	
 	public String[] getDeviceNames() {
 		String[] names = new String[devices.size()];
 		for(Device d: devices) {
@@ -39,6 +43,9 @@ public class Session {
 	
 	public ArrayList<Device> getDevices() {
 		return devices;
+	}
+	public int numDevices() {
+		return devices.size();
 	}
 	
 }
