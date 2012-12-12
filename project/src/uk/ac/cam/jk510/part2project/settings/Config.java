@@ -8,24 +8,31 @@ import android.graphics.Color;
 
 public class Config {
 
-	private static final int MinUpdateRedrawSize = 1;
-	private static int MapLineThickness = 2;
+	private static final int MinUpdateRedrawSize = 1;	//number of new points to recieve before redrawing
+	private static int MapLineThickness = 2;	//thickness of paths drawn in MapDisplayScreen
 	private static int arrayBlockSize = 600;		// At 1 per second, thats 10 mins per chunk
 	private static int arrayIndexFrequency = 10;	// Finest granularity of points. In samples per 10 sec.
-	private static String name = "John";
-	private static int bgColor = Color.WHITE;
-	private static int[] colors = {Color.BLUE, Color.GREEN, Color.RED};	//TODO add more colours
+	private static String name = "John";	//Name of local player TODO lookup from OS?
 	
+	//Colors
+	private static int bgColor = Color.WHITE;	
+	private static int[] colors = {Color.BLUE, Color.GREEN, Color.RED};	//TODO add more colours
+	private static float posIndicatorSize = 10;	//Radius of circle
+	
+	//Protocol
 	private static Proto protocol = Proto.singleUser;
 	private static SessionEnum sesh = SessionEnum.bluetooth;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
 	
-	private static final int gpsUpdateTime = 0;
-	private static final int gpsUpdateDistance = 0;
+	//GPS Updates
+	private static final int gpsUpdateTime = 0;	//minTime between GPS position updates
+	private static final int gpsUpdateDistance = 0;	//min distance between GPS position updates
 	
-	private static final String UUIDString = "fa87c0d0-afac-11de-8a39-0800200c9a66";
+	//Hard-coded app data
+	private static final String UUIDString = "fa87c0d0-afac-11de-8a39-0800200c9a66"; //Randomly created string for use with this app
 
+	//Getter methods
 	public static int getMapLineThickness() {
 		return MapLineThickness;
 	}
@@ -68,5 +75,7 @@ public class Config {
 	public static int getColor(int p) {
 		return colors[p];
 	}
-
+	public static float getPosIndicatorSize() {
+		return posIndicatorSize;
+	}
 }

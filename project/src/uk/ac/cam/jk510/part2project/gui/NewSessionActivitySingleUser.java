@@ -1,16 +1,10 @@
 package uk.ac.cam.jk510.part2project.gui;
 
 import uk.ac.cam.jk510.part2project.R;
-import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
-import uk.ac.cam.jk510.part2project.protocol.SessionEnum;
-import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionManager;
 import uk.ac.cam.jk510.part2project.session.SessionManagerSingleUser;
-import uk.ac.cam.jk510.part2project.settings.Config;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 
 public class NewSessionActivitySingleUser extends NewSessionActivity {
 

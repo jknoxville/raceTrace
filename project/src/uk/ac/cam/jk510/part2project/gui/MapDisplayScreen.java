@@ -1,19 +1,14 @@
 package uk.ac.cam.jk510.part2project.gui;
 
-import java.util.zip.Inflater;
-
 import uk.ac.cam.jk510.part2project.R;
 import uk.ac.cam.jk510.part2project.graphics.MapDrawer;
 import uk.ac.cam.jk510.part2project.location.GPSDriver;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
-import uk.ac.cam.jk510.part2project.session.Session;
-import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -94,11 +89,6 @@ public class MapDisplayScreen extends Activity {
     		//testDataUsed = true;
     	}
     	
-    }
-    
-    private static int testDataDeviceNumber() {
-    	//return index of last device
-    	return (Session.getSession()).numDevices() - 1;
     }
     
 }

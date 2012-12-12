@@ -14,8 +14,11 @@ import android.view.View;
 public class MapDrawerTest extends View {
 	Paint line = new Paint();
 	Paint vertices = new Paint();
+	RectF bounds = new RectF();
+	Matrix mat = new Matrix();
 	
 	//Path used instead
+	@SuppressWarnings("unused")
 	@Deprecated
 	private void drawSmoothLines(Canvas canvas, float[] pts, Paint linePaint) {
 		canvas.drawLines(pts, linePaint);
@@ -76,7 +79,6 @@ public class MapDrawerTest extends View {
 		
 		char[] x = {20,20,100,150,50,78,56,200};
 		char[] y = {20,50,100,130,250,33,67,5};
-		RectF bounds = new RectF();
 		try {			System.err.println("here");
 			Path path = createPath(x,y);
 			System.err.println("here here");
@@ -86,7 +88,6 @@ public class MapDrawerTest extends View {
 			int cWidth = canvas.getWidth();
 			float pHeight = bounds.height();
 			float pWidth = bounds.width();
-			Matrix mat = new Matrix();
 			float yScale = cHeight/pHeight;
 			float xScale = cWidth/pWidth;
 			System.err.println("xScale: "+xScale+" yScale: "+yScale);

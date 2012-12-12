@@ -1,7 +1,6 @@
 package uk.ac.cam.jk510.part2project.graphics;
 
 import java.util.Map.Entry;
-import java.util.Set;
 
 import uk.ac.cam.jk510.part2project.openjdk.TreeMap;
 import android.graphics.Path;
@@ -9,6 +8,9 @@ import android.graphics.Path;
 public class DevicePath {
 
 	private TreeMap<Integer, Segment> pathCache = new TreeMap<Integer, Segment>();
+	private float endX;
+	private float endY;
+	private int lastIndex = -1;
 
 	protected void add(int index, float x, float y) {
 		//Check it's not here already, which it shouldn't be, because the filtering is done by PositionStore
@@ -34,7 +36,7 @@ public class DevicePath {
 			}
 
 			//add point to previous segment
-			Entry prevEntry = pathCache.lowerEntry(index);
+			Entry<Integer, Segment> prevEntry = pathCache.lowerEntry(index);
 			//			CompleteSegment prev = (CompleteSegment) pathCache.lowerEntry(index).getValue();
 			//if there is a previous segment, add this point to it.
 			if(!(prevEntry == null)) {
@@ -75,6 +77,11 @@ public class DevicePath {
 				}
 			}
 		}
+		if(index>lastIndex) {
+			lastIndex = index;
+			endX = x;
+			endY = y;
+		}
 	}
 
 	//constructor which creates a TreeMap with just one big gap.
@@ -89,18 +96,18 @@ public class DevicePath {
 
 	public Path makePath() {
 		System.out.println("makePath()");//debug
-		Set<Entry<Integer, Segment>> entrySet = pathCache.entrySet();
+		//Set<Entry<Integer, Segment>> entrySet = pathCache.entrySet();
 		Path entirePath = new Path();
 
 		System.out.println("makePath() 2");//debug
 		//iterate through all Segments in order, adding them to the path
-		int position = -1;
+		//int position = -1;
 		Entry<Integer, Segment> entry = null;
 		System.out.println("makePath() before loop");//debug
 		entry = pathCache.firstEntry();	// entry = first entry
 		//while there are higher entries, store them in entry and execute loop:
 		boolean firstCompleteSegment = true;	//this flag is set so the first complete segment can be identified and
-												//that a line isnt drawn from the origin.
+		//that a line isnt drawn from the origin.
 		while(entry!=null) {
 
 			Segment segment = entry.getValue();
@@ -112,20 +119,20 @@ public class DevicePath {
 					entirePath.lineTo(((CompleteSegment)segment).getStartx(), ((CompleteSegment)segment).getStarty());
 				} else {
 					firstCompleteSegment = false;
-					entirePath.moveTo(((CompleteSegment)segment).getStartx(), ((CompleteSegment)segment).getStarty());	//TODO this is a fix. wasnt in original.
+					entirePath.moveTo(((CompleteSegment)segment).getStartx(), ((CompleteSegment)segment).getStarty());	//if drawing very first path, move to first point first
 				}
-				
+
 				entirePath.addPath(((CompleteSegment)segment).path);
 			} else {
 				//if it is a gap, add a line from current point to start of next path, if there is a next path, otherwise dont
-				Entry nextEntry = pathCache.higherEntry(entry.getKey());
+				Entry<Integer, Segment> nextEntry = pathCache.higherEntry(entry.getKey());
 				if(nextEntry == null) {
 					//no need to draw line since this is the last point
 				} else {
-					CompleteSegment nextSegment = (CompleteSegment) nextEntry.getValue();
+					//CompleteSegment nextSegment = (CompleteSegment) nextEntry.getValue();
 					//entirePath.lineTo(nextSegment.getStartx(), nextSegment.getStarty());
 				}
-				
+
 			}
 			entry = pathCache.higherEntry(entry.getKey());
 		}
@@ -135,4 +142,11 @@ public class DevicePath {
 		return entirePath;
 	}
 
+	public float getEndX() {
+		return endX;
+	}
+
+	public float getEndY() {
+		return endY;
+	}
 }

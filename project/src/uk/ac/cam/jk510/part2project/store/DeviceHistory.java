@@ -3,7 +3,6 @@ package uk.ac.cam.jk510.part2project.store;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 public abstract class DeviceHistory {
@@ -97,7 +96,7 @@ public abstract class DeviceHistory {
 		default: try {
 				throw new Exception();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				// TODO anything in this case?
 				e.printStackTrace();
 			}
 		}

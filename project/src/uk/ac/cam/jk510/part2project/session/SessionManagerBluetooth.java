@@ -59,12 +59,8 @@ public class SessionManagerBluetooth extends SessionManager {
 	}
 
 	public static void populateList(final ArrayList<String> list) {
-		//run in seperate thread:
-		/*
-		new Thread(new Runnable() {	//TODO should be done in thread
+		// TODO run in seperate thread?
 
-			public void run() {
-		 */
 		Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
 		deviceList = new ArrayList<BluetoothDevice>();
 		//iterate through all paired devices, adding them to a linkedlist, also add their name to list.
@@ -72,8 +68,6 @@ public class SessionManagerBluetooth extends SessionManager {
 			deviceList.add(device);
 			list.add(device.getName());
 		}
-		//}
-		//}).start();
 	}
 
 	public static ArrayList<BluetoothDevice> getPairedBTDevices() {

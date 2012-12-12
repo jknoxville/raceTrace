@@ -1,15 +1,9 @@
 package uk.ac.cam.jk510.part2project.gui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-
 import uk.ac.cam.jk510.part2project.R;
 import uk.ac.cam.jk510.part2project.session.SessionManagerBluetooth;
-import android.app.Activity;
-import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
-import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -32,7 +26,7 @@ public class SessionSetupActivity extends NewSessionActivity {
         
         SessionManagerBluetooth.populateList(pairedList);	//Add bluetooth names to the list driving the ListView
         
-        ArrayAdapter<String> listAdapter = new ArrayAdapter(this, R.layout.select_player_row, pairedList);
+        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this, R.layout.select_player_row, pairedList);
         selectedPlayers.setAdapter(listAdapter);
     }
     
@@ -56,7 +50,6 @@ public class SessionSetupActivity extends NewSessionActivity {
 
 	@Override
 	protected void setUpSession() throws Exception {
-		// TODO Auto-generated method stub
 		
 	}
 }
