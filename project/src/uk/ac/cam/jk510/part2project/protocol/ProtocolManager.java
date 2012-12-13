@@ -1,14 +1,11 @@
 package uk.ac.cam.jk510.part2project.protocol;
 
-import uk.ac.cam.jk510.part2project.graphics.MapDrawer;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import uk.ac.cam.jk510.part2project.store.Coords;
 import uk.ac.cam.jk510.part2project.store.CoordsTXYA;
-import uk.ac.cam.jk510.part2project.store.IncompatibleCoordsException;
 import uk.ac.cam.jk510.part2project.store.PositionStore;
-import android.content.Context;
 
 public abstract class ProtocolManager {
 	
@@ -37,13 +34,8 @@ public abstract class ProtocolManager {
 		Device lastDev = session.getDevice(device);
 		for(int i=0; i<1; i++) {
 			Coords coords = new CoordsTXYA((int) (Math.random()*100), (int) (Math.random()*100)+712026, (int) (Math.random()*100)+9828785, (int) (Math.random()*100));
-			try {
-				System.err.println("now inserting index: "+coords.getLClock());	//debug
-				PositionStore.insert(lastDev, coords);
-			} catch (IncompatibleCoordsException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			System.err.println("now inserting index: "+coords.getLClock());	//debug
+			insertOriginalDataPoint(lastDev, coords);
 			System.err.println("Finished inputting test data");	//debug
 		}
 	}
@@ -60,6 +52,19 @@ public abstract class ProtocolManager {
 	
 	public static ProtocolManager getProtocolManager() {
 		return mgr;
+	}
+	
+	public static void insertOriginalDataPoint(Device device, Coords coords) {
+		//if(decision logic) {
+		//TODO alert network module, maybe subscriber model so it sends it out.
+		//should sending decision be made here or there, probably here because its ProtocolManager.
+		//}
+		PositionStore.insert(device, coords);
+	}
+
+	public static void spawnSendingThread() {
+		
+		
 	}
 
 //	@Deprecated

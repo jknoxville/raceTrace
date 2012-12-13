@@ -14,7 +14,7 @@ public class SessionManagerSingleUser extends SessionManager {
 		ArrayList<Device> devices = new ArrayList<Device>();
 		DeviceHandle handle = new DeviceHandleSingleUser();
 		Protocol protocol = new ProtocolXYA();
-		Device me = new Device(Config.getName(), 0, handle, protocol);
+		Device me = new Device(Config.getName(), handle, protocol);
 		devices.add(me);
 		//Using null for keys since its single user and no comms needed.
 		

@@ -8,26 +8,17 @@ import uk.ac.cam.jk510.part2project.settings.Config;
 
 public class PositionStore {
 
-	//private ArrayList<DeviceHistory> masterHistory;
-	private static PositionStore instance;
 	private static LinkedList<PositionStoreSubscriber> subscribers = new LinkedList<PositionStoreSubscriber>();
 
 	private PositionStore() {
 		//Singleton Pattern, private constructor
 	}
 
-	public static PositionStore getInstance() {
-		if(instance == null) {
-			instance = new PositionStore();
-		}
-		return instance;
-	}
-
 	public static Coords getCoord(Device d, int index) {
 		return d.getHistory().getCoord(index);
 	}
 
-	public static void insert(Device device, Coords coords) throws IncompatibleCoordsException {
+	public static void insert(Device device, Coords coords) {
 
 		try {
 			//insert into the deviceHistory object, this method also adds it to it's newPoints.
@@ -40,6 +31,8 @@ public class PositionStore {
 		} catch (DataPointPresentException e) {	//Already have the dataPoint being inserted
 			//TODO Log this?
 			//Want to do anything else here?
+		} catch (IncompatibleCoordsException e) {
+			e.printStackTrace();
 		}
 	}
 

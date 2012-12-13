@@ -1,5 +1,6 @@
 package uk.ac.cam.jk510.part2project.location;
 
+import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -73,14 +74,8 @@ public class GPSDriver implements LocationListener {
 
 			tv.setText("Lat: "+coords.getCoord(0)+" Long: "+coords.getCoord(1)+" Accuracy: "+l.getAccuracy()+" Speed: "+l.getSpeed()+"m/s");
 
-			try {
-				PositionStore.insert(thisDevice, coords);
-				currentLocation = l;
-				
-			} catch (IncompatibleCoordsException e) {
-				// TODO anything?
-				e.printStackTrace();
-			}
+			ProtocolManager.insertOriginalDataPoint(thisDevice, coords);
+			currentLocation = l;
 		}
 
 	}

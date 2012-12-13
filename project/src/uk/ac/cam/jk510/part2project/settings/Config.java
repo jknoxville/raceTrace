@@ -31,7 +31,10 @@ public class Config {
 	
 	//Hard-coded app data
 	private static final String UUIDString = "fa87c0d0-afac-11de-8a39-0800200c9a66"; //Randomly created string for use with this app
-
+	private static final String serverIP = "78.150.172.9";
+	//private static final String serverIP = "192.168.1.20";
+	private static final int serverPort = 60000;
+	
 	//Getter methods
 	public static int getMapLineThickness() {
 		return MapLineThickness;
@@ -77,5 +80,11 @@ public class Config {
 	}
 	public static float getPosIndicatorSize() {
 		return posIndicatorSize;
+	}
+	public static String getServerIP() {
+		return serverIP;
+	}
+	public static int getServerPort() {
+		return serverPort;
 	}
 }

@@ -52,7 +52,7 @@ public class MapDisplayScreen extends Activity {
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		TextView info = (TextView) findViewById(R.id.mapScreenInfo);
 		System.out.println(info);
-		GPSDriver.init(locationManager, info);
+		GPSDriver.init(locationManager, info);	//TODO do in seperate thread?
 		instance = this;
         
     }

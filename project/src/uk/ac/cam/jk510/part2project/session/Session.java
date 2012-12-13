@@ -1,9 +1,10 @@
 package uk.ac.cam.jk510.part2project.session;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Session {
-	
+
 	private static Session session;
 	
 	private ArrayList<Device> devices;
@@ -43,6 +44,9 @@ public class Session {
 	
 	public ArrayList<Device> getDevices() {
 		return devices;
+	}
+	public Keys getKeys() {
+		return keys;
 	}
 	public int numDevices() {
 		return devices.size();
