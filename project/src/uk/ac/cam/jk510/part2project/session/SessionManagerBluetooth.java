@@ -3,6 +3,8 @@ package uk.ac.cam.jk510.part2project.session;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -124,11 +126,22 @@ public class SessionManagerBluetooth extends SessionManager {
 
 						//Send Master info, and then request slave's info
 						OutputStream outputStream = sock.getOutputStream();
-						sendMyAddressInfo(outputStream);
+						ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+						sendMyAddressInfo(oos);
 
 						InputStream inputStream = sock.getInputStream();
-						receiveAddressInfo(inputStream);
-
+						ObjectInputStream ois = new ObjectInputStream(inputStream);
+						receiveAddressInfo(ois);
+						try{
+						String name = (String) ois.readObject();
+						String address = (String) ois.readObject();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						//then construct session object.
+						//TODO then send this out to all devices
+						
+						
 						sock.close();
 					} catch (IOException e) {
 						System.out.println("Error connecting to "+device.getName());
@@ -139,8 +152,9 @@ public class SessionManagerBluetooth extends SessionManager {
 		}).start();
 	}
 
-	private static void sendMyAddressInfo(OutputStream os) {
-		/*
+	@Deprecated
+	private static void sendMyAddressInfo2(OutputStream os) {
+		/*send:
 		 * name
 		 * ip address
 		 */
@@ -173,7 +187,22 @@ public class SessionManagerBluetooth extends SessionManager {
 			System.out.println("Exception occured");
 		}
 	}
+	
+	private static void sendMyAddressInfo(ObjectOutputStream os) {
+		/*send:
+		 * name
+		 * ip address
+		 */
+		try{
+		os.writeObject(Config.getName());
+		os.writeObject(DataConnectionManager.getMyIP());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
 
+	@Deprecated
 	private static String receiveAddressInfo(InputStream is) {
 
 		//TODO overflow size etc
@@ -212,7 +241,8 @@ public class SessionManagerBluetooth extends SessionManager {
 					tv.setText(receiveAddressInfo(inputStream));
 
 					OutputStream outputStream = sock.getOutputStream();
-					sendMyAddressInfo(outputStream);
+					ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+					sendMyAddressInfo(oos);
 					//close connection while master fetches data from the other devices
 					sock.close();
 
