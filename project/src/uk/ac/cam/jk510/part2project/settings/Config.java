@@ -31,9 +31,12 @@ public class Config {
 	
 	//Hard-coded app data
 	private static final String UUIDString = "fa87c0d0-afac-11de-8a39-0800200c9a66"; //Randomly created string for use with this app
-	private static final String serverIP = "78.150.172.9";
+	private static final String serverIP = "78.150.171.124";
 	//private static final String serverIP = "192.168.1.20";
 	private static final int serverPort = 60000;
+	
+	//Datagram Format
+	private static final int nameSize = 1;
 	
 	//Getter methods
 	public static int getMapLineThickness() {
@@ -86,5 +89,11 @@ public class Config {
 	}
 	public static int getServerPort() {
 		return serverPort;
+	}
+	public static int getDatagramMetadataSize() {
+		return nameSize;	//TODO keep up to date with other metadata fields other than coordinates.
+	}
+	public static int getNameSize() {
+		return nameSize;
 	}
 }

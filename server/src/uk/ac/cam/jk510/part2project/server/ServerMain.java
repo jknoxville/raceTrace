@@ -5,10 +5,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
+import java.util.Arrays;
 
+import uk.ac.cam.jk510.part2project.network.Message;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionPackage;
@@ -23,9 +28,9 @@ public class ServerMain {
 		/*
 		 * Receive serialized session from some device.
 		 * Set up data storage structures
-		 * Set up socket to each device
-		 * Start periodic sending thread
-		 * Start listening thread for each device
+		 * Set up datagram socket.
+		 * Spawn one listening thread.
+		 * Start periodic sending thread.
 		 * 
 		 */
 
@@ -34,37 +39,45 @@ public class ServerMain {
 		 * Involves starting thread to listen for a connection
 		 */
 
+		SessionPackage pack = NetworkInterface.getSessionPackage();
+		Session session = Session.reconstructSession(pack);
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				
-				SessionPackage pack = NetworkInterface.getSessionPackage();
-				Session session = Session.reconstructSession(pack);
-
-				//spawn device listener threads:
-				for(final Device device: session.getDevices()) {
-					
-					//new thread:
-					new Thread(new Runnable() {
-						@Override
-						public void run() {
-							try {
-							ServerSocket serv = new ServerSocket(Config.getServerPort());
-							Socket sock = serv.accept();
-							System.out.println("connected to "+device.getName());	//debug
-							
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							
+		try {
+			byte[] data = new byte[1024];	//TODO check this hard limit is ok
+			DatagramPacket datagram = new DatagramPacket(data, data.length);
+			DatagramSocket sock = new DatagramSocket(Config.getServerPort());
+			
+			//TODO spawn periodic sending thread
+			new Thread(new Runnable() {
+				public void run() {
+					while(true) {
+						try {
+							Thread.sleep(Config.getServerResendPeriodMillis());
+							ServerState.sendIfReady();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
-					}).start();
-
+					}
 				}
+			}).start();
+			
+			//listen for incoming data and process it:
+			while(true) {
+				sock.receive(datagram);
+				Message.processDatagram(datagram);
 			}
 
-		}).start();
+
+
+		} catch (SocketException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}	//TODO what about when multiple sessions are going. and same port used.
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

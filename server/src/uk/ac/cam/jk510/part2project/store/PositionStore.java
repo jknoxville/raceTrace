@@ -7,6 +7,7 @@ import uk.ac.cam.jk510.part2project.settings.Config;
 
 
 public class PositionStore {
+	
 
 	private static LinkedList<PositionStoreSubscriber> subscribers = new LinkedList<PositionStoreSubscriber>();
 
@@ -24,6 +25,7 @@ public class PositionStore {
 			//insert into the deviceHistory object, this method also adds it to it's newPoints.
 			(device.getHistory()).insert(coords);
 
+			
 			//check for subscriber notification condition
 			if(updateReady(device)) {
 				notifyObservers(device);

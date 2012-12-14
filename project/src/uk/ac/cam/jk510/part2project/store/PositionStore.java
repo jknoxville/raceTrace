@@ -26,7 +26,7 @@ public class PositionStore {
 
 			//check for subscriber notification condition
 			if(updateReady(device)) {
-				notifyObservers(device);
+				notifyObservers(device);	//TODO move this to after a bunch of points are inserted. not after each point.
 			}
 		} catch (DataPointPresentException e) {	//Already have the dataPoint being inserted
 			//TODO Log this?
