@@ -3,6 +3,8 @@ package uk.ac.cam.jk510.part2project.session;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
+
 public class Session {
 
 	private static Session session;
@@ -50,6 +52,27 @@ public class Session {
 	}
 	public int numDevices() {
 		return devices.size();
+	}
+	
+	public static Session reconstructSession(SessionPackage pack) {
+		int numDevices = pack.deviceNames.length;
+		ArrayList<Device> devices = new ArrayList<Device>();
+		for(int device = 0; device<numDevices; device++) {
+			String name = pack.deviceNames[device];
+			DeviceHandle handle = pack.deviceHandles[device];
+			try {
+				Device dev = new Device(name, handle, new ProtocolXYA());
+				devices.add(dev);
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		Session session = new Session(devices, pack.keys);
+		return session;
 	}
 	
 }

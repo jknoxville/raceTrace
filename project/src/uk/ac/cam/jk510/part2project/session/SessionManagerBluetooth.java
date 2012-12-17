@@ -6,12 +6,14 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
+import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -113,15 +115,18 @@ public class SessionManagerBluetooth extends SessionManager {
 				 * 			-May be done online or using bluetooth
 				 */
 
-				for(BluetoothDevice device: selectedList) {
+				ArrayList<Device> devices = new ArrayList<Device>();
+				Keys keys = null;	//TODO make actual keys
+
+				for(BluetoothDevice bluetoothDevice: selectedList) {
 					try {
 						bluetoothAdapter.cancelDiscovery();	//to speed up connection
-						
-						
+
+
 						String ip = DataConnectionManager.getMyIP();
 						System.out.println("My ip address: "+ip);	//debug
 
-						BluetoothSocket sock = device.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
+						BluetoothSocket sock = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
 						sock.connect();
 
 						//Send Master info, and then request slave's info
@@ -131,21 +136,42 @@ public class SessionManagerBluetooth extends SessionManager {
 
 						InputStream inputStream = sock.getInputStream();
 						ObjectInputStream ois = new ObjectInputStream(inputStream);
-						receiveAddressInfo(ois);
 						try{
-						String name = (String) ois.readObject();
-						String address = (String) ois.readObject();
+							String name = (String) ois.readObject();
+							String address = (String) ois.readObject();
+							Device device = new Device(name, new DeviceHandleIP(InetAddress.getByName(address)), new ProtocolXYA());
+							devices.add(device);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 						//then construct session object.
 						//TODO then send this out to all devices
-						
-						
+
+
 						sock.close();
 					} catch (IOException e) {
-						System.out.println("Error connecting to "+device.getName());
+						System.out.println("Error connecting to "+bluetoothDevice.getName());
 						continue;
+					}
+				}
+				Session session = new Session(devices, keys);	//now for master, session setup is complete
+				SessionPackage pack = new SessionPackage(session);
+				for(BluetoothDevice bluetoothDevice: selectedList) {
+
+					BluetoothSocket sock;
+					try {
+						sock = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
+						sock.connect();
+
+						//Send package to each device
+						OutputStream outputStream = sock.getOutputStream();
+						ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+						oos.writeObject(pack);
+
+						sock.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 				}
 			}
@@ -162,9 +188,9 @@ public class SessionManagerBluetooth extends SessionManager {
 			String name = Config.getName();
 			byte[] nameData = name.getBytes("UTF-16LE");
 			String ip = DataConnectionManager.getMyIP();
-			
+
 			System.out.println("My ip address: "+ip);	//debug
-			
+
 			byte[] ipData = ip.getBytes("UTF-16LE");
 
 			for(int i=0; i<nameData.length; i++) {
@@ -187,19 +213,19 @@ public class SessionManagerBluetooth extends SessionManager {
 			System.out.println("Exception occured");
 		}
 	}
-	
+
 	private static void sendMyAddressInfo(ObjectOutputStream os) {
 		/*send:
 		 * name
 		 * ip address
 		 */
 		try{
-		os.writeObject(Config.getName());
-		os.writeObject(DataConnectionManager.getMyIP());
+			os.writeObject(Config.getName());
+			os.writeObject(DataConnectionManager.getMyIP());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Deprecated
@@ -229,7 +255,7 @@ public class SessionManagerBluetooth extends SessionManager {
 			public void run() {
 				try {
 					bluetoothAdapter.cancelDiscovery();	//to speed up connection
-					
+
 					String ip = DataConnectionManager.getMyIP();
 					System.out.println("My ip address: "+ip);	//debug
 
@@ -238,7 +264,10 @@ public class SessionManagerBluetooth extends SessionManager {
 
 					//Receive Master info, and then send slave's info
 					InputStream inputStream = sock.getInputStream();
-					tv.setText(receiveAddressInfo(inputStream));
+					ObjectInputStream ois = new ObjectInputStream(inputStream);
+					String masterName = (String) ois.readObject();
+					String masterAddress = (String) ois.readObject();
+					tv.setText("master's name: "+masterName);
 
 					OutputStream outputStream = sock.getOutputStream();
 					ObjectOutputStream oos = new ObjectOutputStream(outputStream);
@@ -249,10 +278,16 @@ public class SessionManagerBluetooth extends SessionManager {
 					//open new connection
 					sock = serverSock.accept();
 					//wait for package
-					awaitPackage(inputStream);
+					inputStream = sock.getInputStream();	//get new InputStream
+					ois = new ObjectInputStream(inputStream);
+					SessionPackage pack = (SessionPackage) ois.readObject();
+					Session.reconstructSession(pack); //construct and save session object from recieved object.
 
 
 				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -261,6 +296,7 @@ public class SessionManagerBluetooth extends SessionManager {
 		}).start();
 	}
 
+	@Deprecated
 	private static void awaitPackage(InputStream in) throws IOException {
 		DataInputStream din = new DataInputStream(in);
 		int length;
@@ -270,10 +306,10 @@ public class SessionManagerBluetooth extends SessionManager {
 		String ipAddress;
 		while((name = din.readUTF()) != null) {
 			ipAddress = din.readUTF();
-			
-			
+
+
 		}
-		
+
 		//construct session object.
 		new Session(null, null);
 	}
