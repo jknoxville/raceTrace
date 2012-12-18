@@ -12,6 +12,11 @@ import uk.ac.cam.jk510.part2project.store.PositionStoreSubscriber;
 
 
 public class ServerState implements PositionStoreSubscriber {
+	
+	/*
+	 * This class holds the implementation state of the server, e.g which points from each device are new points.
+	 * It subscribes to PositionStore updates so can stay updated.
+	 */
 
 	private static ArrayList<LinkedList<Integer>> globalNewPoints = new ArrayList<LinkedList<Integer>>();
 	private static boolean initialised = false;

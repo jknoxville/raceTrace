@@ -2,6 +2,7 @@ package uk.ac.cam.jk510.part2project.network;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
@@ -29,7 +30,7 @@ public class DataConnectionManager {
 
 		return null;
 	}
-	
+
 	public static void sendSessionToServer(Session session) throws UnknownHostException, IOException {
 		SessionPackage pack = new SessionPackage(session);
 		System.out.println("Initiating connection with server");	//debug
@@ -37,6 +38,19 @@ public class DataConnectionManager {
 		System.out.println("Connected to server");	//debug
 		ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
 		oos.writeObject(pack);
+	}
+
+	public static DatagramSocket getDataSocket() {
+		DatagramSocket sock;
+		try {
+			sock = new DatagramSocket(Config.getDefaultClientPort());
+			return sock;
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
 	}
 
 }

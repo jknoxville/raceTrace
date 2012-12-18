@@ -21,4 +21,8 @@ public class DeviceHandleIP extends DeviceHandle {
 		return port;
 	}
 
+	public void setPort(int newPort) {
+		port = newPort;
+	}
+
 }

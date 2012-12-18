@@ -1,5 +1,7 @@
 package uk.ac.cam.jk510.part2project.settings;
 
+import java.util.Random;
+
 import uk.ac.cam.jk510.part2project.protocol.Proto;
 import uk.ac.cam.jk510.part2project.protocol.SessionEnum;
 import uk.ac.cam.jk510.part2project.store.CoordsType;
@@ -12,7 +14,8 @@ public class Config {
 	private static int MapLineThickness = 2;	//thickness of paths drawn in MapDisplayScreen
 	private static int arrayBlockSize = 600;		// At 1 per second, thats 10 mins per chunk
 	private static int arrayIndexFrequency = 10;	// Finest granularity of points. In samples per 10 sec.
-	private static String name = "John";	//Name of local player TODO lookup from OS?
+	//private static String name = "John";	//Name of local player TODO lookup from OS?
+	private static String name = String.valueOf(Math.random());	//TODO temp fix: random name for each device
 	
 	//Colors
 	private static int bgColor = Color.WHITE;	

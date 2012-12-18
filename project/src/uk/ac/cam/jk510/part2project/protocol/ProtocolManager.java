@@ -8,26 +8,22 @@ import uk.ac.cam.jk510.part2project.store.CoordsTXYA;
 import uk.ac.cam.jk510.part2project.store.PositionStore;
 
 public abstract class ProtocolManager {
-	
+
 	private static ProtocolManager mgr;
 	protected static Session session;
-	
+
 	public static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
-			mgr = newProtocolManager(session);
-			if(mgr == null) {
-			System.err.println("at initialiseProtocolManager mgr is null");	//debug
-			} else {
-				System.err.println("at initialiseProtocolManager mgr is not null");	//debug
-			}
+		mgr = newProtocolManager(session);
+		mgr.spawnReceivingThread();
 		return mgr;
 	}
-	
+
 	public static void testInputData() {
 		for (int dev=0; dev<session.numDevices(); dev++) {
 			testInputData(dev);
 		}
 	}
-	
+
 	public static void testInputData(int device) {
 		//TODO remove the following test data
 		//adds some random data for test
@@ -39,7 +35,7 @@ public abstract class ProtocolManager {
 			System.err.println("Finished inputting test data");	//debug
 		}
 	}
-	
+
 	private static ProtocolManager newProtocolManager(Session sess) throws Exception {
 		Proto protocol = Config.getProtocol();
 		switch(protocol) {
@@ -49,29 +45,37 @@ public abstract class ProtocolManager {
 		}
 		return mgr;
 	}
-	
+
 	public static ProtocolManager getProtocolManager() {
 		return mgr;
 	}
-	
+
+	/* This method is specifically for original data points.
+	 * Distinction made so that on insert, it can also notify the network module. This doesnt have to be done
+	 * for network received data points, (un-original ones).
+	 */
 	public static void insertOriginalDataPoint(Device device, Coords coords) {
-		//if(decision logic) {
+		//if(decision logic) {	what decision logic?
 		//TODO alert network module, maybe subscriber model so it sends it out.
 		//should sending decision be made here or there, probably here because its ProtocolManager.
 		//}
+		mgr.giveToNetwork(device, coords);
+		PositionStore.insert(device, coords);
+	}
+	
+	public static void insertNetworkDataPoint(Device device, Coords coords) {
 		PositionStore.insert(device, coords);
 	}
 
-	public static void spawnSendingThread() {
-		
-		
-	}
+	public abstract void spawnReceivingThread();
 
-//	@Deprecated
-//	public static MapDrawer initialiseMapDrawer(Context context) throws IllegalAccessException, InstantiationException {
-//		MapDrawer mapDrawer = new MapDrawer(context, session);
-//		mapDrawer.setBackgroundColor(Config.getBackgroundColor());
-//		return mapDrawer;
-//	}
+	//	@Deprecated
+	//	public static MapDrawer initialiseMapDrawer(Context context) throws IllegalAccessException, InstantiationException {
+	//		MapDrawer mapDrawer = new MapDrawer(context, session);
+	//		mapDrawer.setBackgroundColor(Config.getBackgroundColor());
+	//		return mapDrawer;
+	//	}
+
+	protected abstract void giveToNetwork(Device device, Coords coords);
 
 }
