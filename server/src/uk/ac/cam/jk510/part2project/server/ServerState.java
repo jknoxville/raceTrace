@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
+import uk.ac.cam.jk510.part2project.store.Coords;
 import uk.ac.cam.jk510.part2project.store.PositionStore;
 import uk.ac.cam.jk510.part2project.store.PositionStoreSubscriber;
 
@@ -20,7 +21,19 @@ public class ServerState implements PositionStoreSubscriber {
 	public synchronized static void sendIfReady() {
 		init();
 		if(ready()) {
-			//TODO send the new points
+			//TODO send points in batches, with configurable batch size
+			//sendNewPoints();
+			for(LinkedList<Integer> list: globalNewPoints) {
+				int deviceNumber = globalNewPoints.indexOf(list);
+				Device fromDevice = Session.getSession().getDevice(deviceNumber);
+				NetworkInterface net = NetworkInterface.getInstance();
+				for(int index: list) {
+					Coords coords = PositionStore.getCoord(fromDevice, index);
+					for(Device toDevice: Session.getSession().getDevices()) {
+						net.sendCoordsToDevice(toDevice, fromDevice, coords);
+					}
+				}
+			}
 
 			for(LinkedList<Integer> list: globalNewPoints) {	//clear newPointsLists
 				list.clear();

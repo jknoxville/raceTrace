@@ -25,7 +25,7 @@ public class SessionManagerPredefined extends SessionManager {
 		
 		//device #1
 		try {
-			handle = new DeviceHandleIP(InetAddress.getByName(DataConnectionManager.getMyIP()));
+			handle = new DeviceHandleIP(InetAddress.getByName(DataConnectionManager.getMyIP()), Config.getDefaultClientPort());
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,7 +38,7 @@ public class SessionManagerPredefined extends SessionManager {
 		
 		//Device #2
 		try {
-			handle = new DeviceHandleIP(InetAddress.getByName("78.150.175.15"));
+			handle = new DeviceHandleIP(InetAddress.getByName("78.150.175.15"), Config.getDefaultClientPort());
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

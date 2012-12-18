@@ -42,41 +42,26 @@ public class ServerMain {
 		SessionPackage pack = NetworkInterface.getSessionPackage();
 		Session session = Session.reconstructSession(pack);
 
-		try {
-			byte[] data = new byte[1024];	//TODO check this hard limit is ok
-			DatagramPacket datagram = new DatagramPacket(data, data.length);
-			DatagramSocket sock = new DatagramSocket(Config.getServerPort());
-			
-			//TODO spawn periodic sending thread
-			new Thread(new Runnable() {
-				public void run() {
-					while(true) {
-						try {
-							Thread.sleep(Config.getServerResendPeriodMillis());
-							ServerState.sendIfReady();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+		NetworkInterface net = NetworkInterface.getInstance();
+		
+		//TODO spawn periodic sending thread
+		new Thread(new Runnable() {
+			public void run() {
+				while(true) {
+					try {
+						Thread.sleep(Config.getServerResendPeriodMillis());
+						ServerState.sendIfReady();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
-			}).start();
-			
-			//listen for incoming data and process it:
-			while(true) {
-				sock.receive(datagram);
-				Message.processDatagram(datagram);
 			}
-
-
-
-		} catch (SocketException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}	//TODO what about when multiple sessions are going. and same port used.
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}).start();
+		
+		//listen for incoming data and process it:
+		while(true) {
+			Message.processDatagram(net.receiveDatagram());
 		}
 	}
 

@@ -139,7 +139,7 @@ public class SessionManagerBluetooth extends SessionManager {
 						try{
 							String name = (String) ois.readObject();
 							String address = (String) ois.readObject();
-							Device device = new Device(name, new DeviceHandleIP(InetAddress.getByName(address)), new ProtocolXYA());
+							Device device = new Device(name, new DeviceHandleIP(InetAddress.getByName(address), Config.getDefaultClientPort()), new ProtocolXYA());
 							devices.add(device);
 						} catch (Exception e) {
 							e.printStackTrace();
