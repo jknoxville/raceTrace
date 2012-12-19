@@ -22,41 +22,70 @@ public class Message {
 		System.out.println("offset = "+datagram.getOffset());
 		try {
 			//TODO any extra (sync?) data other than coords?
-			int deviceID = data[0];
 			
 			
-			((DeviceHandleIP) Session.getSession().getDevice(deviceID).getHandle()).setPort(datagram.getPort());
+			
 
-			byte[] coordinateData = new byte[data.length-Config.getDatagramMetadataSize()];
-			System.arraycopy(data, Config.getDatagramMetadataSize(), coordinateData, 0, data.length-Config.getDatagramMetadataSize());
-			insertCoordinateData(coordinateData, deviceID);
+//			byte[] coordinateData = new byte[data.length-Config.getDatagramMetadataSize()];
+//			System.arraycopy(data, Config.getDatagramMetadataSize(), coordinateData, 0, data.length-Config.getDatagramMetadataSize());
+			
+//			int length = data.length;
+//			int numDataPoints = length/sizeOfDataPoint;
+//			if(length%sizeOfDataPoint != 0) {
+//				System.err.println("sizeOfDataPoint: "+sizeOfDataPoint+" length = "+length);	//debug
+//				//throw new Exception();
+//			}
+			int numDataPoints = 1;	//TODO make dynamic
+			
+			ByteBuffer bb = ByteBuffer.wrap(data);	
+			
+			//read metadata first
+			int deviceID = bb.getInt();
+			
+			for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
+				System.out.println("Iteration "+dataPoint);	//debug
+				int lTime = bb.getInt();
+				float x = bb.getFloat();
+				float y = bb.getFloat();
+				float alt = bb.getFloat();
+				System.out.println("receiving. device "+deviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
+				CoordsTXYA coords = new CoordsTXYA(lTime, x, y, alt);
+				ProtocolManager.insertNetworkDataPoint(Session.getSession().getDevice(deviceID), coords);
+			}
+			//ServerState.sendIfReady();	//This is in server variant.
+			((DeviceHandleIP) Session.getSession().getDevice(deviceID).getHandle()).setPort(datagram.getPort());
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	private static void insertCoordinateData(byte[] data, int deviceID) throws Exception {
-//		int length = data.length;
-//		int numDataPoints = length/sizeOfDataPoint;
-//		if(length%sizeOfDataPoint != 0) {
-//			System.err.println("sizeOfDataPoint: "+sizeOfDataPoint+" length = "+length);	//debug
-//			//throw new Exception();
+//	private static void insertCoordinateData(byte[] coordinateData, int deviceID) throws Exception {
+////		int length = data.length;
+////		int numDataPoints = length/sizeOfDataPoint;
+////		if(length%sizeOfDataPoint != 0) {
+////			System.err.println("sizeOfDataPoint: "+sizeOfDataPoint+" length = "+length);	//debug
+////			//throw new Exception();
+////		}
+//		int numDataPoints = 1;	//TODO make dynamic
+//		
+//		ByteBuffer bb = ByteBuffer.wrap(coordinateData);	//TODO use the other varient of .wrap and get rid of this function abstraction
+//		
+//		int deviceID = bb.readInt();
+//		
+//		for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
+//			System.out.println("Iteration "+dataPoint);	//debug
+//			int lTime = bb.getInt();
+//			float x = bb.getFloat();
+//			float y = bb.getFloat();
+//			float alt = bb.getFloat();
+//			System.out.println("receiving. device "+deviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
+//			CoordsTXYA coords = new CoordsTXYA(lTime, x, y, alt);
+//			ProtocolManager.insertNetworkDataPoint(Session.getSession().getDevice(deviceID), coords);
 //		}
-		int numDataPoints = 1;	//TODO make dynamic
-		
-		ByteBuffer bb = ByteBuffer.wrap(data);	//TODO use the other varient of .wrap and get rid of this function abstraction
-		for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
-			System.out.println("Iteration "+dataPoint);	//debug
-			int lTime = bb.getInt();
-			float x = bb.getFloat();
-			float y = bb.getFloat();
-			float alt = bb.getFloat();
-			System.out.println("receiving. device "+deviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
-			CoordsTXYA coords = new CoordsTXYA(lTime, x, y, alt);
-			ProtocolManager.insertNetworkDataPoint(Session.getSession().getDevice(deviceID), coords);
-		}
-		//ServerState.sendIfReady();	//This is in server variant.
-	}
+//		//ServerState.sendIfReady();	//This is in server variant.
+//		((DeviceHandleIP) Session.getSession().getDevice(deviceID).getHandle()).setPort(datagram.getPort());
+//	}
 
 }

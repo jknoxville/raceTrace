@@ -14,7 +14,7 @@ public class DeviceHistoryXYA extends DeviceHistory {
 	private ArrayList<float[]> yList;
 	private ArrayList<float[]> altList;
 	
-	protected Coords getCoord(int index) {
+	protected synchronized Coords getCoord(int index) {
 		int arrayNumber = arrayNumber(index);
 		int offset = offset(index);
 		assert(dataPointPresentList.get(arrayNumber)[offset]);

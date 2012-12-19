@@ -91,18 +91,20 @@ public class NetworkInterface {
 
 	public void sendCoordsToDevice(Device toDevice, Device fromDevice, Coords coords) {
 		int deviceID = fromDevice.getDeviceID();
+		int lClock = coords.getLClock();
 		float x = coords.getCoord(0);
 		float y = coords.getCoord(1);
 		float alt = coords.getCoord(2);
-		byte[] data = new byte[4*4];
+		byte[] data = new byte[5*4];
 		ByteBuffer bb = ByteBuffer.wrap(data);
 		bb.putInt(deviceID);
+		bb.putInt(lClock);
 		bb.putFloat(x);
 		bb.putFloat(y);
 		bb.putFloat(alt);
 		try {
 			DatagramPacket datagram = new DatagramPacket(data, data.length, socketAddresses[toDevice.getDeviceID()]);
-			System.out.println("About to send datapoint to "+((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName());
+			System.out.println("About to send datapoint "+lClock+" to "+((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName());
 			socket.send(datagram);
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block

@@ -17,11 +17,11 @@ public class DeviceHandleIP extends DeviceHandle {
 		return ip;
 	}
 
-	public int getPort() {
+	public synchronized int getPort() {
 		return port;
 	}
 
-	public void setPort(int newPort) {
+	public synchronized void setPort(int newPort) {
 		port = newPort;
 	}
 

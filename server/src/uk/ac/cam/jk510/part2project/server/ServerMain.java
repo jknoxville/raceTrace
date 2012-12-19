@@ -43,6 +43,7 @@ public class ServerMain {
 		Session session = Session.reconstructSession(pack);
 
 		NetworkInterface net = NetworkInterface.getInstance();
+		ServerState.init();
 		
 		//TODO spawn periodic sending thread
 		new Thread(new Runnable() {

@@ -51,8 +51,8 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	}
 
 	//this method was based on Server -> NetworkInterface.sendCoordsToDevice
-	private void sendCoordsToServer(Device toDevice, Coords coords) {
-		int deviceID = Session.getThisDevice().getDeviceID();
+	private void sendCoordsToServer(Device fromDevice, Coords coords) {
+		int deviceID = fromDevice.getDeviceID();
 		int lClock = coords.getLClock();
 		float x = coords.getCoord(0);
 		float y = coords.getCoord(1);

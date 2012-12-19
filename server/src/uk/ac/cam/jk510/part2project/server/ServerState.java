@@ -24,7 +24,7 @@ public class ServerState implements PositionStoreSubscriber {
 	private static int numNewPoints=0;
 
 	public synchronized static void sendIfReady() {
-		init();
+		//init();	//init moved to Server.main
 		if(ready()) {
 			//TODO send points in batches, with configurable batch size
 			//sendNewPoints();
@@ -51,14 +51,13 @@ public class ServerState implements PositionStoreSubscriber {
 
 	@Override
 	public synchronized void notifyOfUpdate(Device d, LinkedList<Integer> givenNewPoints) {
-		init();	//check state is initisalised
 		LinkedList<Integer> newPointsList = globalNewPoints.get(d.getDeviceID());
 		newPointsList.addAll(givenNewPoints);
 		numNewPoints += givenNewPoints.size();
 		sendIfReady();
 	}
 
-	private static void init() {
+	static void init() {
 		if(!initialised) {
 			PositionStore.subscribeToUpdates(new ServerState());	//subscribe to updates
 			for(Device d: Session.getSession().getDevices()) {	//initialise lists

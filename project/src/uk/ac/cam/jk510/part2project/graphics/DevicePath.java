@@ -12,7 +12,7 @@ public class DevicePath {
 	private float endY;
 	private int lastIndex = -1;
 
-	protected void add(int index, float x, float y) {
+	protected synchronized void add(int index, float x, float y) {
 		//Check it's not here already, which it shouldn't be, because the filtering is done by PositionStore
 		assert(!pathCache.containsKey(index));
 		if(pathCache.containsKey(index) && pathCache.get(index) instanceof CompleteSegment) {
@@ -94,7 +94,7 @@ public class DevicePath {
 
 	}
 
-	public Path makePath() {
+	public synchronized Path makePath() {
 		System.out.println("makePath()");//debug
 		//Set<Entry<Integer, Segment>> entrySet = pathCache.entrySet();
 		Path entirePath = new Path();
@@ -142,11 +142,11 @@ public class DevicePath {
 		return entirePath;
 	}
 
-	public float getEndX() {
+	public synchronized float getEndX() {
 		return endX;
 	}
 
-	public float getEndY() {
+	public synchronized float getEndY() {
 		return endY;
 	}
 }

@@ -41,6 +41,9 @@ public class Config {
 	//Server Specific
 	private static final long serverResendPeriodSecs = 3;
 	private static final int serverNewPointsThreshold = 2;
+	
+	//Testing
+	private static final boolean serverDuplicationTest = true;
 
 	//Getter methods
 	public static int getMapLineThickness() {
@@ -109,5 +112,8 @@ public class Config {
 	}
 	public static int getServerNewPointsThreshold() {
 		return serverNewPointsThreshold;
+	}
+	public static boolean serverDuplicationTest() {
+		return serverDuplicationTest;
 	}
 }

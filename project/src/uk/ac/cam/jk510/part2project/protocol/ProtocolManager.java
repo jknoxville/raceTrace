@@ -18,9 +18,10 @@ public abstract class ProtocolManager {
 	}
 
 	public static void testInputData() {
-		for (int dev=0; dev<Session.getSession().numDevices(); dev++) {
-			testInputData(dev);
-		}
+//		for (int dev=0; dev<Session.getSession().numDevices(); dev++) {
+//			testInputData(dev);
+//		}
+		testInputData(0);	//changed from above as needed
 	}
 
 	public static void testInputData(int device) {

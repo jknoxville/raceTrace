@@ -16,7 +16,7 @@ public abstract class DeviceHistory {
 
 	protected abstract Coords getCoord(int index);
 	
-	protected void insert(Coords coords) throws IncompatibleCoordsException, DataPointPresentException {
+	protected synchronized void insert(Coords coords) throws IncompatibleCoordsException, DataPointPresentException {
 		//Check that right type of Coords object has been provided
 		if (!(checkClass(coords))) {
 			System.err.println(coords.coordsType+" "+coordsType);
