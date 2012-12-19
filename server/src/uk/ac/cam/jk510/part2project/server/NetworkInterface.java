@@ -43,7 +43,7 @@ public class NetworkInterface {
 		Session session = Session.getSession();
 		socketAddresses = new InetSocketAddress[session.numDevices()];
 		for(Device d: session.getDevices()) {
-			socketAddresses[d.getDeviceID()] = new InetSocketAddress(((DeviceHandleIP) d.getHandle()).getIP(), ((DeviceHandleIP) d.getHandle()).getPort());
+			socketAddresses[d.getDeviceID()] = new InetSocketAddress(((DeviceHandleIP) d.getHandle()).getIP().getHostName(), ((DeviceHandleIP) d.getHandle()).getPort());
 		}
 		net = this;
 	}
@@ -102,6 +102,7 @@ public class NetworkInterface {
 		bb.putFloat(alt);
 		try {
 			DatagramPacket datagram = new DatagramPacket(data, data.length, socketAddresses[toDevice.getDeviceID()]);
+			System.out.println("About to send datapoint to "+((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName());
 			socket.send(datagram);
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block

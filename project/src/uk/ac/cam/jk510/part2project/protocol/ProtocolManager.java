@@ -10,16 +10,15 @@ import uk.ac.cam.jk510.part2project.store.PositionStore;
 public abstract class ProtocolManager {
 
 	private static ProtocolManager mgr;
-	protected static Session session;
 
 	public static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
-		mgr = newProtocolManager(session);
+		mgr = newProtocolManager();
 		mgr.spawnReceivingThread();
 		return mgr;
 	}
 
 	public static void testInputData() {
-		for (int dev=0; dev<session.numDevices(); dev++) {
+		for (int dev=0; dev<Session.getSession().numDevices(); dev++) {
 			testInputData(dev);
 		}
 	}
@@ -27,20 +26,20 @@ public abstract class ProtocolManager {
 	public static void testInputData(int device) {
 		//TODO remove the following test data
 		//adds some random data for test
-		Device lastDev = session.getDevice(device);
+		Device lastDev = Session.getSession().getDevice(device);
 		for(int i=0; i<1; i++) {
 			Coords coords = new CoordsTXYA((int) (Math.random()*100), (int) (Math.random()*100)+712026, (int) (Math.random()*100)+9828785, (int) (Math.random()*100));
-			System.err.println("now inserting index: "+coords.getLClock());	//debug
+			System.err.println("now inserting test index: "+coords.getLClock()+" to device "+device);	//debug
 			insertOriginalDataPoint(lastDev, coords);
 			System.err.println("Finished inputting test data");	//debug
 		}
 	}
 
-	private static ProtocolManager newProtocolManager(Session sess) throws Exception {
+	private static ProtocolManager newProtocolManager() throws Exception {
 		Proto protocol = Config.getProtocol();
 		switch(protocol) {
-		case singleUser: mgr = new ProtocolManagerSingleUser(sess);
-		break;
+		case singleUser: mgr = new ProtocolManagerSingleUser(); break;
+		case clientServer: mgr = new ProtocolManagerClientServer(); break;
 		default: throw new Exception();
 		}
 		return mgr;

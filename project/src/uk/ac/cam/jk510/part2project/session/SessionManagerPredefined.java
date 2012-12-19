@@ -52,7 +52,6 @@ public class SessionManagerPredefined extends SessionManager {
 		try {
 			
 		DataConnectionManager.sendSessionToServer(session);
-		ProtocolManager.spawnSendingThread();
 		
 		}catch (IOException e) {
 			e.printStackTrace();

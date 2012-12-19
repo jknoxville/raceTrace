@@ -9,13 +9,18 @@ import uk.ac.cam.jk510.part2project.store.HistoryType;
 
 public class ProtocolManagerSingleUser extends ProtocolManager {
 
-	public ProtocolManagerSingleUser(Session session) {
-		this.session = session;
+	public ProtocolManagerSingleUser() {
 	}
 
 	@Override
 	protected void giveToNetwork(Device device, Coords coords) {
 		// Do nothing because no network
+		
+	}
+
+	@Override
+	public void spawnReceivingThread() {
+		//do nothing
 		
 	}
 

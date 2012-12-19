@@ -23,7 +23,7 @@ public class Config {
 	private static float posIndicatorSize = 10;	//Radius of circle
 	
 	//Protocol
-	private static Proto protocol = Proto.singleUser;
+	private static Proto protocol = Proto.clientServer;
 	private static SessionEnum sesh = SessionEnum.bluetooth;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
@@ -42,7 +42,7 @@ public class Config {
 	
 	
 	//Datagram Format
-	private static final int nameSize = 1;
+	private static final int nameSize = 4;
 	
 	//Getter methods
 	public static int getMapLineThickness() {

@@ -17,16 +17,19 @@ public class Message {
 
 	public static void processDatagram(final DatagramPacket datagram) {
 		byte[] data = new byte[datagram.getLength()];
-		System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength());
+		//System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength()); not needed as offset = 0
+		data = datagram.getData();
+		System.out.println("offset = "+datagram.getOffset());
 		try {
 			//TODO any extra (sync?) data other than coords?
 			int deviceID = data[0];
+			
 			
 			((DeviceHandleIP) Session.getSession().getDevice(deviceID).getHandle()).setPort(datagram.getPort());
 
 			byte[] coordinateData = new byte[data.length-Config.getDatagramMetadataSize()];
 			System.arraycopy(data, Config.getDatagramMetadataSize(), coordinateData, 0, data.length-Config.getDatagramMetadataSize());
-			insertCoordinateData(data, deviceID);
+			insertCoordinateData(coordinateData, deviceID);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -34,18 +37,22 @@ public class Message {
 	}
 
 	private static void insertCoordinateData(byte[] data, int deviceID) throws Exception {
-		int length = data.length;
-		int numDataPoints = length/sizeOfDataPoint;
-		if(length%sizeOfDataPoint != 0) {
-			throw new Exception();
-		}
+//		int length = data.length;
+//		int numDataPoints = length/sizeOfDataPoint;
+//		if(length%sizeOfDataPoint != 0) {
+//			System.err.println("sizeOfDataPoint: "+sizeOfDataPoint+" length = "+length);	//debug
+//			//throw new Exception();
+//		}
+		int numDataPoints = 1;	//TODO make dynamic
+		
 		ByteBuffer bb = ByteBuffer.wrap(data);	//TODO use the other varient of .wrap and get rid of this function abstraction
 		for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
-			
+			System.out.println("Iteration "+dataPoint);	//debug
 			int lTime = bb.getInt();
-			int x = bb.getInt();
-			int y = bb.getInt();
-			int alt = bb.getInt();
+			float x = bb.getFloat();
+			float y = bb.getFloat();
+			float alt = bb.getFloat();
+			System.out.println("receiving. device "+deviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
 			CoordsTXYA coords = new CoordsTXYA(lTime, x, y, alt);
 			ProtocolManager.insertNetworkDataPoint(Session.getSession().getDevice(deviceID), coords);
 		}

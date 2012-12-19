@@ -25,8 +25,6 @@ public abstract class DeviceHistory {
 		
 		//if index is not within range of currently allocated arrays then allocate until it is.
 		int index = coords.getLClock();
-		System.err.println(this);	//debug
-		System.err.println(listOfLists);	//debug
 		while(!(index<historyLength())) {
 			System.err.println("Allocating new block, index: "+index+" historyLength: "+historyLength());	//debug
 			for(ArrayList<float[]> l: listOfLists) {

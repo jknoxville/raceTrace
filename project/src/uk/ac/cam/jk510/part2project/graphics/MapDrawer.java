@@ -87,17 +87,23 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		PositionStore.subscribeToUpdates(this);
 	}
 
-	private void updateDeviceTrail(Device device) {
+	private synchronized void updateDeviceTrail(Device device) {
 		DevicePath dp = devicePathList.get(device.getDeviceID());
 		pathsToDraw[device.getDeviceID()] = dp.makePath();	//replace existing path
 		pathIsNew[device.getDeviceID()] = true;
 		atLeastOnePointIsOnScreen = true;
-		invalidate();	//A View method that tells it the view is invalidated so should be drawn again.
+		this.post(new Runnable() {
+			public void run() {
+				invalidate();
+			}
+		});
+		//invalidate();	//A View method that tells it the view is invalidated so should be drawn again.
+		//moved to UI thread.
 
 	}
 
 	@Override
-	public void onDraw(Canvas canvas) {
+	public synchronized void onDraw(Canvas canvas) {
 
 		//		int cHeight = canvas.getHeight();
 		//		int cWidth = canvas.getWidth();
@@ -171,12 +177,12 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 	}
 
 	//Called by PositionStore when new points are ready
-	public void notifyOfUpdate(Device d, LinkedList<Integer> newPoints) {
+	public synchronized void notifyOfUpdate(Device d, LinkedList<Integer> newPoints) {
 		System.err.println("MapDrawer notified of update");	//debug
 		//get new points from history
 		DevicePath dp = devicePathList.get(d.getDeviceID());
 		for(Integer index: newPoints) {
-			System.err.println("Now adding index: "+index+" from newPoints");//debug
+			System.err.println("Now adding index: "+index+" from newPoints on device "+d.getDeviceID());//debug
 			Coords coords = PositionStore.getCoord(d, index);
 			dp.add(index, coords.getCoord(0), coords.getCoord(1));
 		}

@@ -41,7 +41,7 @@ public abstract class DeviceHistory {
 		
 		//Check to see if already have data for this time range.
 		if(dataPointPresentList.get(arrayNumber)[offset]) {
-			System.err.println("Datapoint already present");	//debug
+			System.err.println("Datapoint: index "+index+"already present");	//debug
 			throw new DataPointPresentException();
 		} else {
 			System.err.println("Datapoint not present");	//debug
