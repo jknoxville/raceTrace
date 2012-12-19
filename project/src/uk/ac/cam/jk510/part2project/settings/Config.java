@@ -38,7 +38,7 @@ public class Config {
 	//private static final String serverIP = "192.168.1.20";
 	private static final String serverIP = "jknoxville.no-ip.org";
 	private static final int serverPort = 60000;
-	private static final int defaultClientPort = 60000;
+	private static final int defaultClientPort = 60001;
 	
 	
 	//Datagram Format

@@ -10,6 +10,8 @@ public class DevicePath {
 	private TreeMap<Integer, Segment> pathCache = new TreeMap<Integer, Segment>();
 	private float endX;
 	private float endY;
+	private float lastXinMadePath;
+	private float lastYinMadePath;
 	private int lastIndex = -1;
 
 	protected synchronized void add(int index, float x, float y) {
@@ -95,15 +97,15 @@ public class DevicePath {
 	}
 
 	public synchronized Path makePath() {
-		System.out.println("makePath()");//debug
 		//Set<Entry<Integer, Segment>> entrySet = pathCache.entrySet();
 		Path entirePath = new Path();
 
-		System.out.println("makePath() 2");//debug
+		lastXinMadePath = endX;
+		lastYinMadePath = endY;
+		
 		//iterate through all Segments in order, adding them to the path
 		//int position = -1;
 		Entry<Integer, Segment> entry = null;
-		System.out.println("makePath() before loop");//debug
 		entry = pathCache.firstEntry();	// entry = first entry
 		//while there are higher entries, store them in entry and execute loop:
 		boolean firstCompleteSegment = true;	//this flag is set so the first complete segment can be identified and
@@ -142,11 +144,11 @@ public class DevicePath {
 		return entirePath;
 	}
 
-	public synchronized float getEndX() {
-		return endX;
+	public synchronized float getPositionX() {
+		return lastXinMadePath;
 	}
 
-	public synchronized float getEndY() {
-		return endY;
+	public synchronized float getPositionY() {
+		return lastYinMadePath;
 	}
 }

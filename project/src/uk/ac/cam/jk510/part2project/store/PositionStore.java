@@ -2,6 +2,7 @@ package uk.ac.cam.jk510.part2project.store;
 
 import java.util.LinkedList;
 
+import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
