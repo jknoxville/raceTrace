@@ -26,7 +26,6 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	protected void giveToNetwork(Device device, Coords coords) {
 		checkInit();
 		sendCoordsToServer(device, coords);
-
 	}
 
 	@Override

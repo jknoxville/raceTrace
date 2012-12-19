@@ -48,10 +48,11 @@ public class Message {
 				float x = bb.getFloat();
 				float y = bb.getFloat();
 				float alt = bb.getFloat();
-				System.out.println("receiving. device "+deviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
+				System.out.println("receiving from "+datagram.getAddress().getHostName()+":"+datagram.getPort()+" device "+deviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
 				CoordsTXYA coords = new CoordsTXYA(lTime, x, y, alt);
 				PositionStore.insert(Session.getSession().getDevice(deviceID), coords);
 				if(Config.serverDuplicationTest() && deviceID == 0) {
+					System.out.println("Adding dupe");
 					CoordsTXYA coords2 = new CoordsTXYA(lTime, x+10, y, alt);
 					PositionStore.insert(Session.getSession().getDevice(deviceID+1), coords2);
 				}

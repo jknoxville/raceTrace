@@ -103,8 +103,12 @@ public class NetworkInterface {
 		bb.putFloat(y);
 		bb.putFloat(alt);
 		try {
-			DatagramPacket datagram = new DatagramPacket(data, data.length, socketAddresses[toDevice.getDeviceID()]);
-			System.out.println("About to send datapoint "+lClock+" to "+((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName());
+			InetSocketAddress sockadd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
+			DatagramPacket datagram = new DatagramPacket(data, data.length, sockadd);
+			//DatagramPacket datagram = new DatagramPacket(data, data.length, ((DeviceHandleIP) toDevice.getHandle()).getIP(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
+			//DatagramPacket datagram = new DatagramPacket(data, data.length, socketAddresses[toDevice.getDeviceID()]);
+			//TODO clean up the socketAddresses thing.
+			System.out.println("About to send datapoint "+lClock+" to "+((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName()+":"+((DeviceHandleIP) toDevice.getHandle()).getPort());
 			socket.send(datagram);
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block

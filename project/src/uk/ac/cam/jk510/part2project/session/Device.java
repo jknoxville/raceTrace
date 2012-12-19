@@ -20,7 +20,7 @@ public class Device {
 		//this.history = (DeviceHistory) (protocol.deviceHistoryClass).newInstance();
 		this.history = DeviceHistory.newHistory();
 	}
-
+	
 	public String getName() {
 		return name;
 	}

@@ -40,7 +40,7 @@ public class Config {
 	
 	//Server Specific
 	private static final long serverResendPeriodSecs = 3;
-	private static final int serverNewPointsThreshold = 2;
+	private static final int serverNewPointsThreshold = 1;
 	
 	//Testing
 	private static final boolean serverDuplicationTest = true;

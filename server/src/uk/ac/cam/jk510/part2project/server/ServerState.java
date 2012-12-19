@@ -67,7 +67,7 @@ public class ServerState implements PositionStoreSubscriber {
 		}
 	}
 	private static boolean ready() {
-		return (timeOfLastSend + Config.getServerResendPeriodMillis() <= System.currentTimeMillis()) || (numNewPoints>Config.getServerNewPointsThreshold());
+		return (timeOfLastSend + Config.getServerResendPeriodMillis() <= System.currentTimeMillis()) || (numNewPoints>=Config.getServerNewPointsThreshold());
 	}
 
 }

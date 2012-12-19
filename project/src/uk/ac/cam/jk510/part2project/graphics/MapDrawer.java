@@ -153,25 +153,29 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		int device = 0;
 		for(Path path : pathsToDraw) {
 
+
 			if(path == null) {	//some paths will be null at first before they have any points added.
 				continue;
 			}
-
+			
 			//if this path is new, scale it - NO. rescale all paths everytime, because if any path scale changes, they all do.
 			//if(pathIsNew[device]) {
 			path.offset(-pLeft, -pTop);	//changed from bounds.left and bounds.top
 			path.transform(mat);
 			//}
+
+
 			//draw all paths regardless of new or not
 			canvas.drawPath(path, lines[device]);
 
 			//draw position Indicators
 			DevicePath dp = devicePathList.get(device);
+
 			canvas.drawCircle((dp.getEndX()-pLeft)*scale, (dp.getEndY()-pTop)*scale, Config.getPosIndicatorSize(), lines[device]);
-
+			canvas.drawLine(0, 0, (dp.getEndX()-pLeft)*scale, (dp.getEndY()-pTop)*scale, new Paint());	//debug
 			device++;
-		}
 
+		}
 		mat.reset();
 
 	}
