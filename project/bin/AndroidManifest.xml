@@ -54,20 +54,12 @@
         <activity
             android:name=".gui.SessionSetupSlaveActivity"
             android:label="@string/title_activity_session_setup_slave" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".gui.NewSessionActivityPredefined"
             android:label="@string/title_activity_new_session_activity_predefined" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

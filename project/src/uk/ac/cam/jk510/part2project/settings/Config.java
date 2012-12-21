@@ -105,4 +105,8 @@ public class Config {
 	public static int getNameSize() {
 		return nameSize;
 	}
+	public static void setName(String name2) {
+		name = name2;
+		
+	}
 }

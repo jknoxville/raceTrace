@@ -16,12 +16,20 @@ public abstract class ProtocolManager {
 		mgr.spawnReceivingThread();
 		return mgr;
 	}
+	
+	//TODO when sending to server, must attach the device number thats sending it so server knows which its coming from, not just which it's about. (e.g. for swicthing port numbers)
 
 	public static void testInputData() {
 //		for (int dev=0; dev<Session.getSession().numDevices(); dev++) {
 //			testInputData(dev);
 //		}
-		testInputData(0);	//changed from above as needed
+	  	new Thread(new Runnable() {
+    		public void run() {
+    			int thisDeviceNumber = Session.getThisDevice().getDeviceID();
+    			testInputData(thisDeviceNumber);	//changed from above as needed
+    		}
+	  	}).start();
+	
 	}
 
 	public static void testInputData(int device) {

@@ -69,5 +69,9 @@ public abstract class NewSessionActivity extends Activity {
 		Intent intent = new Intent(this, MapDisplayScreen.class);    	
 		startActivity(intent);
 	}
+	
+	public void onSetupComplete() throws Exception {
+		onSetupComplete(null);
+	}
 
 }

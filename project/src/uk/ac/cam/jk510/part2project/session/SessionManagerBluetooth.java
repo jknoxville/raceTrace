@@ -7,11 +7,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 
+import uk.ac.cam.jk510.part2project.gui.SessionSetupActivity;
+import uk.ac.cam.jk510.part2project.gui.SessionSetupSlaveActivity;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -22,6 +25,7 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.util.SparseBooleanArray;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -103,7 +107,7 @@ public class SessionManagerBluetooth extends SessionManager {
 		}).start();
 	}
 
-	public static void spawnMasterBluetoothSetupThread() {
+	public static void spawnMasterBluetoothSetupThread(final View view, final SessionSetupActivity activity) {
 		//run in seperate thread:
 		new Thread(new Runnable() {
 
@@ -122,25 +126,32 @@ public class SessionManagerBluetooth extends SessionManager {
 					try {
 						bluetoothAdapter.cancelDiscovery();	//to speed up connection
 
-
+						Config.setName(bluetoothAdapter.getName());	//TODO unstable. this uses current name. Master creates session with name at pair time.
+						
 						String ip = DataConnectionManager.getMyIP();
 						System.out.println("My ip address: "+ip);	//debug
 
 						BluetoothSocket sock = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
 						sock.connect();
 
+						System.out.println("connected to "+bluetoothDevice.getName());	//debug
+
 						//Send Master info, and then request slave's info
 						OutputStream outputStream = sock.getOutputStream();
 						ObjectOutputStream oos = new ObjectOutputStream(outputStream);
 						sendMyAddressInfo(oos);
 
+						System.out.println("sent my (master) address info");	//debug
+
 						InputStream inputStream = sock.getInputStream();
 						ObjectInputStream ois = new ObjectInputStream(inputStream);
 						try{
+							System.out.println("waiting for device info");	//debug
 							String name = (String) ois.readObject();
 							String address = (String) ois.readObject();
 							Device device = new Device(name, new DeviceHandleIP(InetAddress.getByName(address), Config.getDefaultClientPort()), new ProtocolXYA());
 							devices.add(device);
+							System.out.println("Made device "+name);	//debug
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -154,8 +165,20 @@ public class SessionManagerBluetooth extends SessionManager {
 						continue;
 					}
 				}
-				Session session = new Session(devices, keys);	//now for master, session setup is complete
+				Session session = null;
+				try{
+				if(selectedList.size()==0) {
+					(new SessionManagerSingleUser()).newSession(null);
+					session = Session.getSession();
+				} else {
+					session = new Session(devices, keys);	//now for master, session setup is complete
+				}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				SessionPackage pack = new SessionPackage(session);
+
+
 				for(BluetoothDevice bluetoothDevice: selectedList) {
 
 					BluetoothSocket sock;
@@ -166,14 +189,44 @@ public class SessionManagerBluetooth extends SessionManager {
 						//Send package to each device
 						OutputStream outputStream = sock.getOutputStream();
 						ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+						System.out.println("sending session to "+bluetoothDevice.getName());	//debug
 						oos.writeObject(pack);
-
+						System.out.println("sent");	//debug
 						sock.close();
+
+
+
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
+
+				try {
+					DataConnectionManager.sendSessionToServer(session);	//TODO do this in another thread at the same time as the above thing.
+				} catch (UnknownHostException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+
+				//get UI thread to call onSetupComplete()
+				view.post(new Runnable() {
+
+					public void run() {
+
+						try {
+							activity.onSetupComplete();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+
+				});
 			}
 		}).start();
 	}
@@ -250,7 +303,7 @@ public class SessionManagerBluetooth extends SessionManager {
 
 	}
 
-	public static void spawnSlaveBluetoothSetupThread(final TextView tv) {
+	public static void spawnSlaveBluetoothSetupThread(final View view, final SessionSetupSlaveActivity activity) {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -258,22 +311,29 @@ public class SessionManagerBluetooth extends SessionManager {
 
 					String ip = DataConnectionManager.getMyIP();
 					System.out.println("My ip address: "+ip);	//debug
+					
+					Config.setName(bluetoothAdapter.getName());	//TODO unstable. this uses current name. Master creates session with name at pair time.
 
 					BluetoothServerSocket serverSock = bluetoothAdapter.listenUsingRfcommWithServiceRecord(Config.getName(), UUID.fromString(Config.getUUIDString()));
 					BluetoothSocket sock = serverSock.accept();
 
+					System.out.println("connected to master");	//debug
 					//Receive Master info, and then send slave's info
 					InputStream inputStream = sock.getInputStream();
 					ObjectInputStream ois = new ObjectInputStream(inputStream);
 					String masterName = (String) ois.readObject();
 					String masterAddress = (String) ois.readObject();
-					tv.setText("master's name: "+masterName);
+					//tv.setText("master's name: "+masterName);
 
+					System.out.println("got master info");	//debug
 					OutputStream outputStream = sock.getOutputStream();
 					ObjectOutputStream oos = new ObjectOutputStream(outputStream);
 					sendMyAddressInfo(oos);
 					//close connection while master fetches data from the other devices
 					sock.close();
+
+					System.out.println("sent my info");	//debug
+					System.out.println("waiting for master...");	//debug
 
 					//open new connection
 					sock = serverSock.accept();
@@ -282,6 +342,21 @@ public class SessionManagerBluetooth extends SessionManager {
 					ois = new ObjectInputStream(inputStream);
 					SessionPackage pack = (SessionPackage) ois.readObject();
 					Session.reconstructSession(pack); //construct and save session object from recieved object.
+
+					//get UI thread to call onSetupComplete()
+					view.post(new Runnable() {
+
+						public void run() {
+
+							try {
+								activity.onSetupComplete();
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+
+					});
 
 
 				} catch (IOException e) {

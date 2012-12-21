@@ -12,7 +12,7 @@ public class Session {
 
 	private ArrayList<Device> devices;
 	private Keys keys;
-	private static Device me;
+	private static int meNumber;
 
 	protected Session(ArrayList<Device> devices, Keys keys) {
 		super();
@@ -20,12 +20,9 @@ public class Session {
 		this.keys = keys;
 		for(Device d: devices) {
 			if(d.getName() == Config.getName()) {
-				me = d;
+				meNumber = d.getDeviceID();
 				break;
 			}
-		}
-		if(me == null) {
-			me = devices.get(0);	//TODO this is a temporary fix.
 		}
 		//TODO make Config.name read name from some preferences (see android tutorials)
 		//TODO have check when setting up session to see if names clash.
@@ -40,11 +37,11 @@ public class Session {
 	}
 
 	public static Device getThisDevice() {
-		return me;
+		return session.getDevice(meNumber);
 	}
-
-	public Device getDevice(int n) {
-		return devices.get(n);
+	
+	public static Device getDevice(int n) {
+		return session.devices.get(n);
 	}
 
 	public String[] getDeviceNames() {

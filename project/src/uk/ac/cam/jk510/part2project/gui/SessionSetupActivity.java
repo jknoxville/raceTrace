@@ -38,7 +38,8 @@ public class SessionSetupActivity extends NewSessionActivity {
     	//destroy previous lists / adapters
     	
     	progressList = (TextView) findViewById(R.id.progressList);
-    	SessionManagerBluetooth.spawnMasterBluetoothSetupThread();
+    	View thisView = findViewById(android.R.id.content);
+    	SessionManagerBluetooth.spawnMasterBluetoothSetupThread(thisView, this);
     	
     }
 

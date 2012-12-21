@@ -30,9 +30,10 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 
 	@Override
 	public void spawnReceivingThread() {
-		checkInit();
+		
 		new Thread(new Runnable() {
 			public void run() {
+				checkInit();
 				byte[] receivingData = new byte[1024];
 				DatagramPacket datagram = new DatagramPacket(receivingData, receivingData.length);
 				while(true) {

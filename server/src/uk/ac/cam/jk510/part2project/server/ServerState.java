@@ -67,7 +67,8 @@ public class ServerState implements PositionStoreSubscriber {
 		}
 	}
 	private static boolean ready() {
-		return (timeOfLastSend + Config.getServerResendPeriodMillis() <= System.currentTimeMillis()) || (numNewPoints>=Config.getServerNewPointsThreshold());
+		//Note ready is always false when there is just one device in session.
+		return (timeOfLastSend + Config.getServerResendPeriodMillis() <= System.currentTimeMillis()) || (numNewPoints>=Config.getServerNewPointsThreshold()) && Session.getSession().numDevices()!=1;
 	}
 
 }

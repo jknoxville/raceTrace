@@ -43,7 +43,7 @@ public class Config {
 	private static final int serverNewPointsThreshold = 1;
 	
 	//Testing
-	private static final boolean serverDuplicationTest = true;
+	private static final boolean serverDuplicationTest = false;
 
 	//Getter methods
 	public static int getMapLineThickness() {
