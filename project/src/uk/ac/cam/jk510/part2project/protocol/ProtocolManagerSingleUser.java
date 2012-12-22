@@ -5,8 +5,6 @@ import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.store.Coords;
 import uk.ac.cam.jk510.part2project.store.HistoryType;
 
-
-
 public class ProtocolManagerSingleUser extends ProtocolManager {
 
 	public ProtocolManagerSingleUser() {
@@ -21,12 +19,6 @@ public class ProtocolManagerSingleUser extends ProtocolManager {
 	@Override
 	public void spawnReceivingThread() {
 		//do nothing
-		
-	}
-
-	@Override
-	protected void stopReceivingThread() {
-		// No receiving thread so nothing needed here
 		
 	}
 

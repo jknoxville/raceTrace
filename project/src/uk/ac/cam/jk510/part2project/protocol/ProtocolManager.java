@@ -10,6 +10,7 @@ import uk.ac.cam.jk510.part2project.store.PositionStore;
 public abstract class ProtocolManager {
 
 	private static ProtocolManager instance;
+	private static boolean alive = true;
 
 	public static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
 		instance = newProtocolManager();
@@ -93,12 +94,16 @@ public abstract class ProtocolManager {
 	protected abstract void giveToNetwork(Device device, Coords coords);
 	
 	public static void destroy() {
-		instance.stopReceivingThread();
-		instance.protocolSpecificDestroy();
+		ProtocolManager.stopReceivingThread();
+		if(instance != null) {
+			instance.protocolSpecificDestroy();
+		}
 		instance = null;
 	}
 	
-	protected abstract void stopReceivingThread();
+	protected static void stopReceivingThread() {
+		alive = false;
+	}
 	
 	protected abstract void protocolSpecificDestroy();
 

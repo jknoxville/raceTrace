@@ -85,5 +85,9 @@ public class Session {
 		Session session = new Session(devices, pack.keys);
 		return session;
 	}
+	
+	public static void destroy() {
+		session = null;
+	}
 
 }

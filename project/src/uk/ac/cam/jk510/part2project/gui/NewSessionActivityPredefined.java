@@ -5,6 +5,7 @@ import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionManager;
 import uk.ac.cam.jk510.part2project.session.SessionManagerPredefined;
+import uk.ac.cam.jk510.part2project.session.StopThreadException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -39,6 +40,7 @@ public class NewSessionActivityPredefined extends NewSessionActivity {
 	protected void setUpSession() throws Exception {
 		// Create Session state:
 		SessionManager smgr = new SessionManagerPredefined();
+		SessionManager.checkIfAlive();
 		smgr.newSession(this);
 		System.err.println("Finished setUpSession()");	//debug
 		

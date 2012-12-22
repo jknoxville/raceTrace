@@ -3,6 +3,8 @@ package uk.ac.cam.jk510.part2project.gui;
 import uk.ac.cam.jk510.part2project.R;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.session.Session;
+import uk.ac.cam.jk510.part2project.session.SessionManager;
+import uk.ac.cam.jk510.part2project.session.StopThreadException;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -81,6 +83,13 @@ public abstract class NewSessionActivity extends Activity {
 	
 	//destroy all state as if this activity was never created.
 	private void destroy() {
+		SessionManager.killThread();	//this will stop the session setup thread eventually.
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		ProtocolManager.destroy();
 		instance = null;
 	}
@@ -88,6 +97,7 @@ public abstract class NewSessionActivity extends Activity {
 	public void onBackPressed() {
 		destroy();
 		this.finish();
+		Session.destroy();
 	}
 
 }

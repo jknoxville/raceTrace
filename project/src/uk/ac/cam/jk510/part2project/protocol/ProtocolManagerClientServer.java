@@ -87,12 +87,6 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	}
 
 	@Override
-	protected void stopReceivingThread() {
-		alive = false;
-		
-	}
-
-	@Override
 	protected void protocolSpecificDestroy() {
 		//nothing to do
 		

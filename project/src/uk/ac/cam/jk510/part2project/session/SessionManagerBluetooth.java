@@ -109,6 +109,9 @@ public class SessionManagerBluetooth extends SessionManager {
 	}
 
 	public static void spawnMasterBluetoothSetupThread(final View view, final SessionSetupActivity activity) {
+
+		SessionManager.setAlive();
+
 		//run in seperate thread:
 		new Thread(new Runnable() {
 
@@ -120,137 +123,165 @@ public class SessionManagerBluetooth extends SessionManager {
 				 * 			-May be done online or using bluetooth
 				 */
 
-				ArrayList<Device> devices = new ArrayList<Device>();
-				Keys keys = null;	//TODO make actual keys
-				
-				Config.setName(bluetoothAdapter.getName());	//TODO unstable. this uses current name. Master creates session with name at pair time.
-				
-				//first add master to devices
-				{
-					try {
-						Device device = new Device(Config.getName(), new DeviceHandleIP(InetAddress.getByName(DataConnectionManager.getMyIP()), Config.getDefaultClientPort()), new ProtocolXYA());
-						devices.add(device);
-					} catch (UnknownHostException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SocketException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InstantiationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				
-
-				for(BluetoothDevice bluetoothDevice: selectedList) {
-					try {
-						bluetoothAdapter.cancelDiscovery();	//to speed up connection
-
-						Config.setName(bluetoothAdapter.getName());	//TODO unstable. this uses current name. Master creates session with name at pair time.
-						
-						String ip = DataConnectionManager.getMyIP();
-						System.out.println("My ip address: "+ip);	//debug
-
-						BluetoothSocket sock = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
-						sock.connect();
-
-						System.out.println("connected to "+bluetoothDevice.getName());	//debug
-
-						//Send Master info, and then request slave's info
-						OutputStream outputStream = sock.getOutputStream();
-						ObjectOutputStream oos = new ObjectOutputStream(outputStream);
-						sendMyAddressInfo(oos);
-
-						System.out.println("sent my (master) address info");	//debug
-
-						InputStream inputStream = sock.getInputStream();
-						ObjectInputStream ois = new ObjectInputStream(inputStream);
-						try{
-							System.out.println("waiting for device info");	//debug
-							String name = (String) ois.readObject();
-							String address = (String) ois.readObject();
-							Device device = new Device(name, new DeviceHandleIP(InetAddress.getByName(address), Config.getDefaultClientPort()), new ProtocolXYA());
-							devices.add(device);
-							System.out.println("Made device "+name);	//debug
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						//then construct session object.
-						//TODO then send this out to all devices
-
-
-						sock.close();
-					} catch (IOException e) {
-						System.out.println("Error connecting to "+bluetoothDevice.getName());
-						continue;
-					}
-				}
-				Session session = null;
-				try{
-				if(selectedList.size()==0) {
-					(new SessionManagerSingleUser()).newSession(null);
-					session = Session.getSession();
-				} else {
-					session = new Session(devices, keys);	//now for master, session setup is complete
-				}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				SessionPackage pack = new SessionPackage(session);
-
-
-				for(BluetoothDevice bluetoothDevice: selectedList) {
-
-					BluetoothSocket sock;
-					try {
-						sock = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
-						sock.connect();
-
-						//Send package to each device
-						OutputStream outputStream = sock.getOutputStream();
-						ObjectOutputStream oos = new ObjectOutputStream(outputStream);
-						System.out.println("sending session to "+bluetoothDevice.getName());	//debug
-						oos.writeObject(pack);
-						System.out.println("sent");	//debug
-						sock.close();
-
-
-
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-
 				try {
-					DataConnectionManager.sendSessionToServer(session);	//TODO do this in another thread at the same time as the above thing.
-				} catch (UnknownHostException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 
+					checkIfAlive();
+					ArrayList<Device> devices = new ArrayList<Device>();
+					checkIfAlive();
+					Keys keys = null;	//TODO make actual keys
 
-				//get UI thread to call onSetupComplete()
-				view.post(new Runnable() {
-
-					public void run() {
-
+					Config.setName(bluetoothAdapter.getName());	//TODO unstable. this uses current name. Master creates session with name at pair time.
+					checkIfAlive();
+					//first add master to devices
+					{
 						try {
-							activity.onSetupComplete();
-						} catch (Exception e) {
+							Device device = new Device(Config.getName(), new DeviceHandleIP(InetAddress.getByName(DataConnectionManager.getMyIP()), Config.getDefaultClientPort()), new ProtocolXYA());
+							devices.add(device);
+						} catch (UnknownHostException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (SocketException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InstantiationException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
 
-				});
+
+					for(BluetoothDevice bluetoothDevice: selectedList) {
+						try {
+							checkIfAlive();
+							bluetoothAdapter.cancelDiscovery();	//to speed up connection
+
+							Config.setName(bluetoothAdapter.getName());	//TODO unstable. this uses current name. Master creates session with name at pair time.
+
+							String ip = DataConnectionManager.getMyIP();
+							System.out.println("My ip address: "+ip);	//debug
+							checkIfAlive();
+							BluetoothSocket sock = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
+							
+							sock.connect();
+							checkIfAlive();
+							System.out.println("connected to "+bluetoothDevice.getName());	//debug
+
+							//Send Master info, and then request slave's info
+							OutputStream outputStream = sock.getOutputStream();
+							ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+							checkIfAlive();
+							sendMyAddressInfo(oos);
+							checkIfAlive();
+							
+							System.out.println("sent my (master) address info");	//debug
+
+							InputStream inputStream = sock.getInputStream();
+							ObjectInputStream ois = new ObjectInputStream(inputStream);
+							checkIfAlive();
+							
+							try{
+								System.out.println("waiting for device info");	//debug
+								String name = (String) ois.readObject();
+								checkIfAlive();
+								String address = (String) ois.readObject();
+								checkIfAlive();
+								Device device = new Device(name, new DeviceHandleIP(InetAddress.getByName(address), Config.getDefaultClientPort()), new ProtocolXYA());
+								devices.add(device);
+								checkIfAlive();
+								System.out.println("Made device "+name);	//debug
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							//then construct session object.
+							//TODO then send this out to all devices
+
+
+							sock.close();
+						} catch (IOException e) {
+							System.out.println("Error connecting to "+bluetoothDevice.getName());
+							continue;
+						}
+					}
+					Session session = null;
+					try{
+						if(selectedList.size()==0) {
+							(new SessionManagerSingleUser()).newSession(null);
+							session = Session.getSession();
+						} else {
+							session = new Session(devices, keys);	//now for master, session setup is complete
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					checkIfAlive();
+					SessionPackage pack = new SessionPackage(session);
+
+
+					for(BluetoothDevice bluetoothDevice: selectedList) {
+						checkIfAlive();
+						
+						BluetoothSocket sock;
+						try {
+							sock = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
+							sock.connect();
+
+							checkIfAlive();
+							
+							//Send package to each device
+							OutputStream outputStream = sock.getOutputStream();
+							ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+							System.out.println("sending session to "+bluetoothDevice.getName());	//debug
+							checkIfAlive();
+							
+							oos.writeObject(pack);
+							
+							checkIfAlive();
+							System.out.println("sent");	//debug
+							sock.close();
+							
+							checkIfAlive();
+
+
+
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+
+					try {
+						DataConnectionManager.sendSessionToServer(session);	//TODO do this in another thread at the same time as the above thing.
+						checkIfAlive();
+					} catch (UnknownHostException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
+
+					//get UI thread to call onSetupComplete()
+					view.post(new Runnable() {
+
+						public void run() {
+
+							try {
+								checkIfAlive();
+								activity.onSetupComplete();
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+
+					});
+				} catch (StopThreadException e) {
+					//do nothing ending thread
+				}
 			}
 		}).start();
 	}
@@ -333,40 +364,55 @@ public class SessionManagerBluetooth extends SessionManager {
 				try {
 					bluetoothAdapter.cancelDiscovery();	//to speed up connection
 
+					checkIfAlive();
 					String ip = DataConnectionManager.getMyIP();
 					System.out.println("My ip address: "+ip);	//debug
-					
+					checkIfAlive();
 					Config.setName(bluetoothAdapter.getName());	//TODO unstable. this uses current name. Master creates session with name at pair time.
 
 					BluetoothServerSocket serverSock = bluetoothAdapter.listenUsingRfcommWithServiceRecord(Config.getName(), UUID.fromString(Config.getUUIDString()));
+					checkIfAlive();
+					
 					BluetoothSocket sock = serverSock.accept();
-
+					checkIfAlive();
+					
 					System.out.println("connected to master");	//debug
 					//Receive Master info, and then send slave's info
 					InputStream inputStream = sock.getInputStream();
 					ObjectInputStream ois = new ObjectInputStream(inputStream);
+					checkIfAlive();
 					String masterName = (String) ois.readObject();
+					checkIfAlive();
 					String masterAddress = (String) ois.readObject();
+					checkIfAlive();
 					//tv.setText("master's name: "+masterName);
 
 					System.out.println("got master info");	//debug
 					OutputStream outputStream = sock.getOutputStream();
 					ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+					checkIfAlive();
 					sendMyAddressInfo(oos);
+					checkIfAlive();
 					//close connection while master fetches data from the other devices
 					sock.close();
-
+					checkIfAlive();
+					
 					System.out.println("sent my info");	//debug
 					System.out.println("waiting for master...");	//debug
-					
+
 					//open new connection
 					sock = serverSock.accept();
+					checkIfAlive();
+					
 					//wait for package
 					inputStream = sock.getInputStream();	//get new InputStream
 					ois = new ObjectInputStream(inputStream);
+					checkIfAlive();
 					SessionPackage pack = (SessionPackage) ois.readObject();
+					checkIfAlive();
 					Session.reconstructSession(pack); //construct and save session object from recieved object.
-
+					checkIfAlive();
+					
 					//get UI thread to call onSetupComplete()
 					view.post(new Runnable() {
 
@@ -389,6 +435,8 @@ public class SessionManagerBluetooth extends SessionManager {
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (StopThreadException e) {
+					//end thread
 				}
 
 			}
