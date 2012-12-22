@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.View;
 
 public class NewSessionActivityPredefined extends NewSessionActivity {
+	
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

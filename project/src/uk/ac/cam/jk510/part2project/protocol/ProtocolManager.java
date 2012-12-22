@@ -9,12 +9,12 @@ import uk.ac.cam.jk510.part2project.store.PositionStore;
 
 public abstract class ProtocolManager {
 
-	private static ProtocolManager mgr;
+	private static ProtocolManager instance;
 
 	public static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
-		mgr = newProtocolManager();
-		mgr.spawnReceivingThread();
-		return mgr;
+		instance = newProtocolManager();
+		instance.spawnReceivingThread();
+		return instance;
 	}
 	
 	//TODO when sending to server, must attach the device number thats sending it so server knows which its coming from, not just which it's about. (e.g. for swicthing port numbers)
@@ -47,15 +47,15 @@ public abstract class ProtocolManager {
 	private static ProtocolManager newProtocolManager() throws Exception {
 		Proto protocol = Config.getProtocol();
 		switch(protocol) {
-		case singleUser: mgr = new ProtocolManagerSingleUser(); break;
-		case clientServer: mgr = new ProtocolManagerClientServer(); break;
+		case singleUser: instance = new ProtocolManagerSingleUser(); break;
+		case clientServer: instance = new ProtocolManagerClientServer(); break;
 		default: throw new Exception();
 		}
-		return mgr;
+		return instance;
 	}
 
 	public static ProtocolManager getProtocolManager() {
-		return mgr;
+		return instance;
 	}
 
 	/* This method is specifically for original data points.
@@ -70,7 +70,7 @@ public abstract class ProtocolManager {
 		new Thread(new Runnable() {
 			public void run() {
 				// TODO Auto-generated method stub
-				mgr.giveToNetwork(device, coords);
+				instance.giveToNetwork(device, coords);
 			}
 		}).start();
 		
@@ -91,5 +91,15 @@ public abstract class ProtocolManager {
 	//	}
 
 	protected abstract void giveToNetwork(Device device, Coords coords);
+	
+	public static void destroy() {
+		instance.stopReceivingThread();
+		instance.protocolSpecificDestroy();
+		instance = null;
+	}
+	
+	protected abstract void stopReceivingThread();
+	
+	protected abstract void protocolSpecificDestroy();
 
 }

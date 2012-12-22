@@ -20,6 +20,7 @@ public class MapDisplayScreen extends Activity {
 	boolean testDataUsed = false;	//debug
 	static MapDisplayScreen instance;
 	static NewSessionActivity sessionActivity;
+	private GPSDriver gpsDriver;
 
 //	//Commented out 13.53 friday
 //    @Override
@@ -51,8 +52,7 @@ public class MapDisplayScreen extends Activity {
 		
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		TextView info = (TextView) findViewById(R.id.mapScreenInfo);
-		System.out.println(info);
-		GPSDriver.init(locationManager, info);	//TODO do in seperate thread?
+		gpsDriver = GPSDriver.init(locationManager, info);	//TODO do in seperate thread?
 		instance = this;
         
     }
@@ -69,8 +69,11 @@ public class MapDisplayScreen extends Activity {
     			//MapDisplayScreen.super.onBackPressed();
     			//send intent to main menu activity with FLAG_ACTIVITY_CLEAR_TOP set to clear stack
     			//startActivity(new Intent(instance, NewOldSession.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+    			
+    			if(gpsDriver != null) {
+    				gpsDriver.destroy();
+    			}
     			instance.finish();
-    			NewSessionActivity.newSessionActivity.finish();
     		}
     	}).create().show();
     }

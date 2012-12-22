@@ -21,6 +21,7 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 
 	private DatagramSocket socket;
 	private SocketAddress serverSocketAddress;
+	private static boolean alive = true;
 
 	@Override
 	protected void giveToNetwork(Device device, Coords coords) {
@@ -36,7 +37,7 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 				checkInit();
 				byte[] receivingData = new byte[1024];
 				DatagramPacket datagram = new DatagramPacket(receivingData, receivingData.length);
-				while(true) {
+				while(alive) {
 					try {
 						socket.receive(datagram);
 						System.out.println("Recieved datagram");
@@ -83,6 +84,18 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 			socket = DataConnectionManager.getDataSocket();
 			serverSocketAddress = new InetSocketAddress(Config.getServerIP(), Config.getServerPort());
 		}
+	}
+
+	@Override
+	protected void stopReceivingThread() {
+		alive = false;
+		
+	}
+
+	@Override
+	protected void protocolSpecificDestroy() {
+		//nothing to do
+		
 	}
 
 }

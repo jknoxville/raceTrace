@@ -29,6 +29,10 @@ public class NewOldSession extends Activity {
     public void newSession(final View view) throws Exception {
     	final Context context = this;
     	new Thread(new Runnable() {
+    		/*
+    		 * State left on thread exit:
+    		 * some NewSessionActivity has been started.
+    		 */
     		public void run() {
     			final Class newSessionActivity;
     			SessionEnum sesh = Config.getSesh();
@@ -50,7 +54,7 @@ public class NewOldSession extends Activity {
     			view.post(new Runnable() {
     				public void run() {
     					Intent intent = new Intent(context, newSessionActivity);
-    					startActivity(intent);
+    					startActivityForResult(intent, 1);
     				}
     			});
     		}
@@ -60,8 +64,12 @@ public class NewOldSession extends Activity {
     }
     
     public void loadSession(View view) {
+		/*
+		 * State left on exit:
+		 * NewSessionActivityPredefined has been started.
+		 */
     	Intent intent = new Intent(this, NewSessionActivityPredefined.class);
-		startActivity(intent);
+		startActivityForResult(intent, 1);
     }
     
 }

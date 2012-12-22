@@ -24,4 +24,16 @@ public class ProtocolManagerSingleUser extends ProtocolManager {
 		
 	}
 
+	@Override
+	protected void stopReceivingThread() {
+		// No receiving thread so nothing needed here
+		
+	}
+
+	@Override
+	protected void protocolSpecificDestroy() {
+		// No state to destroy
+		
+	}
+
 }

@@ -5,14 +5,19 @@ import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.session.Session;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 
 public abstract class NewSessionActivity extends Activity {
+	
+	/*
+	 * This activity is always the predecessor of MapDisplayScreen.
+	 */
 
 	Session session;
 	Exception exception;
-	static NewSessionActivity newSessionActivity;
+	static NewSessionActivity instance;
 
 //	@Override
 //	public void onCreate(Bundle savedInstanceState) {
@@ -31,7 +36,7 @@ public abstract class NewSessionActivity extends Activity {
 	//This method spawns a new thread and sets it running setUpSession().
 	//When finished setUpSession(), it calls onSetupComplete()
 	final protected void setUpSessionThread() {
-		newSessionActivity = this;	//sets up static link so this activity can be closed by another
+		instance = this;	//sets up static link so this activity can be closed by another
 		new Thread(new Runnable() {
 
 			public void run() {
@@ -72,6 +77,17 @@ public abstract class NewSessionActivity extends Activity {
 	
 	public void onSetupComplete() throws Exception {
 		onSetupComplete(null);
+	}
+	
+	//destroy all state as if this activity was never created.
+	private void destroy() {
+		ProtocolManager.destroy();
+		instance = null;
+	}
+	
+	public void onBackPressed() {
+		destroy();
+		this.finish();
 	}
 
 }

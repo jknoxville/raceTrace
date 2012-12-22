@@ -25,31 +25,33 @@ import android.widget.TextView;
 public class GPSDriver implements LocationListener {
 
 	int logicalTime = 0;
-	private static GPSDriver driver;
-	private static Device thisDevice;
-	private static TextView tv;
-	private static Location currentLocation;
+	private static GPSDriver instance;
+	private Device thisDevice;
+	private TextView tv;
+	private Location currentLocation;
+	private LocationManager lm;
 
 	private GPSDriver(LocationManager locationManager, TextView tv) {
 
 		//TODO: might want to add extra providers and use the logic on android guide site to select between them.
-
+		lm = locationManager;
 		thisDevice = Session.getThisDevice();
 
 		//Register for GPS updates
 		//locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, Config.getGPSUpdateDistance(), this);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Config.getGPSUpdateTime(), Config.getGPSUpdateDistance(), this);
 		
-		driver = this;
-		GPSDriver.tv = tv;
+		instance = this;
+		this.tv = tv;
 		tv.setTextColor(Color.BLACK);
-		GPSDriver.tv.setText("Waiting for location...");
+		this.tv.setText("Waiting for location...");
 	}
 
-	static public void init(LocationManager lm, TextView tv) {
-		if(driver == null) {
+	static public GPSDriver init(LocationManager lm, TextView tv) {
+		if(instance == null) {
 			new GPSDriver(lm, tv);
 		}
+		return instance;
 	}
 
 	public void onLocationChanged(Location l) {
@@ -88,10 +90,10 @@ public class GPSDriver implements LocationListener {
 	}
 
 	public static GPSDriver getGPSDriver() {
-		if(driver == null) {
+		if(instance == null) {
 			return null;
 		} else {
-			return driver;
+			return instance;
 		}
 	}
 
@@ -120,6 +122,7 @@ public class GPSDriver implements LocationListener {
 		 * may want to ask user to switch it on again.
 		 */
 		//ask user to switch it on again, but will continue if they dont want to
+		//probably not because user must have switched it off themself.
 		
 		
 
@@ -133,6 +136,11 @@ public class GPSDriver implements LocationListener {
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public void destroy() {
+		lm.removeUpdates(this);
+		instance = null;
 	}
 
 }
