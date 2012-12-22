@@ -35,11 +35,11 @@ public abstract class ProtocolManager {
 	public static void testInputData(int device) {
 		//TODO remove the following test data
 		//adds some random data for test
-		Device lastDev = Session.getSession().getDevice(device);
+		Device deviceObject = Session.getDevice(device);
 		for(int i=0; i<1; i++) {
 			Coords coords = new CoordsTXYA((int) (Math.random()*100), (int) (Math.random()*100)+712026, (int) (Math.random()*100)+9828785, (int) (Math.random()*100));
 			System.err.println("now inserting test index: "+coords.getLClock()+" to device "+device);	//debug
-			insertOriginalDataPoint(lastDev, coords);
+			insertOriginalDataPoint(deviceObject, coords);
 			System.err.println("Finished inputting test data");	//debug
 		}
 	}
@@ -62,12 +62,18 @@ public abstract class ProtocolManager {
 	 * Distinction made so that on insert, it can also notify the network module. This doesnt have to be done
 	 * for network received data points, (un-original ones).
 	 */
-	public static void insertOriginalDataPoint(Device device, Coords coords) {
+	public static void insertOriginalDataPoint(final Device device, final Coords coords) {
 		//if(decision logic) {	what decision logic?
 		//TODO alert network module, maybe subscriber model so it sends it out.
 		//should sending decision be made here or there, probably here because its ProtocolManager.
 		//}
-		mgr.giveToNetwork(device, coords);
+		new Thread(new Runnable() {
+			public void run() {
+				// TODO Auto-generated method stub
+				mgr.giveToNetwork(device, coords);
+			}
+		}).start();
+		
 		PositionStore.insert(device, coords);
 	}
 	

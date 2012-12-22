@@ -37,7 +37,9 @@ public class GPSDriver implements LocationListener {
 		thisDevice = Session.getThisDevice();
 
 		//Register for GPS updates
+		//locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, Config.getGPSUpdateDistance(), this);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Config.getGPSUpdateTime(), Config.getGPSUpdateDistance(), this);
+		
 		driver = this;
 		GPSDriver.tv = tv;
 		tv.setTextColor(Color.BLACK);
@@ -61,8 +63,13 @@ public class GPSDriver implements LocationListener {
 				if(l.getAccuracy()<=currentLocation.getAccuracy()) {
 					useThisLocation = true;
 				} else {
-					if(l.getTime()>currentLocation.getTime()+5*1000) {
+					if(l.getTime()>currentLocation.getTime()+5*1000 && l.getProvider() == LocationManager.GPS_PROVIDER) {
 						useThisLocation = true;
+					}
+					else {
+						if(l.getTime()>currentLocation.getTime()+10*1000) {
+							useThisLocation = true;
+						}
 					}
 				}
 			}

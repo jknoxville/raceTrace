@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -121,6 +122,29 @@ public class SessionManagerBluetooth extends SessionManager {
 
 				ArrayList<Device> devices = new ArrayList<Device>();
 				Keys keys = null;	//TODO make actual keys
+				
+				Config.setName(bluetoothAdapter.getName());	//TODO unstable. this uses current name. Master creates session with name at pair time.
+				
+				//first add master to devices
+				{
+					try {
+						Device device = new Device(Config.getName(), new DeviceHandleIP(InetAddress.getByName(DataConnectionManager.getMyIP()), Config.getDefaultClientPort()), new ProtocolXYA());
+						devices.add(device);
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SocketException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InstantiationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
 
 				for(BluetoothDevice bluetoothDevice: selectedList) {
 					try {
@@ -334,7 +358,7 @@ public class SessionManagerBluetooth extends SessionManager {
 
 					System.out.println("sent my info");	//debug
 					System.out.println("waiting for master...");	//debug
-
+					
 					//open new connection
 					sock = serverSock.accept();
 					//wait for package

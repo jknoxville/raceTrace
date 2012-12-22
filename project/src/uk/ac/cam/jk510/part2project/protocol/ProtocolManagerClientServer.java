@@ -79,7 +79,7 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	}
 
 	private void checkInit() {
-		if(socket == null) {
+		if(socket == null || serverSocketAddress == null) {
 			socket = DataConnectionManager.getDataSocket();
 			serverSocketAddress = new InetSocketAddress(Config.getServerIP(), Config.getServerPort());
 		}

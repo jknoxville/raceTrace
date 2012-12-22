@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.net.BindException;
 import java.net.DatagramSocket;
 import java.net.MalformedURLException;
 import java.net.Socket;
@@ -16,6 +17,8 @@ import uk.ac.cam.jk510.part2project.session.SessionPackage;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 public class DataConnectionManager {
+
+	private static DatagramSocket staticSocket;
 
 	public static String getMyIP() throws SocketException {
 
@@ -61,16 +64,17 @@ public class DataConnectionManager {
 	}
 
 	public static DatagramSocket getDataSocket() {
-		DatagramSocket sock;
-		try {
-			sock = new DatagramSocket(Config.getDefaultClientPort());
-			return sock;
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+		if(staticSocket == null) {
+			try {
+				staticSocket = new DatagramSocket(Config.getDefaultClientPort());
+				return staticSocket;
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
 		}
-
+		return staticSocket;
 	}
 
 }

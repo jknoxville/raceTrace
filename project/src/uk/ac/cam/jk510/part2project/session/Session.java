@@ -12,15 +12,17 @@ public class Session {
 
 	private ArrayList<Device> devices;
 	private Keys keys;
-	private static int meNumber;
+	private static int meNumber = -1;
 
 	protected Session(ArrayList<Device> devices, Keys keys) {
 		super();
 		this.devices = devices;
 		this.keys = keys;
 		for(Device d: devices) {
-			if(d.getName() == Config.getName()) {
+			System.out.println(d.getName()+" and "+Config.getName());
+			if(d.getName().equals(Config.getName())) {
 				meNumber = d.getDeviceID();
+				System.out.println("I am device "+meNumber);
 				break;
 			}
 		}
@@ -28,7 +30,7 @@ public class Session {
 		//TODO have check when setting up session to see if names clash.
 
 		session = this;
-		System.err.println("just saved Session.session: "+session);	//debug
+		System.err.println("just saved Session.session: "+session+" Has "+session.numDevices()+" devices.");	//debug
 	}
 
 	public static Session getSession() {
@@ -63,6 +65,7 @@ public class Session {
 	}
 
 	public static Session reconstructSession(SessionPackage pack) {
+		System.out.println("Reconstructing session");	//debug
 		int numDevices = pack.deviceNames.length;
 		ArrayList<Device> devices = new ArrayList<Device>();
 		for(int device = 0; device<numDevices; device++) {
