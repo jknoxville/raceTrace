@@ -72,4 +72,8 @@ public class NewOldSession extends Activity {
 		startActivityForResult(intent, 1);
     }
     
+    public void onStop() {
+    	finish();	//TODO check this is right. May be the case that calling finish here exits too early sometimes.
+    }
+    
 }
