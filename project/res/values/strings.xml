@@ -15,10 +15,10 @@
     <string name="title_activity_smbtserverorclient">SMBTserverorclient</string>
 
     <!-- Session Set up -->
-    <string name="button_be_server">I am the boss</string>
-    <string name="button_be_client">I am not the boss</string>
+    <string name="button_be_server">Create Session</string>
+    <string name="button_be_client">Join Session</string>
     <string name="title_activity_session_setup">SessionSetupActivity</string>
-    <string name="selected_players_list">Current players:</string>
+    <string name="selected_players_list">Choose players for this session:</string>
     <string name="scan_button">Scan for more devices</string>
     <string name="done">Done</string>
     <string name="title_activity_session_setup_slave">SessionSetupSlaveActivity</string>

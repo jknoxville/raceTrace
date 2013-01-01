@@ -90,6 +90,9 @@ public class NetworkInterface {
 	}
 
 	public void sendCoordsToDevice(Device toDevice, Device fromDevice, Coords coords) {
+		/*
+		 * When sending from server, no fromID is sent.
+		 */
 		int deviceID = fromDevice.getDeviceID();
 		int lClock = coords.getLClock();
 		float x = coords.getCoord(0);

@@ -40,7 +40,8 @@ public class Message {
 			ByteBuffer bb = ByteBuffer.wrap(data);	
 			
 			//read metadata first
-			int deviceID = bb.getInt();
+			int fromDeviceID = bb.getInt();
+			int aboutDeviceID = bb.getInt();
 			
 			for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
 				System.out.println("Iteration "+dataPoint);	//debug
@@ -48,18 +49,18 @@ public class Message {
 				float x = bb.getFloat();
 				float y = bb.getFloat();
 				float alt = bb.getFloat();
-				System.out.println("receiving from "+datagram.getAddress().getHostName()+":"+datagram.getPort()+" device "+deviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
+				System.out.println("receiving from "+datagram.getAddress().getHostName()+":"+datagram.getPort()+" device "+aboutDeviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
 				CoordsTXYA coords = new CoordsTXYA(lTime, x, y, alt);
-				PositionStore.insert(Session.getSession().getDevice(deviceID), coords);
-				if(Config.serverDuplicationTest() && deviceID == 0) {
+				PositionStore.insert(Session.getSession().getDevice(aboutDeviceID), coords);
+				if(Config.serverDuplicationTest() && aboutDeviceID == 0) {
 					System.out.println("Adding dupe");
 					CoordsTXYA coords2 = new CoordsTXYA(lTime, x+10, y, alt);
-					PositionStore.insert(Session.getSession().getDevice(deviceID+1), coords2);
+					PositionStore.insert(Session.getSession().getDevice(aboutDeviceID+1), coords2);
 				}
 			}
-			int oldPort = ((DeviceHandleIP) Session.getSession().getDevice(deviceID).getHandle()).getPort();
-			((DeviceHandleIP) Session.getSession().getDevice(deviceID).getHandle()).setPort(datagram.getPort());
-			int newPort = ((DeviceHandleIP) Session.getSession().getDevice(deviceID).getHandle()).getPort();
+			int oldPort = ((DeviceHandleIP) Session.getSession().getDevice(fromDeviceID).getHandle()).getPort();
+			((DeviceHandleIP) Session.getSession().getDevice(fromDeviceID).getHandle()).setPort(datagram.getPort());
+			int newPort = ((DeviceHandleIP) Session.getSession().getDevice(fromDeviceID).getHandle()).getPort();
 			if(oldPort != newPort) {
 				System.out.println("Device port changed from "+oldPort+" to "+newPort);
 			}
@@ -70,30 +71,6 @@ public class Message {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	@Deprecated
-	private static void insertCoordinateData(byte[] data, int deviceID) throws Exception {
-		int length = data.length;
-//		int numDataPoints = length/sizeOfDataPoint;
-//		if(length%sizeOfDataPoint != 0) {
-//			throw new Exception();
-//		}
-
-		int numDataPoints = 1;	//TODO make dynamic
-		
-		ByteBuffer bb = ByteBuffer.wrap(data);	//TODO use the other varient of .wrap and get rid of this function abstraction
-		for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
-			
-			int lTime = bb.getInt();
-			float x = bb.getFloat();
-			float y = bb.getFloat();
-			float alt = bb.getFloat();
-			System.out.println("receiving. device "+deviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
-			CoordsTXYA coords = new CoordsTXYA(lTime, x, y, alt);
-			PositionStore.insert(Session.getSession().getDevice(deviceID), coords);
-		}
-		ServerState.sendIfReady();
 	}
 
 }

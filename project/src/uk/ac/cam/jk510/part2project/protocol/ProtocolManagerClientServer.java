@@ -24,9 +24,9 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	private static boolean alive = true;
 
 	@Override
-	protected void giveToNetwork(Device device, Coords coords) {
+	protected void giveToNetwork(Device aboutDevice, Coords coords) {
 		checkInit();
-		sendCoordsToServer(device, coords);
+		sendCoordsToServer(Session.getThisDevice(), aboutDevice, coords);	//TODO move the "getThisDevice" to a later stage
 	}
 
 	@Override
@@ -45,27 +45,30 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					Message.processDatagram(datagram);
+					Message.processServerDatagram(datagram);
 				}
 			}
 		}).start();
 	}
 
 	//this method was based on Server -> NetworkInterface.sendCoordsToDevice
-	private void sendCoordsToServer(Device fromDevice, Coords coords) {
-		int deviceID = fromDevice.getDeviceID();
+	private void sendCoordsToServer(Device fromDevice, Device aboutDevice, Coords coords) {
+		int fromDeviceID = fromDevice.getDeviceID();	//used to identify sender to the recipent.
+		int aboutDeviceID = aboutDevice.getDeviceID();	//deviceID of the device whose location this point is.
+	
 		int lClock = coords.getLClock();
 		float x = coords.getCoord(0);
 		float y = coords.getCoord(1);
 		float alt = coords.getCoord(2);
-		byte[] data = new byte[5*4];
+		byte[] data = new byte[5*5];
 		ByteBuffer bb = ByteBuffer.wrap(data);
-		bb.putInt(deviceID);	//TODO This is to go at the start of each packet, not each coordinate (if >1 coord per packet)
+		bb.putInt(fromDeviceID);	//	TODO this is added, update all recipents so it doesnt shift everything wrongly
+		bb.putInt(aboutDeviceID);	//TODO These two are to go at the start of each packet, not each coordinate (if >1 coord per packet)
 		bb.putInt(lClock);
 		bb.putFloat(x);
 		bb.putFloat(y);
 		bb.putFloat(alt);
-		System.out.println("sending. device "+deviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
+		System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
 		try {
 			checkInit();
 			DatagramPacket datagram = new DatagramPacket(data, data.length, serverSocketAddress);
@@ -88,8 +91,7 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 
 	@Override
 	protected void protocolSpecificDestroy() {
-		//nothing to do
-		
+		alive = false;	//stop receiving thread TODO warning: thread may be blocking on network so wont actually stop until next packet arrives.
 	}
 
 }

@@ -50,6 +50,7 @@ public abstract class ProtocolManager {
 		switch(protocol) {
 		case singleUser: instance = new ProtocolManagerSingleUser(); break;
 		case clientServer: instance = new ProtocolManagerClientServer(); break;
+		case p2p: instance = new ProtocolManagerP2P(); break;
 		default: throw new Exception();
 		}
 		return instance;

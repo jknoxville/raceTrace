@@ -94,18 +94,19 @@ public class SessionManagerBluetooth extends SessionManager {
 		//update SessionManager with selectedList
 		//post advance to UI thread
 
-		new Thread(new Runnable() {
-			public void run() {
+//		new Thread(new Runnable() {
+//			public void run() {
 				SparseBooleanArray boolArray = selectedPlayers.getCheckedItemPositions();
 				selectedList = new LinkedList<BluetoothDevice>();
 				//Add all devices from deviceList that are ticked, to selectedList
 				for(int i=0; i<boolArray.size(); i++) {
-					if(boolArray.get(i)) {
-						selectedList.add(deviceList.get(i));
+					if(boolArray.get(boolArray.keyAt(i))) {
+						selectedList.add(deviceList.get(boolArray.keyAt(i)));
 					}
 				}
-			}
-		}).start();
+				System.out.println("after making selectedList, size = "+selectedList.size());	//debug
+//			}
+//		}).start();
 	}
 
 	public static void spawnMasterBluetoothSetupThread(final View view, final SessionSetupActivity activity) {
@@ -125,6 +126,7 @@ public class SessionManagerBluetooth extends SessionManager {
 
 				try {
 
+					System.out.println(selectedList.size());
 					checkIfAlive();
 					ArrayList<Device> devices = new ArrayList<Device>();
 					checkIfAlive();
@@ -137,6 +139,7 @@ public class SessionManagerBluetooth extends SessionManager {
 						try {
 							Device device = new Device(Config.getName(), new DeviceHandleIP(InetAddress.getByName(DataConnectionManager.getMyIP()), Config.getDefaultClientPort()), new ProtocolXYA());
 							devices.add(device);
+							System.out.println("Added master device");	//debug
 						} catch (UnknownHostException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

@@ -12,7 +12,8 @@ public class Session {
 
 	private ArrayList<Device> devices;
 	private Keys keys;
-	private static int meNumber = -1;
+	private int meNumber = -1;
+	private int deviceCount = 0;
 
 	protected Session(ArrayList<Device> devices, Keys keys) {
 		super();
@@ -20,11 +21,14 @@ public class Session {
 		this.keys = keys;
 		for(Device d: devices) {
 			System.out.println(d.getName()+" and "+Config.getName());
+			//TODO use bluetooth MAC address instead of name.
 			if(d.getName().equals(Config.getName())) {
-				meNumber = d.getDeviceID();
-				System.out.println("I am device "+meNumber);
+				meNumber = deviceCount;
+				System.out.println("I am device "+meNumber+" / "+devices.size());
 				break;
 			}
+			
+			deviceCount++;
 		}
 		//TODO make Config.name read name from some preferences (see android tutorials)
 		//TODO have check when setting up session to see if names clash.
@@ -39,7 +43,7 @@ public class Session {
 	}
 
 	public static Device getThisDevice() {
-		return session.getDevice(meNumber);
+		return session.getDevice(session.meNumber);
 	}
 	
 	public static Device getDevice(int n) {
@@ -88,6 +92,11 @@ public class Session {
 	
 	public static void destroy() {
 		session = null;
+	}
+
+	public static int getIndex(Device device) {
+		
+		return session.devices.indexOf(device);
 	}
 
 }
