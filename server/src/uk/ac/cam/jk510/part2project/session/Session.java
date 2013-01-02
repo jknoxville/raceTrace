@@ -12,6 +12,7 @@ public class Session {
 	private ArrayList<Device> devices;
 	private Keys keys;
 	private static Device me;
+	//TODO put SocketAddresses here maybe.
 	
 	protected Session(ArrayList<Device> devices, Keys keys) {
 		super();

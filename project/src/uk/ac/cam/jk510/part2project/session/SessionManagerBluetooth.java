@@ -205,14 +205,16 @@ public class SessionManagerBluetooth extends SessionManager {
 							sock.close();
 						} catch (IOException e) {
 							System.out.println("Error connecting to "+bluetoothDevice.getName());
+							e.printStackTrace();
 							continue;
 						}
 					}
 					Session session = null;
 					try{
 						if(selectedList.size()==0) {
-							(new SessionManagerSingleUser()).newSession(null);
-							session = Session.getSession();
+//							(new SessionManagerSingleUser()).newSession(null);
+							
+							session = new Session(devices, keys);
 						} else {
 							session = new Session(devices, keys);	//now for master, session setup is complete
 						}
@@ -229,7 +231,11 @@ public class SessionManagerBluetooth extends SessionManager {
 						BluetoothSocket sock;
 						try {
 							sock = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
+							try {
 							sock.connect();
+							} catch (IOException e) {
+								sock.connect();	//TODO something better. retries the thing.
+							}
 
 							checkIfAlive();
 							
@@ -243,10 +249,15 @@ public class SessionManagerBluetooth extends SessionManager {
 							
 							checkIfAlive();
 							System.out.println("sent");	//debug
+							try {
+								Thread.sleep(1000);		//debug to stop socket from closing too early for reciever to receieve.
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}	//
 							sock.close();
 							
 							checkIfAlive();
-
 
 
 						} catch (IOException e1) {
@@ -401,7 +412,7 @@ public class SessionManagerBluetooth extends SessionManager {
 					checkIfAlive();
 					
 					System.out.println("sent my info");	//debug
-					System.out.println("waiting for master...");	//debug
+					System.out.println("waiting for session from master...");	//debug
 
 					//open new connection
 					sock = serverSock.accept();
@@ -411,7 +422,7 @@ public class SessionManagerBluetooth extends SessionManager {
 					inputStream = sock.getInputStream();	//get new InputStream
 					ois = new ObjectInputStream(inputStream);
 					checkIfAlive();
-					SessionPackage pack = (SessionPackage) ois.readObject();
+					SessionPackage pack = (SessionPackage) ois.readObject();		//TODO socket closed here.
 					checkIfAlive();
 					Session.reconstructSession(pack); //construct and save session object from recieved object.
 					checkIfAlive();

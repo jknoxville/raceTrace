@@ -11,7 +11,7 @@ import uk.ac.cam.jk510.part2project.store.CoordsTXYA;
 public class Message {
 	//TODO, this uses CoordsTXYA hardcoded
 
-	public static void processDatagram(final DatagramPacket datagram) {
+	public static void processPeerDatagram(final DatagramPacket datagram) {
 		byte[] data = new byte[datagram.getLength()];
 		//System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength()); not needed as offset = 0
 		data = datagram.getData();
@@ -61,7 +61,7 @@ public class Message {
 		}
 	}
 	
-	//like processDatagram but doesnt read the from field.
+	//like processPeerDatagram but doesnt read the from field.
 	public static void processServerDatagram(final DatagramPacket datagram) {
 		byte[] data = new byte[datagram.getLength()];
 		//System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength()); not needed as offset = 0

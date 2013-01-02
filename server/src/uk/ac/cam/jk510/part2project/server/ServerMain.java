@@ -60,6 +60,8 @@ public class ServerMain {
 			}
 		}).start();
 		
+		System.out.println("Now listening for data");	//debug
+		
 		//listen for incoming data and process it:
 		while(true) {
 			Message.processDatagram(net.receiveDatagram());

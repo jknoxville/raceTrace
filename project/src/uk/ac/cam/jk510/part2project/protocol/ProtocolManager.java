@@ -1,5 +1,12 @@
 package uk.ac.cam.jk510.part2project.protocol;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketAddress;
+import java.net.SocketException;
+import java.nio.ByteBuffer;
+
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -17,20 +24,51 @@ public abstract class ProtocolManager {
 		instance.spawnReceivingThread();
 		return instance;
 	}
-	
+
 	//TODO when sending to server, must attach the device number thats sending it so server knows which its coming from, not just which it's about. (e.g. for swicthing port numbers)
 
 	public static void testInputData() {
-//		for (int dev=0; dev<Session.getSession().numDevices(); dev++) {
-//			testInputData(dev);
-//		}
-	  	new Thread(new Runnable() {
-    		public void run() {
-    			int thisDeviceNumber = Session.getThisDevice().getDeviceID();
-    			testInputData(thisDeviceNumber);	//changed from above as needed
-    		}
-	  	}).start();
-	
+		//		for (int dev=0; dev<Session.getSession().numDevices(); dev++) {
+		//			testInputData(dev);
+		//		}
+		new Thread(new Runnable() {
+			public void run() {
+				int thisDeviceNumber = Session.getThisDevice().getDeviceID();
+				testInputData(thisDeviceNumber);	//changed from above as needed
+			}
+		}).start();
+
+	}
+
+
+	protected void sendCoordsToAddress(DatagramSocket socket, SocketAddress toSocketAddress, Device aboutDevice, Coords coords) {
+		int fromDeviceID = Session.getThisDevice().getDeviceID();	//used to identify sender to the recipent.
+		int aboutDeviceID = aboutDevice.getDeviceID();	//deviceID of the device whose location this point is.
+
+		int lClock = coords.getLClock();
+		float x = coords.getCoord(0);
+		float y = coords.getCoord(1);
+		float alt = coords.getCoord(2);
+		byte[] data = new byte[5*5];
+		ByteBuffer bb = ByteBuffer.wrap(data);
+		bb.putInt(fromDeviceID);	//	TODO this is added, update all recipents so it doesnt shift everything wrongly
+		bb.putInt(aboutDeviceID);	//TODO These two are to go at the start of each packet, not each coordinate (if >1 coord per packet)
+		bb.putInt(lClock);
+		bb.putFloat(x);
+		bb.putFloat(y);
+		bb.putFloat(alt);
+		System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
+		try {
+			//checkInit();
+			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
+			socket.send(datagram);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static void testInputData(int device) {
@@ -75,10 +113,10 @@ public abstract class ProtocolManager {
 				instance.giveToNetwork(device, coords);
 			}
 		}).start();
-		
+
 		PositionStore.insert(device, coords);
 	}
-	
+
 	public static void insertNetworkDataPoint(Device device, Coords coords) {
 		PositionStore.insert(device, coords);
 	}
@@ -93,7 +131,7 @@ public abstract class ProtocolManager {
 	//	}
 
 	protected abstract void giveToNetwork(Device device, Coords coords);
-	
+
 	public static void destroy() {
 		ProtocolManager.stopReceivingThread();
 		if(instance != null) {
@@ -101,11 +139,11 @@ public abstract class ProtocolManager {
 		}
 		instance = null;
 	}
-	
+
 	protected static void stopReceivingThread() {
 		alive = false;
 	}
-	
+
 	protected abstract void protocolSpecificDestroy();
 
 }
