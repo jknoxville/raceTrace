@@ -1,5 +1,8 @@
 package uk.ac.cam.jk510.part2project.protocol;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.store.Coords;
@@ -25,6 +28,13 @@ public class ProtocolManagerSingleUser extends ProtocolManager {
 	@Override
 	protected void protocolSpecificDestroy() {
 		// No state to destroy
+		
+	}
+
+	@Override
+	public void distributeSession(Session session) throws UnknownHostException,
+			IOException {
+		// Nowhere to distribute to.
 		
 	}
 

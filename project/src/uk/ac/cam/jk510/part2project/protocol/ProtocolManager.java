@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import uk.ac.cam.jk510.part2project.session.Device;
@@ -20,8 +21,10 @@ public abstract class ProtocolManager {
 	private static boolean alive = true;
 
 	public static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
-		instance = newProtocolManager();
-		instance.spawnReceivingThread();
+		if(instance == null) {
+			instance = newProtocolManager();
+			instance.spawnReceivingThread();
+		}
 		return instance;
 	}
 
@@ -145,5 +148,7 @@ public abstract class ProtocolManager {
 	}
 
 	protected abstract void protocolSpecificDestroy();
+
+	public abstract void distributeSession(Session session) throws UnknownHostException, IOException;
 
 }

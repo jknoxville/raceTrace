@@ -17,6 +17,7 @@ import java.util.UUID;
 import uk.ac.cam.jk510.part2project.gui.SessionSetupActivity;
 import uk.ac.cam.jk510.part2project.gui.SessionSetupSlaveActivity;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
+import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;
@@ -224,7 +225,7 @@ public class SessionManagerBluetooth extends SessionManager {
 					checkIfAlive();
 					SessionPackage pack = new SessionPackage(session);
 
-
+					//TODO the following sending of session isnt necessary in client server model, server could send them the session. So should be moved to protocolmanager.
 					for(BluetoothDevice bluetoothDevice: selectedList) {
 						checkIfAlive();
 						
@@ -267,7 +268,9 @@ public class SessionManagerBluetooth extends SessionManager {
 					}
 
 					try {
-						DataConnectionManager.sendSessionToServer(session);	//TODO do this in another thread at the same time as the above thing.
+						ProtocolManager.initialiseProtocolManager(session);
+						ProtocolManager pm = ProtocolManager.getProtocolManager();
+						pm.distributeSession(session);	//TODO do this in another thread at the same time as the above thing.
 						checkIfAlive();
 					} catch (UnknownHostException e1) {
 						// TODO Auto-generated catch block
@@ -275,6 +278,9 @@ public class SessionManagerBluetooth extends SessionManager {
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 
 

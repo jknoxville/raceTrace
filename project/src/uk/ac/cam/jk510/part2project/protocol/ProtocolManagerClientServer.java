@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
@@ -69,6 +70,11 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	@Override
 	protected void protocolSpecificDestroy() {
 		alive = false;	//stop receiving thread TODO warning: thread may be blocking on network so wont actually stop until next packet arrives.
+	}
+	
+	@Override
+	public void distributeSession(Session session) throws UnknownHostException, IOException {
+		DataConnectionManager.sendSessionToServer(session);
 	}
 
 }

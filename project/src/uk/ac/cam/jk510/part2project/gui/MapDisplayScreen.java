@@ -21,6 +21,7 @@ public class MapDisplayScreen extends Activity {
 	static MapDisplayScreen instance;
 	static NewSessionActivity sessionActivity;
 	private GPSDriver gpsDriver;
+	public static TextView debugInfo;	//debug
 
 //	//Commented out 13.53 friday
 //    @Override
@@ -52,6 +53,7 @@ public class MapDisplayScreen extends Activity {
 		
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		TextView info = (TextView) findViewById(R.id.mapScreenInfo);
+		debugInfo = (TextView) findViewById(R.id.debugInfo);
 		gpsDriver = GPSDriver.init(locationManager, info);	//TODO do in seperate thread?
 		instance = this;
         
