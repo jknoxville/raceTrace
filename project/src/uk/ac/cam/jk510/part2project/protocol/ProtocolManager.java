@@ -2,12 +2,12 @@ package uk.ac.cam.jk510.part2project.protocol;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -44,7 +44,7 @@ public abstract class ProtocolManager {
 	}
 
 
-	protected void sendCoordsToAddress(DatagramSocket socket, SocketAddress toSocketAddress, Device aboutDevice, Coords coords) {
+	protected void sendCoordsToAddress(SocketAddress toSocketAddress, Device aboutDevice, Coords coords) {
 		int fromDeviceID = Session.getThisDevice().getDeviceID();	//used to identify sender to the recipent.
 		int aboutDeviceID = aboutDevice.getDeviceID();	//deviceID of the device whose location this point is.
 
@@ -64,7 +64,7 @@ public abstract class ProtocolManager {
 		try {
 			//checkInit();
 			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
-			socket.send(datagram);
+			DataConnectionManager.send(datagram);
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -150,5 +150,7 @@ public abstract class ProtocolManager {
 	protected abstract void protocolSpecificDestroy();
 
 	public abstract void distributeSession(Session session) throws UnknownHostException, IOException;
+
+	public abstract void sendKeepAliveMessage(int index);
 
 }

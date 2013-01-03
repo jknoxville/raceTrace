@@ -20,7 +20,7 @@ import uk.ac.cam.jk510.part2project.store.Coords;
 
 public class ProtocolManagerClientServer extends ProtocolManager {
 
-	private DatagramSocket socket;
+	//private DatagramSocket socket;
 	private SocketAddress serverSocketAddress;
 	private static boolean alive = true;
 
@@ -40,7 +40,8 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 				DatagramPacket datagram = new DatagramPacket(receivingData, receivingData.length);
 				while(alive) {
 					try {
-						socket.receive(datagram);
+						//socket.receive(datagram);
+						DataConnectionManager.receive(datagram);	//this is a destructive method on the datagram object
 						System.out.println("Recieved datagram");
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -51,18 +52,30 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 			}
 		}).start();
 	}
+	
+	public void spawnKeepAliveThread() {
+		while(alive) {
+			try {
+				Thread.sleep(Config.getKeepAlivePeriod());
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			DataConnectionManager.keepAlive();
+		}
+	}
 
 	//this method was based on Server -> NetworkInterface.sendCoordsToDevice
 	private void sendCoordsToServer(Device aboutDevice, Coords coords) {
 		
 		checkInit();
-		sendCoordsToAddress(socket, serverSocketAddress, aboutDevice, coords);
+		sendCoordsToAddress(serverSocketAddress, aboutDevice, coords);
 		
 	}
 
 	private void checkInit() {
-		if(socket == null || serverSocketAddress == null) {
-			socket = DataConnectionManager.getDataSocket();
+		DataConnectionManager.initDataSocket();
+		if(serverSocketAddress == null) {
 			serverSocketAddress = new InetSocketAddress(Config.getServerIP(), Config.getServerPort());
 		}
 	}
@@ -75,6 +88,12 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	@Override
 	public void distributeSession(Session session) throws UnknownHostException, IOException {
 		DataConnectionManager.sendSessionToServer(session);
+	}
+
+	@Override
+	public void sendKeepAliveMessage(int device) {
+		//TODO send it.
+		
 	}
 
 }

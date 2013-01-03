@@ -5,20 +5,24 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.BindException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
+import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionPackage;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 public class DataConnectionManager {
 
-	private static DatagramSocket staticSocket;
+	private static DatagramSocket socket;
+	private static ArrayList<Long> lastSendTimers;
 
 	public static String getMyIP() throws SocketException {
 
@@ -61,20 +65,48 @@ public class DataConnectionManager {
 		System.out.println("Connected to server");	//debug
 		ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
 		oos.writeObject(pack);
+		updateLastSendTime(0);
+	}
+	
+	public static void receive(DatagramPacket datagram) throws IOException {
+		socket.receive(datagram);
 	}
 
-	public static DatagramSocket getDataSocket() {
-		if(staticSocket == null) {
+	//TODO What about p2p where each peer should have individual keepalive?
+	/*
+	 * How about:
+	 * Keepalive message contains ids of all alive peers including their last heard from time.
+	 */
+
+	
+	private static void updateLastSendTime(int device) {
+		lastSendTimers.add(device, System.currentTimeMillis());
+	}
+	
+	public static void keepAlive() {
+		int index = 0;
+		for(Long timer: lastSendTimers) {
+			if(timer == null || timer+Config.getKeepAlivePeriod()<System.currentTimeMillis()) {
+				//TODO send keep alive message
+				ProtocolManager.getProtocolManager().sendKeepAliveMessage(index);
+			}
+			index++;
+		}
+	}
+
+	public static void send(DatagramPacket datagram) throws IOException {
+		socket.send(datagram);
+	}
+
+	public static void initDataSocket() {
+		if(socket == null) {
 			try {
-				staticSocket = new DatagramSocket(Config.getDefaultClientPort());
-				return staticSocket;
+				socket = new DatagramSocket(Config.getDefaultClientPort());
 			} catch (SocketException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				return null;
 			}
 		}
-		return staticSocket;
 	}
 
 }

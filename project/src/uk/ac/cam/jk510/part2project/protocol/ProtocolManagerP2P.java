@@ -65,7 +65,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 	}
 
 	public void sendCoordsToPeer(Device toDevice, Device aboutDevice, Coords coords) {
-		sendCoordsToAddress(socket, ((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), aboutDevice, coords);
+		sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), aboutDevice, coords);
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 
 	private void checkSocketIsOpen() {
 		if(socket == null) {
-			socket = DataConnectionManager.getDataSocket();
+			DataConnectionManager.initDataSocket();
 		}
 	}
 
@@ -84,6 +84,12 @@ public class ProtocolManagerP2P extends ProtocolManager {
 	public void distributeSession(Session session) throws UnknownHostException,
 			IOException {
 		//TODO move sneding of session by bluetooth to here
+		
+	}
+
+	@Override
+	public void sendKeepAliveMessage(int index) {
+		// TODO Send it
 		
 	}
 

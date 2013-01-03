@@ -16,6 +16,7 @@ public class Config {
 	private static int arrayIndexFrequency = 10;	// Finest granularity of points. In samples per 10 sec.
 	//private static String name = "John";	//Name of local player TODO lookup from OS?
 	private static String name = String.valueOf(Math.random());	//TODO temp fix: random name for each device
+	private static final int keepAlivePeriod = 10000;
 	
 	//Colors
 	private static int bgColor = Color.WHITE;	
@@ -108,5 +109,8 @@ public class Config {
 	public static void setName(String name2) {
 		name = name2;
 		
+	}
+	public static long getKeepAlivePeriod() {
+		return keepAlivePeriod;
 	}
 }
