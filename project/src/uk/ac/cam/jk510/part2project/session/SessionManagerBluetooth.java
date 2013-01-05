@@ -1,6 +1,5 @@
 package uk.ac.cam.jk510.part2project.session;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -14,8 +13,8 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 
-import uk.ac.cam.jk510.part2project.gui.SessionSetupActivity;
-import uk.ac.cam.jk510.part2project.gui.SessionSetupSlaveActivity;
+import uk.ac.cam.jk510.part2project.gui.NewSessionActivityBluetoothMaster;
+import uk.ac.cam.jk510.part2project.gui.NewSessionActivityBluetoothSlave;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
@@ -29,7 +28,6 @@ import android.content.Intent;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class SessionManagerBluetooth extends SessionManager {
 
@@ -95,22 +93,22 @@ public class SessionManagerBluetooth extends SessionManager {
 		//update SessionManager with selectedList
 		//post advance to UI thread
 
-//		new Thread(new Runnable() {
-//			public void run() {
-				SparseBooleanArray boolArray = selectedPlayers.getCheckedItemPositions();
-				selectedList = new LinkedList<BluetoothDevice>();
-				//Add all devices from deviceList that are ticked, to selectedList
-				for(int i=0; i<boolArray.size(); i++) {
-					if(boolArray.get(boolArray.keyAt(i))) {
-						selectedList.add(deviceList.get(boolArray.keyAt(i)));
-					}
-				}
-				System.out.println("after making selectedList, size = "+selectedList.size());	//debug
-//			}
-//		}).start();
+		//		new Thread(new Runnable() {
+		//			public void run() {
+		SparseBooleanArray boolArray = selectedPlayers.getCheckedItemPositions();
+		selectedList = new LinkedList<BluetoothDevice>();
+		//Add all devices from deviceList that are ticked, to selectedList
+		for(int i=0; i<boolArray.size(); i++) {
+			if(boolArray.get(boolArray.keyAt(i))) {
+				selectedList.add(deviceList.get(boolArray.keyAt(i)));
+			}
+		}
+		System.out.println("after making selectedList, size = "+selectedList.size());	//debug
+		//			}
+		//		}).start();
 	}
 
-	public static void spawnMasterBluetoothSetupThread(final View view, final SessionSetupActivity activity) {
+	public static void spawnMasterBluetoothSetupThread(final View view, final NewSessionActivityBluetoothMaster activity) {
 
 		SessionManager.setAlive();
 
@@ -168,7 +166,7 @@ public class SessionManagerBluetooth extends SessionManager {
 							System.out.println("My ip address: "+ip);	//debug
 							checkIfAlive();
 							BluetoothSocket sock = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
-							
+
 							sock.connect();
 							checkIfAlive();
 							System.out.println("connected to "+bluetoothDevice.getName());	//debug
@@ -179,13 +177,13 @@ public class SessionManagerBluetooth extends SessionManager {
 							checkIfAlive();
 							sendMyAddressInfo(oos);
 							checkIfAlive();
-							
+
 							System.out.println("sent my (master) address info");	//debug
 
 							InputStream inputStream = sock.getInputStream();
 							ObjectInputStream ois = new ObjectInputStream(inputStream);
 							checkIfAlive();
-							
+
 							try{
 								System.out.println("waiting for device info");	//debug
 								String name = (String) ois.readObject();
@@ -213,8 +211,8 @@ public class SessionManagerBluetooth extends SessionManager {
 					Session session = null;
 					try{
 						if(selectedList.size()==0) {
-//							(new SessionManagerSingleUser()).newSession(null);
-							
+							//							(new SessionManagerSingleUser()).newSession(null);
+
 							session = new Session(devices, keys);
 						} else {
 							session = new Session(devices, keys);	//now for master, session setup is complete
@@ -228,26 +226,26 @@ public class SessionManagerBluetooth extends SessionManager {
 					//TODO the following sending of session isnt necessary in client server model, server could send them the session. So should be moved to protocolmanager.
 					for(BluetoothDevice bluetoothDevice: selectedList) {
 						checkIfAlive();
-						
+
 						BluetoothSocket sock;
 						try {
 							sock = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(Config.getUUIDString()));
 							try {
-							sock.connect();
+								sock.connect();
 							} catch (IOException e) {
 								sock.connect();	//TODO something better. retries the thing.
 							}
 
 							checkIfAlive();
-							
+
 							//Send package to each device
 							OutputStream outputStream = sock.getOutputStream();
 							ObjectOutputStream oos = new ObjectOutputStream(outputStream);
 							System.out.println("sending session to "+bluetoothDevice.getName());	//debug
 							checkIfAlive();
-							
+
 							oos.writeObject(pack);
-							
+
 							checkIfAlive();
 							System.out.println("sent");	//debug
 							try {
@@ -257,7 +255,7 @@ public class SessionManagerBluetooth extends SessionManager {
 								e.printStackTrace();
 							}	//
 							sock.close();
-							
+
 							checkIfAlive();
 
 
@@ -306,42 +304,6 @@ public class SessionManagerBluetooth extends SessionManager {
 		}).start();
 	}
 
-	@Deprecated
-	private static void sendMyAddressInfo2(OutputStream os) {
-		/*send:
-		 * name
-		 * ip address
-		 */
-		try {
-			String name = Config.getName();
-			byte[] nameData = name.getBytes("UTF-16LE");
-			String ip = DataConnectionManager.getMyIP();
-
-			System.out.println("My ip address: "+ip);	//debug
-
-			byte[] ipData = ip.getBytes("UTF-16LE");
-
-			for(int i=0; i<nameData.length; i++) {
-				if(nameData[i]==Byte.MAX_VALUE) {
-					System.out.println("Warning, incorrect encoding in SessionManagerBluetooth");
-				}
-			}
-			for(int i=0; i<ipData.length; i++) {
-				if(ipData[i]==Byte.MAX_VALUE) {
-					System.out.println("Warning, incorrect encoding in SessionManagerBluetooth");
-				}
-			}
-			byte[] data = new byte[nameData.length+ipData.length+1];
-			System.arraycopy(nameData, 0, data, 0, nameData.length);
-			data[nameData.length] = Byte.MAX_VALUE;	//seperator between values
-			System.arraycopy(ipData, 0, data, nameData.length+1, ipData.length);
-			System.out.println(ip);
-			os.write(nameData);
-		} catch (Exception e) {
-			System.out.println("Exception occured");
-		}
-	}
-
 	private static void sendMyAddressInfo(ObjectOutputStream os) {
 		/*send:
 		 * name
@@ -356,29 +318,11 @@ public class SessionManagerBluetooth extends SessionManager {
 
 	}
 
-	@Deprecated
-	private static String receiveAddressInfo(InputStream is) {
-
-		//TODO overflow size etc
-		byte[] buffer = new byte[100];
-		try {
-			is.read(buffer);
-			String string = new String(buffer, "UTF-16LE");
-			System.out.println(string);
-			return string;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "error";
-		}
-
-	}
-
 	public static void listenForMaster() {
 
 	}
 
-	public static void spawnSlaveBluetoothSetupThread(final View view, final SessionSetupSlaveActivity activity) {
+	public static void spawnSlaveBluetoothSetupThread(final View view, final NewSessionActivityBluetoothSlave activity) {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -392,10 +336,10 @@ public class SessionManagerBluetooth extends SessionManager {
 
 					BluetoothServerSocket serverSock = bluetoothAdapter.listenUsingRfcommWithServiceRecord(Config.getName(), UUID.fromString(Config.getUUIDString()));
 					checkIfAlive();
-					
+
 					BluetoothSocket sock = serverSock.accept();
 					checkIfAlive();
-					
+
 					System.out.println("connected to master");	//debug
 					//Receive Master info, and then send slave's info
 					InputStream inputStream = sock.getInputStream();
@@ -416,14 +360,14 @@ public class SessionManagerBluetooth extends SessionManager {
 					//close connection while master fetches data from the other devices
 					sock.close();
 					checkIfAlive();
-					
+
 					System.out.println("sent my info");	//debug
 					System.out.println("waiting for session from master...");	//debug
 
 					//open new connection
 					sock = serverSock.accept();
 					checkIfAlive();
-					
+
 					//wait for package
 					inputStream = sock.getInputStream();	//get new InputStream
 					ois = new ObjectInputStream(inputStream);
@@ -432,7 +376,7 @@ public class SessionManagerBluetooth extends SessionManager {
 					checkIfAlive();
 					Session.reconstructSession(pack); //construct and save session object from recieved object.
 					checkIfAlive();
-					
+
 					//get UI thread to call onSetupComplete()
 					view.post(new Runnable() {
 
@@ -461,24 +405,6 @@ public class SessionManagerBluetooth extends SessionManager {
 
 			}
 		}).start();
-	}
-
-	@Deprecated
-	private static void awaitPackage(InputStream in) throws IOException {
-		DataInputStream din = new DataInputStream(in);
-		int length;
-		byte[] buffer = new byte[1000];
-		int offset = 0;
-		String name;
-		String ipAddress;
-		while((name = din.readUTF()) != null) {
-			ipAddress = din.readUTF();
-
-
-		}
-
-		//construct session object.
-		new Session(null, null);
 	}
 
 }

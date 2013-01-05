@@ -3,7 +3,7 @@ package uk.ac.cam.jk510.part2project.settings;
 import java.util.Random;
 
 import uk.ac.cam.jk510.part2project.protocol.Proto;
-import uk.ac.cam.jk510.part2project.protocol.SessionEnum;
+import uk.ac.cam.jk510.part2project.session.SessionEnum;
 import uk.ac.cam.jk510.part2project.store.CoordsType;
 import uk.ac.cam.jk510.part2project.store.HistoryType;
 import android.graphics.Color;
@@ -25,7 +25,7 @@ public class Config {
 	
 	//Protocol
 	private static Proto protocol = Proto.p2p;
-	private static SessionEnum sesh = SessionEnum.bluetooth;
+	private static SessionEnum sesh = SessionEnum.singleSession;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
 	

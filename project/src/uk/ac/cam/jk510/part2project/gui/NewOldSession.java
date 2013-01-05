@@ -2,7 +2,7 @@ package uk.ac.cam.jk510.part2project.gui;
 
 
 import uk.ac.cam.jk510.part2project.R;
-import uk.ac.cam.jk510.part2project.protocol.SessionEnum;
+import uk.ac.cam.jk510.part2project.session.SessionEnum;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;
 import android.content.Context;
@@ -40,6 +40,8 @@ public class NewOldSession extends Activity {
     			case singleUser: newSessionActivity = NewSessionActivitySingleUser.class;
     			break;
     			case bluetooth: newSessionActivity = SMBTserverorclient.class;
+    			break;
+    			case singleSession: newSessionActivity = NewSessionActivitySingleSession.class;
     			break;
     			default: try {
 						throw new Exception();

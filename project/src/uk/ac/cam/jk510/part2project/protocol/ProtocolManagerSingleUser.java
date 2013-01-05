@@ -38,4 +38,10 @@ public class ProtocolManagerSingleUser extends ProtocolManager {
 		
 	}
 
+	@Override
+	public void sendKeepAliveMessage(int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

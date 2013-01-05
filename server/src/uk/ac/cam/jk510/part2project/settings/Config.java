@@ -34,6 +34,7 @@ public class Config {
 	private static final String UUIDString = "fa87c0d0-afac-11de-8a39-0800200c9a66"; //Randomly created string for use with this app
 	private static final String serverIP = "78.150.172.9";
 	private static final int serverPort = 60000;
+	private static final int defaultClientPort = 60001;
 
 	//Datagram Format
 	private static final int nameSize = 1;
@@ -41,6 +42,7 @@ public class Config {
 	//Server Specific
 	private static final long serverResendPeriodSecs = 3;
 	private static final int serverNewPointsThreshold = 1;
+	private static final boolean singleSession = true;
 	
 	//Testing
 	private static final boolean serverDuplicationTest = false;
@@ -115,5 +117,11 @@ public class Config {
 	}
 	public static boolean serverDuplicationTest() {
 		return serverDuplicationTest;
+	}
+	public static boolean singleSession() {
+		return singleSession;
+	}
+	public static int getDefaultClientPort() {
+		return defaultClientPort;
 	}
 }

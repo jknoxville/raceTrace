@@ -6,20 +6,13 @@ import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import uk.ac.cam.jk510.part2project.store.Coords;
 import uk.ac.cam.jk510.part2project.store.CoordsTXYA;
-import uk.ac.cam.jk510.part2project.store.IncompatibleCoordsException;
-import uk.ac.cam.jk510.part2project.store.PositionStore;
 import uk.me.jstott.jcoord.LatLng;
 import uk.me.jstott.jcoord.UTMRef;
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.content.Intent;
 import android.graphics.Color;
-import android.location.GpsSatellite;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.widget.TextView;
 
 public class GPSDriver implements LocationListener {

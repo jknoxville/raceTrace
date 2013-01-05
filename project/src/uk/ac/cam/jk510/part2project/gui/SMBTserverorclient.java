@@ -24,13 +24,13 @@ public class SMBTserverorclient extends Activity {
 	}
 
 	public void beServer(View view) {
-		Intent toSetupSession = new Intent(this, SessionSetupActivity.class);
+		Intent toSetupSession = new Intent(this, NewSessionActivityBluetoothMaster.class);
 		startActivityForResult(toSetupSession, GET_PLAYER_LIST);
 
 	}
 
 	public void beClient(View view) {
-		Intent toSetupSession = new Intent(this, SessionSetupSlaveActivity.class);
+		Intent toSetupSession = new Intent(this, NewSessionActivityBluetoothSlave.class);
 		startActivity(toSetupSession);
 	}
 }
