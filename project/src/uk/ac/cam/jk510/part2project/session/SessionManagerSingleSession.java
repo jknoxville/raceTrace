@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import uk.ac.cam.jk510.part2project.gui.NewSessionActivity;
 import uk.ac.cam.jk510.part2project.gui.NewSessionActivitySingleSession;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;
@@ -21,7 +22,7 @@ public class SessionManagerSingleSession extends SessionManager {
 
 	}
 
-	public static void spawnSetupThread(final View view) {
+	public static void spawnSetupThread(final View view, final NewSessionActivity activity) {
 		new Thread(
 				new Runnable() {
 					public void run() {
@@ -29,14 +30,18 @@ public class SessionManagerSingleSession extends SessionManager {
 							//Open TCP socket to server.
 							Socket sock = new Socket(Config.getServerIP(), 60000);	//TODO hardcoded port
 
-							//Send name, address and port
+							//Send name	/TODO possibly the port you have open as well (NAT stuff)
 							ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
 							oos.writeObject(Config.getName());
 
 							//recieve session object back
 							ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
 							SessionPackage pack = (SessionPackage) ois.readObject();
-							Session.reconstructSession(pack);
+							Session sesh = Session.reconstructSession(pack);
+							System.out.println("Reconstucting sesh");	//debug
+							for (Device d: sesh.getDevices()) {
+								System.out.println(((DeviceHandleIP) d.getHandle()).getPort());	//debug
+							}
 
 							//TODO post new intent thing to ui thread to go to mapdispalyscreen.
 							view.post(new Runnable() {
@@ -46,8 +51,7 @@ public class SessionManagerSingleSession extends SessionManager {
 									try {
 
 										//TODO go to mapdisplayscreen
-										Intent intent = new Intent(context, newSessionActivity);
-				    					NewSessionActivitySingleServer.startActivityForResult(intent, 1);
+										activity.onSetupComplete();
 
 									} catch (Exception e) {
 										// TODO Auto-generated catch block

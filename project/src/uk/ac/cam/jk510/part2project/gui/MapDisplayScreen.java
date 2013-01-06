@@ -16,34 +16,12 @@ import android.view.View;
 import android.widget.TextView;
 
 public class MapDisplayScreen extends Activity {
-	MapDrawer mapDrawer;
+	public MapDrawer mapDrawer;	//TODO not public
 	boolean testDataUsed = false;	//debug
-	static MapDisplayScreen instance;
+	public static MapDisplayScreen instance;
 	static NewSessionActivity sessionActivity;
 	private GPSDriver gpsDriver;
 	public static TextView debugInfo;	//debug
-
-//	//Commented out 13.53 friday
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        //setContentView(R.layout.activity_map_display_screen);
-//        
-////        mapDrawer = new MapDrawer(this);
-////        mapDrawer.setBackgroundColor(Color.WHITE);
-//        MapDrawer mapDrawer = null;
-//		try {
-//			mapDrawer = ProtocolManager.initialiseMapDrawer(this);
-//			//ProtocolManager.testInputData();
-//		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (InstantiationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//        setContentView(mapDrawer);
-//    }
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,8 +30,10 @@ public class MapDisplayScreen extends Activity {
 		setContentView(R.layout.activity_map_display_screen);	
 		
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		mapDrawer = (MapDrawer) findViewById(R.id.mapDrawer);
 		TextView info = (TextView) findViewById(R.id.mapScreenInfo);
 		debugInfo = (TextView) findViewById(R.id.debugInfo);
+		ProtocolManager.debugInfo = debugInfo;
 		gpsDriver = GPSDriver.init(locationManager, info);	//TODO do in seperate thread?
 		instance = this;
         

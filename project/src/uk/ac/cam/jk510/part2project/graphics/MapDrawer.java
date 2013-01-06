@@ -23,7 +23,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 	//Paint line = new Paint();
 	Paint[] lines;
 	Paint vertices = new Paint();
-	ArrayList<DevicePath> devicePathList = new ArrayList<DevicePath>();
+	ArrayList<DevicePath> devicePathList;
 	Path[] pathsToDraw;
 	Session session = Session.getSession();
 	ArrayList<Device> devices;
@@ -84,6 +84,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 			lines[device] = new Paint();
 			initPaint(device);
 		}
+		devicePathList = new ArrayList<DevicePath>();
 		for(Device d: devices) {
 			devicePathList.add(d.getDeviceID(), new DevicePath());
 		}

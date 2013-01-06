@@ -21,8 +21,8 @@ import uk.ac.cam.jk510.part2project.store.Coords;
 
 public class ProtocolManagerP2P extends ProtocolManager {
 
-	private DatagramSocket socket;
-	public static boolean alive;	//TODO move this to ProtocolManager class and make private and alive().
+	//private DatagramSocket socket;
+	public static boolean alive = true;	//TODO move this to ProtocolManager class and make private and alive().
 
 	@Override
 	public void spawnReceivingThread() {
@@ -38,12 +38,13 @@ public class ProtocolManagerP2P extends ProtocolManager {
 				
 				byte[] receivingData = new byte[1024];
 				DatagramPacket datagram = new DatagramPacket(receivingData, receivingData.length);
+				checkSocketIsOpen();
 				while(alive) {
 					if(MapDisplayScreen.debugInfo != null) {
-						debugInfo.setText("Device 0: "+((DeviceHandleIP) Session.getDevice(0).getHandle()).getIP().getHostAddress()+":"+((DeviceHandleIP) Session.getDevice(0).getHandle()).getPort());
+					//	debugInfo.setText("Device 0: "+((DeviceHandleIP) Session.getDevice(0).getHandle()).getIP().getHostAddress()+":"+((DeviceHandleIP) Session.getDevice(0).getHandle()).getPort());
 					}
 					try {
-						socket.receive(datagram);
+						DataConnectionManager.receive(datagram);
 						System.out.println("Recieved datagram");
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -60,6 +61,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 	protected void giveToNetwork(Device aboutDevice, Coords coords) {
 		checkSocketIsOpen();
 		for(Device toDevice: Session.getSession().getDevices()) {
+			System.out.println("Sending to device "+toDevice.getDeviceID());	//debug
 			sendCoordsToPeer(toDevice, aboutDevice, coords);
 		}
 	}
@@ -75,9 +77,8 @@ public class ProtocolManagerP2P extends ProtocolManager {
 	}
 
 	private void checkSocketIsOpen() {
-		if(socket == null) {
+
 			DataConnectionManager.initDataSocket();
-		}
 	}
 
 	@Override

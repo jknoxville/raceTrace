@@ -2,11 +2,15 @@ package uk.ac.cam.jk510.part2project.protocol;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+import android.widget.TextView;
+
+import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
@@ -19,6 +23,7 @@ public abstract class ProtocolManager {
 
 	private static ProtocolManager instance;
 	private static boolean alive = true;
+	public static TextView debugInfo;
 
 	public static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
 		if(instance == null) {
@@ -44,7 +49,21 @@ public abstract class ProtocolManager {
 	}
 
 
-	protected void sendCoordsToAddress(SocketAddress toSocketAddress, Device aboutDevice, Coords coords) {
+	protected void sendCoordsToAddress(final InetSocketAddress toSocketAddress, Device aboutDevice, Coords coords) {
+
+		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
+		if(debugInfo != null) {
+			if(MapDisplayScreen.instance != null) {
+				if(MapDisplayScreen.instance.mapDrawer != null) {
+					MapDisplayScreen.instance.mapDrawer.post(new Runnable() {
+						public void run() {
+							debugInfo.setText("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
+						}
+					});
+				}
+			}
+
+		}
 		int fromDeviceID = Session.getThisDevice().getDeviceID();	//used to identify sender to the recipent.
 		int aboutDeviceID = aboutDevice.getDeviceID();	//deviceID of the device whose location this point is.
 
@@ -65,6 +84,13 @@ public abstract class ProtocolManager {
 			//checkInit();
 			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
 			DataConnectionManager.send(datagram);
+
+			if(Config.debugMode()) {
+				DatagramPacket datagram2 = new DatagramPacket(data, data.length, new InetSocketAddress(Config.getServerIP(), Config.getServerPort()));
+				DataConnectionManager.send(datagram2);
+			}
+
+
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

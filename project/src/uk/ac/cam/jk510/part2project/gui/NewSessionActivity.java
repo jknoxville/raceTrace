@@ -20,14 +20,6 @@ public abstract class NewSessionActivity extends Activity {
 	Session session;
 	Exception exception;
 	static NewSessionActivity instance;
-
-//	@Override
-//	public void onCreate(Bundle savedInstanceState) {
-//		super.onCreate(savedInstanceState);
-//		setContentView(R.layout.activity_new_session);
-//
-//		setUpSessionThread(); //is to be done in new thread, from here, instead of being done in onSetupComplete
-//	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

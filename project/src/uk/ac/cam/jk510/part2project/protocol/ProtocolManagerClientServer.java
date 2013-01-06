@@ -21,7 +21,7 @@ import uk.ac.cam.jk510.part2project.store.Coords;
 public class ProtocolManagerClientServer extends ProtocolManager {
 
 	//private DatagramSocket socket;
-	private SocketAddress serverSocketAddress;
+	private InetSocketAddress serverSocketAddress;
 	private static boolean alive = true;
 
 	@Override

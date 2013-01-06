@@ -90,35 +90,39 @@ public class NetworkInterface {
 	}
 
 	public void sendCoordsToDevice(Device toDevice, Device fromDevice, Coords coords) {
-		/*
-		 * When sending from server, no fromID is sent.
-		 */
-		int deviceID = fromDevice.getDeviceID();
-		int lClock = coords.getLClock();
-		float x = coords.getCoord(0);
-		float y = coords.getCoord(1);
-		float alt = coords.getCoord(2);
-		byte[] data = new byte[5*4];
-		ByteBuffer bb = ByteBuffer.wrap(data);
-		bb.putInt(deviceID);
-		bb.putInt(lClock);
-		bb.putFloat(x);
-		bb.putFloat(y);
-		bb.putFloat(alt);
-		try {
-			InetSocketAddress sockadd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
-			DatagramPacket datagram = new DatagramPacket(data, data.length, sockadd);
-			//DatagramPacket datagram = new DatagramPacket(data, data.length, ((DeviceHandleIP) toDevice.getHandle()).getIP(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
-			//DatagramPacket datagram = new DatagramPacket(data, data.length, socketAddresses[toDevice.getDeviceID()]);
-			//TODO clean up the socketAddresses thing.
-			System.out.println("About to send datapoint "+lClock+" to "+((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName()+":"+((DeviceHandleIP) toDevice.getHandle()).getPort());
-			socket.send(datagram);
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		if(!Config.listenOnly()) {
+
+			/*
+			 * When sending from server, no fromID is sent.
+			 */
+			int deviceID = fromDevice.getDeviceID();
+			int lClock = coords.getLClock();
+			float x = coords.getCoord(0);
+			float y = coords.getCoord(1);
+			float alt = coords.getCoord(2);
+			byte[] data = new byte[5*4];
+			ByteBuffer bb = ByteBuffer.wrap(data);
+			bb.putInt(deviceID);
+			bb.putInt(lClock);
+			bb.putFloat(x);
+			bb.putFloat(y);
+			bb.putFloat(alt);
+			try {
+				InetSocketAddress sockadd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
+				DatagramPacket datagram = new DatagramPacket(data, data.length, sockadd);
+				//DatagramPacket datagram = new DatagramPacket(data, data.length, ((DeviceHandleIP) toDevice.getHandle()).getIP(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
+				//DatagramPacket datagram = new DatagramPacket(data, data.length, socketAddresses[toDevice.getDeviceID()]);
+				//TODO clean up the socketAddresses thing.
+				System.out.println("About to send datapoint "+lClock+" to "+((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName()+":"+((DeviceHandleIP) toDevice.getHandle()).getPort());
+				socket.send(datagram);
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

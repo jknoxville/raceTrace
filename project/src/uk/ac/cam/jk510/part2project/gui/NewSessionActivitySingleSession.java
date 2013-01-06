@@ -11,7 +11,7 @@ import android.app.Activity;
 import android.view.Menu;
 import android.view.View;
 
-public class NewSessionActivitySingleSession extends Activity {
+public class NewSessionActivitySingleSession extends NewSessionActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +19,7 @@ public class NewSessionActivitySingleSession extends Activity {
 		setContentView(R.layout.activity_new_session_activity_single_session);
 
 
-		SessionManagerSingleSession.spawnSetupThread(findViewById(R.id.stringy));
+		SessionManagerSingleSession.spawnSetupThread(findViewById(R.id.stringy), this);
 
 	}
 
@@ -28,6 +28,12 @@ public class NewSessionActivitySingleSession extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_new_session_activity_single_session, menu);
 		return true;
+	}
+
+	@Override
+	protected void setUpSession() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

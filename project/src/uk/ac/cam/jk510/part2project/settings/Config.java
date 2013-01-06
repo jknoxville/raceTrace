@@ -36,14 +36,20 @@ public class Config {
 	//Hard-coded app data
 	private static final String UUIDString = "fa87c0d0-afac-11de-8a39-0800200c9a66"; //Randomly created string for use with this app
 	//private static final String serverIP = "78.150.171.124";
-	//private static final String serverIP = "192.168.1.20";
-	private static final String serverIP = "jknoxville.no-ip.org";
+	private static final String localServerIP = "192.168.1.20";
+	private static final String globalServerIP = "jknoxville.no-ip.org";
 	private static final int serverPort = 60000;
 	private static final int defaultClientPort = 60001;
-	
+	private static final boolean localOnly = false;
 	
 	//Datagram Format
 	private static final int nameSize = 4;
+	
+	//Debug
+	private static final boolean debugModeOn = true;
+	/*
+	 * Send all p2p packets to server as well
+	 */
 	
 	//Getter methods
 	public static int getMapLineThickness() {
@@ -92,7 +98,7 @@ public class Config {
 		return posIndicatorSize;
 	}
 	public static String getServerIP() {
-		return serverIP;
+		return (localOnly?localServerIP:globalServerIP);
 	}
 	public static int getServerPort() {
 		return serverPort;
@@ -112,5 +118,8 @@ public class Config {
 	}
 	public static long getKeepAlivePeriod() {
 		return keepAlivePeriod;
+	}
+	public static boolean debugMode() {
+		return debugModeOn;
 	}
 }

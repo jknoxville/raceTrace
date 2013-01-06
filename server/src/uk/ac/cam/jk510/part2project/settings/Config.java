@@ -46,6 +46,9 @@ public class Config {
 	
 	//Testing
 	private static final boolean serverDuplicationTest = false;
+	
+	//debug
+	private static final boolean listenOnly = true;
 
 	//Getter methods
 	public static int getMapLineThickness() {
@@ -123,5 +126,8 @@ public class Config {
 	}
 	public static int getDefaultClientPort() {
 		return defaultClientPort;
+	}
+	public static boolean listenOnly() {
+		return listenOnly;
 	}
 }

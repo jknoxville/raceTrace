@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
 import uk.ac.cam.jk510.part2project.server.ServerState;
+import uk.ac.cam.jk510.part2project.settings.Config;
 
 public class ServerSessionCreator {
 	
@@ -18,8 +19,10 @@ public class ServerSessionCreator {
 		}
 		DeviceHandleIP handle;
 		try {
-			handle = new DeviceHandleIP(InetAddress.getByName(ip), port);
+			handle = new DeviceHandleIP(InetAddress.getByName(ip), Config.getDefaultClientPort());	//TODO could do setup by udp then server could use the port it came from here.
 			devices[index] = new Device(name, handle, new ProtocolXYA());
+			
+			System.out.println(ip+" Device "+index+" @ "+handle.getIP().getHostName()+":"+handle.getPort());
 			
 			boolean listComplete = true;
 			for(Device d:devices) {

@@ -55,6 +55,8 @@ public class Message {
 			//ServerState.sendIfReady();	//This is in server variant.
 			((DeviceHandleIP) Session.getDevice(deviceID).getHandle()).setPort(datagram.getPort());	//update known port of this device. Same for address useful?
 
+			System.out.println("Received");	//debug
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
