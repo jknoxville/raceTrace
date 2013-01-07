@@ -147,8 +147,8 @@ public class ServerState implements PositionStoreSubscriber {
 	static void init() {
 		if(!initialised) {
 			PositionStore.subscribeToUpdates(new ServerState());	//subscribe to updates
-			for(Device d: Session.getSession().getDevices()) {	//initialise lists
-				globalNewPoints.add(d.getDeviceID(), new LinkedList<Integer>());
+			for(int i=0; i<Session.getSession().numDevices(); i++) {	//initialise lists
+				globalNewPoints.add(new LinkedList<Integer>());
 			}
 			initialised = true;
 		}

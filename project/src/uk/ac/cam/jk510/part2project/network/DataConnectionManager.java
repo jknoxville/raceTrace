@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import uk.ac.cam.jk510.part2project.protocol.Logger;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionPackage;
@@ -70,6 +71,7 @@ public class DataConnectionManager {
 	
 	public static void receive(DatagramPacket datagram) throws IOException {
 		socket.receive(datagram);
+		Logger.download(datagram.getLength());	//TODO +header size
 	}
 
 	//TODO What about p2p where each peer should have individual keepalive?

@@ -3,6 +3,7 @@ package uk.ac.cam.jk510.part2project.store;
 import java.util.LinkedList;
 
 import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
+import uk.ac.cam.jk510.part2project.protocol.Logger;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
@@ -24,6 +25,9 @@ public class PositionStore {
 		try {
 			//insert into the deviceHistory object, this method also adds it to it's newPoints.
 			(device.getHistory()).insert(coords);
+			
+			//tell logger
+			Logger.newPoint(device);
 
 			//check for subscriber notification condition
 			if(updateReady(device)) {

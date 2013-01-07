@@ -3,6 +3,7 @@ package uk.ac.cam.jk510.part2project.session;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import uk.ac.cam.jk510.part2project.protocol.Logger;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
@@ -34,6 +35,7 @@ public class Session {
 		//TODO have check when setting up session to see if names clash.
 
 		session = this;
+		new Logger(this);
 		System.err.println("just saved Session.session: "+session+" Has "+session.numDevices()+" devices.");	//debug
 	}
 
