@@ -7,6 +7,8 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.List;
 
 import android.widget.TextView;
 
@@ -21,6 +23,8 @@ import uk.ac.cam.jk510.part2project.store.PositionStore;
 
 public abstract class ProtocolManager {
 
+	protected LinkedList<Coords>[] coordsToSend;	//one linkedlist for each device to send to. Client server so only one.
+	
 	private static ProtocolManager instance;
 	private static boolean alive = true;
 	public static TextView debugInfo;
@@ -28,6 +32,12 @@ public abstract class ProtocolManager {
 	public static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
 		if(instance == null) {
 			instance = newProtocolManager();
+			if(instance instanceof ProtocolManagerClientServer) {
+				instance.coordsToSend = new LinkedList[1];
+			} else if(instance instanceof ProtocolManagerP2P) {
+				instance.coordsToSend = new LinkedList[session.numDevices()];	//TODO make this one size less so none for self.
+			}
+			instance.coordsToSend = new LinkedList[session.numDevices()];
 			instance.spawnReceivingThread();
 		}
 		return instance;
@@ -49,7 +59,7 @@ public abstract class ProtocolManager {
 	}
 
 
-	protected void sendCoordsToAddress(final InetSocketAddress toSocketAddress, Device aboutDevice, Coords coords) {
+	protected void sendCoordsToAddress(final InetSocketAddress toSocketAddress, Device aboutDevice, List<Coords> coordsList) {
 
 		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
 		if(debugInfo != null) {
@@ -65,38 +75,44 @@ public abstract class ProtocolManager {
 
 		}
 		int fromDeviceID = Session.getThisDevice().getDeviceID();	//used to identify sender to the recipent.
-		int aboutDeviceID = aboutDevice.getDeviceID();	//deviceID of the device whose location this point is.
 
-		int lClock = coords.getLClock();
-		float x = coords.getCoord(0);
-		float y = coords.getCoord(1);
-		float alt = coords.getCoord(2);
-		byte[] data = new byte[5*5];
+		byte[] data = new byte[(1+5*coordsList.size())*4];	//1 int for fromID, plus 5 (int|float)s for each coord
 		ByteBuffer bb = ByteBuffer.wrap(data);
 		bb.putInt(fromDeviceID);	//	TODO this is added, update all recipents so it doesnt shift everything wrongly
-		bb.putInt(aboutDeviceID);	//TODO These two are to go at the start of each packet, not each coordinate (if >1 coord per packet)
-		bb.putInt(lClock);
-		bb.putFloat(x);
-		bb.putFloat(y);
-		bb.putFloat(alt);
-		System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
-		try {
-			//checkInit();
-			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
-			DataConnectionManager.send(datagram);
+		//							This are to go at the start of each packet, not each coordinate (if >1 coord per packet)
 
-			if(Config.debugMode()) {
-				DatagramPacket datagram2 = new DatagramPacket(data, data.length, new InetSocketAddress(Config.getServerIP(), Config.getServerPort()));
-				DataConnectionManager.send(datagram2);
+		for(Coords coords: coordsList) {
+
+			int aboutDeviceID = aboutDevice.getDeviceID();	//deviceID of the device whose location this point is.
+			int lClock = coords.getLClock();
+			float x = coords.getCoord(0);
+			float y = coords.getCoord(1);
+			float alt = coords.getCoord(2);
+
+			bb.putInt(aboutDeviceID);
+			bb.putInt(lClock);
+			bb.putFloat(x);
+			bb.putFloat(y);
+			bb.putFloat(alt);
+			System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
+			try {
+				//checkInit();
+				DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
+				DataConnectionManager.send(datagram);
+
+				if(Config.debugMode()) {
+					DatagramPacket datagram2 = new DatagramPacket(data, data.length, new InetSocketAddress(Config.getServerIP(), Config.getServerPort()));
+					DataConnectionManager.send(datagram2);
+				}
+
+
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-
-
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -120,6 +136,7 @@ public abstract class ProtocolManager {
 		case p2p: instance = new ProtocolManagerP2P(); break;
 		default: throw new Exception();
 		}
+		
 		return instance;
 	}
 
@@ -142,7 +159,7 @@ public abstract class ProtocolManager {
 				instance.giveToNetwork(device, coords);
 			}
 		}).start();
-		
+
 		//tell Logger
 		Logger.generatedPoint(coords.getLClock());
 

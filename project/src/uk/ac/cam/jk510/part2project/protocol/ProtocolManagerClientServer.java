@@ -9,6 +9,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.Message;
@@ -27,7 +29,11 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	@Override
 	protected void giveToNetwork(Device aboutDevice, Coords coords) {
 		checkInit();
-		sendCoordsToServer(aboutDevice, coords);	//TODO move the "getThisDevice" to a later stage
+		
+		coordsToSend[0].add(coords);
+		
+		sendCoordsToServer(aboutDevice, coordsToSend[0]);	//TODO move the "getThisDevice" to a later stage
+		coordsToSend[0].clear();
 	}
 
 	@Override
@@ -66,10 +72,10 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	}
 
 	//this method was based on Server -> NetworkInterface.sendCoordsToDevice
-	private void sendCoordsToServer(Device aboutDevice, Coords coords) {
+	private void sendCoordsToServer(Device aboutDevice, List<Coords> coordsList) {
 		
 		checkInit();
-		sendCoordsToAddress(serverSocketAddress, aboutDevice, coords);
+		sendCoordsToAddress(serverSocketAddress, aboutDevice, coordsList);
 		
 	}
 
