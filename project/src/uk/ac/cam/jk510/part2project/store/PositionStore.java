@@ -27,7 +27,7 @@ public class PositionStore {
 			(device.getHistory()).insert(coords);
 			
 			//tell logger
-			Logger.newPoint(device);
+			Logger.receivedPoint(device, coords.getLClock());
 
 			//check for subscriber notification condition
 			if(updateReady(device)) {

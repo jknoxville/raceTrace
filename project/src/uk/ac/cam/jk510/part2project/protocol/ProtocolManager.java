@@ -142,6 +142,9 @@ public abstract class ProtocolManager {
 				instance.giveToNetwork(device, coords);
 			}
 		}).start();
+		
+		//tell Logger
+		Logger.generatedPoint(coords.getLClock());
 
 		PositionStore.insert(device, coords);
 	}

@@ -1,17 +1,24 @@
 package uk.ac.cam.jk510.part2project.protocol;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
+import uk.ac.cam.jk510.part2project.settings.Config;
+import uk.ac.cam.jk510.part2project.store.DataPointPresentException;
 
 public class Logger {
 
 	private static Logger instance;
+	private static int blockSize = Config.getArrayBlockSize();
 
 	private long networkDataUpload = 0;
 	private long networkDataDownload = 0;
 	private long[] timeOfLastReceipt;
+	
+	protected ArrayList<long[]>[] receiptTimes;	//TODO receipt or display time?
+	protected ArrayList<long[]> genTimes;	//time each point was generated
 
 	/*
 	 * TODO:
@@ -78,8 +85,25 @@ public class Logger {
 	 * 
 	 */
 
+	/*
+	 * Strategy:
+	 * 
+	 * Have long[] for each device, when point x arrives set array[x] = time. then have time of arrival of every point. Can use this later with gen / sent arrays of other devices
+	 * to work out times between.
+	 * 
+	 */
+
 	public Logger(Session session) {
-		timeOfLastReceipt = new long[session.numDevices()];
+		int devices = session.numDevices();
+		timeOfLastReceipt = new long[devices];
+		receiptTimes = new ArrayList[devices];
+		for(int i=0; i<devices; i++) {
+			receiptTimes[i] = new ArrayList<long[]>();
+			receiptTimes[i].add(new long[blockSize]);
+		}
+		genTimes = new ArrayList<long[]>();
+		genTimes.add(new long[blockSize]);
+		
 		instance = this;
 	}
 
@@ -91,8 +115,47 @@ public class Logger {
 		instance.networkDataUpload += bytes;
 	}
 
-	public static void newPoint(Device device) {
+	public static void receivedPoint(Device device, int index) {
+		long time = System.currentTimeMillis();
 		instance.timeOfLastReceipt[device.getDeviceID()] = System.currentTimeMillis();
+
+		extendArrays(index);
+
+		//Calculate which array and the offset within it.
+		int arrayNumber = index / blockSize;
+		int offset = index % blockSize;
+
+		//Set dataPointPresent value to true
+		ArrayList<long[]> arra = instance.receiptTimes[device.getDeviceID()];
+		long[] array = arra.get(arrayNumber);
+		array[offset] = time;
+
+	}
+	public static void generatedPoint(int index) {
+		long time = System.currentTimeMillis();
+
+		extendArrays(index);
+
+		//Calculate which array and the offset within it.
+		int arrayNumber = index / blockSize;
+		int offset = index % blockSize;
+
+		//Set dataPointPresent value to true
+		instance.genTimes.get(arrayNumber)[offset] = time;
+
+	}
+	
+	private static void extendArrays(int index) {
+		while(!(index<historyLength())) {
+			instance.genTimes.add(new long[blockSize]);
+			for(int i=0; i<instance.receiptTimes.length; i++) {
+				instance.receiptTimes[i].add(new long[blockSize]);
+			}
+		}
+	}
+
+	protected static int historyLength() {
+		return instance.genTimes.size()*blockSize;
 	}
 
 }
