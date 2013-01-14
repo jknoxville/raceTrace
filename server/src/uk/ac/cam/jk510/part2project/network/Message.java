@@ -35,26 +35,29 @@ public class Message {
 //				System.err.println("sizeOfDataPoint: "+sizeOfDataPoint+" length = "+length);	//debug
 //				//throw new Exception();
 //			}
-			int numDataPoints = 1;	//TODO make dynamic
+			System.out.println("Length of received packet: "+datagram.getLength()+" offset: "+datagram.getOffset());	//debug
+			int numDataPoints = (datagram.getLength()-4*(1))/(5*4);
+			System.out.println("Number of datapoints in this packet: "+numDataPoints);	//debug
 			
-			ByteBuffer bb = ByteBuffer.wrap(data);	
+			ByteBuffer bb = ByteBuffer.wrap(data);
 			
 			//read metadata first
 			int fromDeviceID = bb.getInt();
-			int aboutDeviceID = bb.getInt();
+		
 			
 			for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
+				int aboutDeviceID = bb.getInt();
 				System.out.println("Iteration "+dataPoint);	//debug
 				int lTime = bb.getInt();
 				float x = bb.getFloat();
 				float y = bb.getFloat();
 				float alt = bb.getFloat();
 				System.out.println("receiving from "+datagram.getAddress().getHostName()+":"+datagram.getPort()+" device "+aboutDeviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
-				CoordsTXYA coords = new CoordsTXYA(lTime, x, y, alt);
+				CoordsTXYA coords = new CoordsTXYA(fromDeviceID, lTime, x, y, alt);
 				PositionStore.insert(Session.getSession().getDevice(aboutDeviceID), coords);
 				if(Config.serverDuplicationTest() && aboutDeviceID == 0) {
 					System.out.println("Adding dupe");
-					CoordsTXYA coords2 = new CoordsTXYA(lTime, x+10, y, alt);
+					CoordsTXYA coords2 = new CoordsTXYA(fromDeviceID, lTime, x+10, y, alt);
 					PositionStore.insert(Session.getSession().getDevice(aboutDeviceID+1), coords2);
 				}
 			}

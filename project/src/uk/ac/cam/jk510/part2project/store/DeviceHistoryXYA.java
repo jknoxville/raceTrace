@@ -22,16 +22,18 @@ public class DeviceHistoryXYA extends DeviceHistory {
 		float x = xList.get(arrayNumber)[offset];
 		float y = yList.get(arrayNumber)[offset];
 		float alt = altList.get(arrayNumber)[offset];
-		Coords coords = new CoordsTXYA(index, x, y, alt);
+		Coords coords = new CoordsTXYA(device, index, x, y, alt);
 		
 		return coords;
 	}
 	
-	public DeviceHistoryXYA() {
+	public DeviceHistoryXYA(int device) {
 		super();
 		coordsType = CoordsType.TXYA;
 		
 		blockSize = Config.getArrayBlockSize();
+		
+		this.device = device;
 
 		xList = new ArrayList<float[]>();
 		xList.add(new float[blockSize]);

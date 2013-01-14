@@ -25,5 +25,6 @@
     <string name="title_activity_session_setup_slave">SessionSetupSlaveActivity</string>
     <string name="title_activity_new_session_activity_predefined">NewSessionActivityPredefined</string>
     <string name="title_activity_new_session_activity_single_session">Session Setup</string>
+    <string name="talking_to_server">Communicating with server...</string>
 
 </resources>

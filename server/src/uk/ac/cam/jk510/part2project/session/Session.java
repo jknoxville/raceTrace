@@ -1,42 +1,55 @@
 package uk.ac.cam.jk510.part2project.session;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
+import uk.ac.cam.jk510.part2project.settings.Config;
 
 public class Session {
 
 	private static Session session;
-	
+
 	private ArrayList<Device> devices;
 	private Keys keys;
-	private static Device me;
-	//TODO put SocketAddresses here maybe.
-	
+	private int meNumber = -1;
+	private int deviceCount = 0;
+
 	protected Session(ArrayList<Device> devices, Keys keys) {
 		super();
 		this.devices = devices;
 		this.keys = keys;
-		me = devices.get(0);
-		
+		for(Device d: devices) {
+			System.out.println(d.getName()+" and "+Config.getName());
+			//TODO use bluetooth MAC address instead of name.
+			if(d.getName().equals(Config.getName())) {
+				meNumber = deviceCount;
+				System.out.println("I am device "+meNumber+" / "+devices.size());
+				break;
+			}
+			
+			deviceCount++;
+		}
+		//TODO make Config.name read name from some preferences (see android tutorials)
+		//TODO have check when setting up session to see if names clash.
+
 		session = this;
-		System.err.println("just saved Session.session: "+session);	//debug
+		
+		System.err.println("just saved Session.session: "+session+" Has "+session.numDevices()+" devices.");	//debug
 	}
-	
+
 	public static Session getSession() {
 		assert(session != null);
 		return session;
 	}
-	
+
 	public static Device getThisDevice() {
-		return me;
+		return session.getDevice(session.meNumber);
 	}
 	
-	public Device getDevice(int n) {
-		return devices.get(n);
+	public static Device getDevice(int n) {
+		return session.devices.get(n);
 	}
-	
+
 	public String[] getDeviceNames() {
 		String[] names = new String[devices.size()];
 		for(Device d: devices) {
@@ -44,7 +57,7 @@ public class Session {
 		}
 		return names;
 	}
-	
+
 	public ArrayList<Device> getDevices() {
 		return devices;
 	}
@@ -54,8 +67,9 @@ public class Session {
 	public int numDevices() {
 		return devices.size();
 	}
-	
+
 	public static Session reconstructSession(SessionPackage pack) {
+		System.out.println("Reconstructing session");	//debug
 		int numDevices = pack.deviceNames.length;
 		ArrayList<Device> devices = new ArrayList<Device>();
 		for(int device = 0; device<numDevices; device++) {
@@ -76,4 +90,13 @@ public class Session {
 		return session;
 	}
 	
+	public static void destroy() {
+		session = null;
+	}
+
+	public static int getIndex(Device device) {
+		
+		return session.devices.indexOf(device);
+	}
+
 }

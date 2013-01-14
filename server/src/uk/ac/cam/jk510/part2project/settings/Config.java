@@ -40,15 +40,15 @@ public class Config {
 	private static final int nameSize = 1;
 	
 	//Server Specific
-	private static final long serverResendPeriodSecs = 3;
-	private static final int serverNewPointsThreshold = 1;
+	private static final long serverResendPeriodSecs = 5;
+	private static final int serverNewPointsThreshold = 5;
 	private static final boolean singleSession = true;
 	
 	//Testing
 	private static final boolean serverDuplicationTest = false;
 	
 	//debug
-	private static final boolean listenOnly = true;
+	private static final boolean listenOnly = false;
 
 	//Getter methods
 	public static int getMapLineThickness() {

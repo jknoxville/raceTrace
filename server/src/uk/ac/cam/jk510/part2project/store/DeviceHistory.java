@@ -3,6 +3,7 @@ package uk.ac.cam.jk510.part2project.store;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 public abstract class DeviceHistory {
@@ -13,10 +14,11 @@ public abstract class DeviceHistory {
 	protected ArrayList<boolean[]> dataPointPresentList;
 	protected LinkedList<Integer> newPoints;
 	protected CoordsType coordsType;
+	protected int device;
 
 	protected abstract Coords getCoord(int index);
 	
-	protected void insert(Coords coords) throws IncompatibleCoordsException, DataPointPresentException {
+	protected synchronized void insert(Coords coords) throws IncompatibleCoordsException, DataPointPresentException {
 		//Check that right type of Coords object has been provided
 		if (!(checkClass(coords))) {
 			System.err.println(coords.coordsType+" "+coordsType);
@@ -25,8 +27,6 @@ public abstract class DeviceHistory {
 		
 		//if index is not within range of currently allocated arrays then allocate until it is.
 		int index = coords.getLClock();
-		System.err.println(this);	//debug
-		System.err.println(listOfLists);	//debug
 		while(!(index<historyLength())) {
 			System.err.println("Allocating new block, index: "+index+" historyLength: "+historyLength());	//debug
 			for(ArrayList<float[]> l: listOfLists) {
@@ -41,7 +41,7 @@ public abstract class DeviceHistory {
 		
 		//Check to see if already have data for this time range.
 		if(dataPointPresentList.get(arrayNumber)[offset]) {
-			System.err.println("Datapoint: index "+index+"already present");	//debug
+			System.err.println("Datapoint already present");	//debug
 			throw new DataPointPresentException();
 		} else {
 			System.err.println("Datapoint not present");	//debug
@@ -83,7 +83,7 @@ public abstract class DeviceHistory {
 		newPoints.clear();
 	}
 
-	public static DeviceHistory newHistory() {
+	public static DeviceHistory newHistory(int device) {
 //		ProtocolManager mgr = ProtocolManager.getProtocolManager();
 //		if(mgr == null) {//debug
 //			System.err.println("mgr is null");
@@ -91,7 +91,7 @@ public abstract class DeviceHistory {
 		HistoryType historyType = Config.getHistoryType();
 		DeviceHistory history = null;
 		switch(historyType) {
-		case XYA: history = new DeviceHistoryXYA();
+		case XYA: history = new DeviceHistoryXYA(device);
 		break;
 		default: try {
 				throw new Exception();

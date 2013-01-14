@@ -3,7 +3,8 @@ package uk.ac.cam.jk510.part2project.store;
 public class CoordsTXYA extends Coords {
 	
 	
-	public CoordsTXYA(int lTime, float x, float y, float alt) {
+	public CoordsTXYA(int aboutDevice, int lTime, float x, float y, float alt) {
+		this.aboutDevice = aboutDevice;
 		this.lClock = lTime;
 		coords = new float[3];
 		coords[0] = x;

@@ -3,6 +3,7 @@ package uk.ac.cam.jk510.part2project.store;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 public abstract class DeviceHistory {
@@ -13,6 +14,7 @@ public abstract class DeviceHistory {
 	protected ArrayList<boolean[]> dataPointPresentList;
 	protected LinkedList<Integer> newPoints;
 	protected CoordsType coordsType;
+	protected int device;
 
 	protected abstract Coords getCoord(int index);
 	
@@ -81,7 +83,7 @@ public abstract class DeviceHistory {
 		newPoints.clear();
 	}
 
-	public static DeviceHistory newHistory() {
+	public static DeviceHistory newHistory(int device) {
 //		ProtocolManager mgr = ProtocolManager.getProtocolManager();
 //		if(mgr == null) {//debug
 //			System.err.println("mgr is null");
@@ -89,7 +91,7 @@ public abstract class DeviceHistory {
 		HistoryType historyType = Config.getHistoryType();
 		DeviceHistory history = null;
 		switch(historyType) {
-		case XYA: history = new DeviceHistoryXYA();
+		case XYA: history = new DeviceHistoryXYA(device);
 		break;
 		default: try {
 				throw new Exception();

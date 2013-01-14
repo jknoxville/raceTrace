@@ -71,6 +71,7 @@ public final class R {
         public static final int scan_button=0x7f040011;
         public static final int selected_players_list=0x7f040010;
         public static final int skip=0x7f040009;
+        public static final int talking_to_server=0x7f040016;
         public static final int title_activity_map_display_screen=0x7f040008;
         public static final int title_activity_new_old_session=0x7f040003;
         public static final int title_activity_new_session=0x7f040006;

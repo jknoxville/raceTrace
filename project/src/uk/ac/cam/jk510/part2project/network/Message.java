@@ -31,38 +31,38 @@ public class Message {
 			//				System.err.println("sizeOfDataPoint: "+sizeOfDataPoint+" length = "+length);	//debug
 			//				//throw new Exception();
 			//			}
-			int numDataPoints = 1;	//TODO make dynamic
+			int numDataPoints = (datagram.getLength()-4*(1))/5*4;	//total length - device ID. divided by 5 numbers per each coords.
 
 			ByteBuffer bb = ByteBuffer.wrap(data);	
 
 			//read metadata first
 			//get fromID
 			int deviceID = bb.getInt();
-			
-			//get aboutID
-			int aboutID = bb.getInt();
+
+
 
 			for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
-				System.out.println("Iteration "+dataPoint);	//debug
+				System.out.println("datapoint in packet "+dataPoint);	//debug
+				int aboutID = bb.getInt();
 				int lTime = bb.getInt();
 				float x = bb.getFloat();
 				float y = bb.getFloat();
 				float alt = bb.getFloat();
 				System.out.println("receiving. from device "+deviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
-				CoordsTXYA coords = new CoordsTXYA(lTime, x, y, alt);
+				CoordsTXYA coords = new CoordsTXYA(aboutID, lTime, x, y, alt);
 				ProtocolManager.insertNetworkDataPoint(Session.getDevice(deviceID), coords);
 			}
 			//ServerState.sendIfReady();	//This is in server variant.
 			((DeviceHandleIP) Session.getDevice(deviceID).getHandle()).setPort(datagram.getPort());	//update known port of this device. Same for address useful?
 
 			System.out.println("Received");	//debug
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	//like processPeerDatagram but doesnt read the from field.
 	public static void processServerDatagram(final DatagramPacket datagram) {
 		byte[] data = new byte[datagram.getLength()];
@@ -84,23 +84,22 @@ public class Message {
 			//				System.err.println("sizeOfDataPoint: "+sizeOfDataPoint+" length = "+length);	//debug
 			//				//throw new Exception();
 			//			}
-			int numDataPoints = 1;	//TODO make dynamic
+			System.out.println("datagram size: "+datagram.getLength()+" numDatapoints: "+(datagram.getLength())/(5*4)); //debug
+			System.err.println("datagram size: "+datagram.getLength()+" numDatapoints: "+(datagram.getLength())/(5*4)); //debug
+			int numDataPoints = (datagram.getLength())/(5*4);
 
-			ByteBuffer bb = ByteBuffer.wrap(data);	
-
-			//read metadata first
+			ByteBuffer bb = ByteBuffer.wrap(data);
 			
-			//get aboutID
-			int aboutID = bb.getInt();
 
 			for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
-				System.out.println("Iteration "+dataPoint);	//debug
+				System.out.println("datapoint in packet "+dataPoint+" out of "+numDataPoints);	//debug
+				int aboutID = bb.getInt();
 				int lTime = bb.getInt();
 				float x = bb.getFloat();
 				float y = bb.getFloat();
 				float alt = bb.getFloat();
 				System.out.println("receiving. from server. lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
-				CoordsTXYA coords = new CoordsTXYA(lTime, x, y, alt);
+				CoordsTXYA coords = new CoordsTXYA(aboutID, lTime, x, y, alt);
 				ProtocolManager.insertNetworkDataPoint(Session.getDevice(aboutID), coords);
 			}
 			//ServerState.sendIfReady();	//This is in server variant.

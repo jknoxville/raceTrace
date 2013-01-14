@@ -13,6 +13,10 @@ import uk.ac.cam.jk510.part2project.session.SessionPackage;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 public class DeviceConnection {
+	
+	/*
+	 * This class holds the connection state of devices for the session setup procedure.
+	 */
 
 	final int device;
 	final Socket sock;

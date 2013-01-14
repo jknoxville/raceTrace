@@ -29,16 +29,18 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	@Override
 	protected void giveToNetwork(Device aboutDevice, Coords coords) {
 		checkInit();
-		
+
 		coordsToSend[0].add(coords);
-		
-		sendCoordsToServer(aboutDevice, coordsToSend[0]);	//TODO move the "getThisDevice" to a later stage
-		coordsToSend[0].clear();
+
+		if(readyToSend(0)) {
+			sendCoordsToServer(aboutDevice, coordsToSend[0]);	//TODO move the "getThisDevice" to a later stage
+			coordsToSend[0].clear();
+		}
 	}
 
 	@Override
 	public void spawnReceivingThread() {
-		
+
 		new Thread(new Runnable() {
 			public void run() {
 				checkInit();
@@ -58,7 +60,7 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 			}
 		}).start();
 	}
-	
+
 	public void spawnKeepAliveThread() {
 		while(alive) {
 			try {
@@ -73,10 +75,10 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 
 	//this method was based on Server -> NetworkInterface.sendCoordsToDevice
 	private void sendCoordsToServer(Device aboutDevice, List<Coords> coordsList) {
-		
+
 		checkInit();
 		sendCoordsToAddress(serverSocketAddress, aboutDevice, coordsList);
-		
+
 	}
 
 	private void checkInit() {
@@ -90,7 +92,7 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	protected void protocolSpecificDestroy() {
 		alive = false;	//stop receiving thread TODO warning: thread may be blocking on network so wont actually stop until next packet arrives.
 	}
-	
+
 	@Override
 	public void distributeSession(Session session) throws UnknownHostException, IOException {
 		DataConnectionManager.sendSessionToServer(session);
@@ -99,7 +101,5 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	@Override
 	public void sendKeepAliveMessage(int device) {
 		//TODO send it.
-		
 	}
-
 }

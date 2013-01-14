@@ -32,16 +32,16 @@ public class ProtocolManagerP2P extends ProtocolManager {
 		new Thread(new Runnable() {
 			public void run() {
 				checkSocketIsOpen();
-				
+
 				//debug:
 				TextView debugInfo = MapDisplayScreen.debugInfo;
-				
+
 				byte[] receivingData = new byte[1024];
 				DatagramPacket datagram = new DatagramPacket(receivingData, receivingData.length);
 				checkSocketIsOpen();
 				while(alive) {
 					if(MapDisplayScreen.debugInfo != null) {
-					//	debugInfo.setText("Device 0: "+((DeviceHandleIP) Session.getDevice(0).getHandle()).getIP().getHostAddress()+":"+((DeviceHandleIP) Session.getDevice(0).getHandle()).getPort());
+						//	debugInfo.setText("Device 0: "+((DeviceHandleIP) Session.getDevice(0).getHandle()).getIP().getHostAddress()+":"+((DeviceHandleIP) Session.getDevice(0).getHandle()).getPort());
 					}
 					try {
 						DataConnectionManager.receive(datagram);
@@ -67,7 +67,12 @@ public class ProtocolManagerP2P extends ProtocolManager {
 	}
 
 	public void sendCoordsToPeer(Device toDevice, Device aboutDevice, Coords coords) {
-		sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), aboutDevice, coords);
+		System.out.println(coordsToSend[toDevice.getDeviceID()]);	//debug
+		coordsToSend[toDevice.getDeviceID()].add(coords);
+		if(readyToSend(toDevice.getDeviceID())) {
+			sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), aboutDevice, coordsToSend[toDevice.getDeviceID()]);
+			coordsToSend[toDevice.getDeviceID()].clear();
+		}
 	}
 
 	@Override
@@ -78,20 +83,20 @@ public class ProtocolManagerP2P extends ProtocolManager {
 
 	private void checkSocketIsOpen() {
 
-			DataConnectionManager.initDataSocket();
+		DataConnectionManager.initDataSocket();
 	}
 
 	@Override
 	public void distributeSession(Session session) throws UnknownHostException,
-			IOException {
+	IOException {
 		//TODO move sneding of session by bluetooth to here
-		
+
 	}
 
 	@Override
 	public void sendKeepAliveMessage(int index) {
 		// TODO Send it
-		
+
 	}
 
 }

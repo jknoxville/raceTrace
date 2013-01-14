@@ -18,7 +18,7 @@ public class Device {
 		
 		this.handle = handle;
 		//this.history = (DeviceHistory) (protocol.deviceHistoryClass).newInstance();
-		this.history = DeviceHistory.newHistory();
+		this.history = DeviceHistory.newHistory(deviceCount);
 		System.out.println("Made device "+name+" ID: "+deviceCount);	//debug
 		
 		deviceCount++;

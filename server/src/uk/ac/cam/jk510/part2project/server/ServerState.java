@@ -1,16 +1,17 @@
 package uk.ac.cam.jk510.part2project.server;
 
 import java.io.IOException;
-import java.net.InetAddress;
+import java.net.DatagramPacket;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.SocketException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import uk.ac.cam.jk510.part2project.network.Message;
-import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
 import uk.ac.cam.jk510.part2project.session.Session;
@@ -27,6 +28,8 @@ public class ServerState implements PositionStoreSubscriber {
 	 * This class holds the implementation state of the server, e.g which points from each device are new points.
 	 * It subscribes to PositionStore updates so can stay updated.
 	 */
+
+	protected static LinkedList<Coords>[] coordsToSend;	//one linkedlist for each device to send to. Client server so only one.
 
 	private static ArrayList<LinkedList<Integer>> globalNewPoints = new ArrayList<LinkedList<Integer>>();
 	private static boolean initialised = false;
@@ -51,10 +54,17 @@ public class ServerState implements PositionStoreSubscriber {
 
 		Session session;
 
+
+
 		if(Config.singleSession()) {
 
 			int numDevices = Integer.parseInt(args[0]);
 			connections = new DeviceConnection[numDevices];
+
+			coordsToSend = new LinkedList[numDevices];
+			for(int i = 0; i<numDevices; i++) {
+				coordsToSend[i] = new LinkedList<Coords>();
+			}
 
 			//spawn thread that accepts connections
 			try {
@@ -68,18 +78,27 @@ public class ServerState implements PositionStoreSubscriber {
 				}
 
 
+
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
+
+
 		} else {
 
 			SessionPackage pack = NetworkInterface.getSessionPackage();
 			session = Session.reconstructSession(pack);
-			startMainProcessing(session);
-		}
 
+			coordsToSend = new LinkedList[session.numDevices()];
+			for(int i = 0; i<session.numDevices(); i++) {
+				coordsToSend[i] = new LinkedList<Coords>();
+			}
+			startMainProcessing(session);
+
+		}	
 
 	}
 
@@ -110,6 +129,44 @@ public class ServerState implements PositionStoreSubscriber {
 		}
 	}
 
+	protected static void sendCoordsToAddress(final InetSocketAddress toSocketAddress, List<Coords> coordsList) {
+
+		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
+
+		byte[] data = new byte[(5*coordsList.size())*4];	//5 (int|float)s for each coord
+		ByteBuffer bb = ByteBuffer.wrap(data);
+
+		for(Coords coords: coordsList) {
+
+			int aboutDeviceID = coords.getDevice();	//deviceID of the device whose location this point is.
+			int lClock = coords.getLClock();
+			float x = coords.getCoord(0);
+			float y = coords.getCoord(1);
+			float alt = coords.getCoord(2);
+
+			bb.putInt(aboutDeviceID);
+			bb.putInt(lClock);
+			bb.putFloat(x);
+			bb.putFloat(y);
+			bb.putFloat(alt);
+			System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
+
+		}
+		try {
+			//checkInit();
+			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
+			NetworkInterface.getInstance().sendDatagram(datagram);
+
+
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public synchronized static void sendIfReady() {
 		//init();	//init moved to Server.main
 		if(ready()) {
@@ -119,14 +176,29 @@ public class ServerState implements PositionStoreSubscriber {
 				int deviceNumber = globalNewPoints.indexOf(list);
 				Device fromDevice = Session.getSession().getDevice(deviceNumber);
 				NetworkInterface net = NetworkInterface.getInstance();
+
 				for(int index: list) {
 					Coords coords = PositionStore.getCoord(fromDevice, index);
 					for(Device toDevice: Session.getSession().getDevices()) {
-						net.sendCoordsToDevice(toDevice, fromDevice, coords);
+
+						coordsToSend[toDevice.getDeviceID()].add(coords);
+
+
+						//byte[] data = new byte[1024];
+						//DatagramPacket datagram = new DatagramPacket(data, data.length, sockadd);
+
+
+						//net.sendCoordsToDevice(toDevice, fromDevice, coords);
 					}
 				}
 			}
-
+			for(Device toDevice: Session.getSession().getDevices()) {
+				if(!coordsToSend[toDevice.getDeviceID()].isEmpty()) {
+					InetSocketAddress sockadd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
+					sendCoordsToAddress(sockadd, coordsToSend[toDevice.getDeviceID()]);
+					coordsToSend[toDevice.getDeviceID()].clear();
+				}
+			}
 			for(LinkedList<Integer> list: globalNewPoints) {	//clear newPointsLists
 				list.clear();
 			}

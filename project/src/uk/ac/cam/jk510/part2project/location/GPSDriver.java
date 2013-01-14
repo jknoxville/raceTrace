@@ -98,7 +98,7 @@ public class GPSDriver implements LocationListener {
 		
 		LatLng ll = new LatLng(x, y);
 		UTMRef utmref = ll.toUTMRef();
-		Coords coords = new CoordsTXYA(useLogicalTime(), (float)utmref.getEasting(), (float)utmref.getNorthing(), (float)alt);
+		Coords coords = new CoordsTXYA(Session.getThisDevice().getDeviceID(), useLogicalTime(), (float)utmref.getEasting(), (float)utmref.getNorthing(), (float)alt);
 		return coords;
 
 	}

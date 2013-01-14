@@ -29,15 +29,19 @@ public abstract class ProtocolManager {
 	private static boolean alive = true;
 	public static TextView debugInfo;
 
-	public static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
+	public synchronized static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
 		if(instance == null) {
 			instance = newProtocolManager();
 			if(instance instanceof ProtocolManagerClientServer) {
 				instance.coordsToSend = new LinkedList[1];
+				instance.coordsToSend[0] = new LinkedList<Coords>();
 			} else if(instance instanceof ProtocolManagerP2P) {
 				instance.coordsToSend = new LinkedList[session.numDevices()];	//TODO make this one size less so none for self.
+				System.out.println("Initialising ProtocolManager and thing is "+instance.coordsToSend[0]);	//debug
+				for(int device=0; device < session.numDevices(); device++) {
+					instance.coordsToSend[device] = new LinkedList<Coords>();
+				}
 			}
-			instance.coordsToSend = new LinkedList[session.numDevices()];
 			instance.spawnReceivingThread();
 		}
 		return instance;
@@ -95,24 +99,25 @@ public abstract class ProtocolManager {
 			bb.putFloat(y);
 			bb.putFloat(alt);
 			System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
-			try {
-				//checkInit();
-				DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
-				DataConnectionManager.send(datagram);
 
-				if(Config.debugMode()) {
-					DatagramPacket datagram2 = new DatagramPacket(data, data.length, new InetSocketAddress(Config.getServerIP(), Config.getServerPort()));
-					DataConnectionManager.send(datagram2);
-				}
+		}
+		try {
+			//checkInit();
+			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
+			DataConnectionManager.send(datagram);
 
-
-			} catch (SocketException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(Config.debugMode()) {
+				DatagramPacket datagram2 = new DatagramPacket(data, data.length, new InetSocketAddress(Config.getServerIP(), Config.getServerPort()));
+				DataConnectionManager.send(datagram2);
 			}
+
+
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -121,7 +126,7 @@ public abstract class ProtocolManager {
 		//adds some random data for test
 		Device deviceObject = Session.getDevice(device);
 		for(int i=0; i<1; i++) {
-			Coords coords = new CoordsTXYA((int) (Math.random()*100), (int) (Math.random()*100)+712026, (int) (Math.random()*100)+9828785, (int) (Math.random()*100));
+			Coords coords = new CoordsTXYA(device, (int) (Math.random()*100), (int) (Math.random()*100)+712026, (int) (Math.random()*100)+9828785, (int) (Math.random()*100));
 			System.err.println("now inserting test index: "+coords.getLClock()+" to device "+device);	//debug
 			insertOriginalDataPoint(deviceObject, coords);
 			System.err.println("Finished inputting test data");	//debug
@@ -188,9 +193,15 @@ public abstract class ProtocolManager {
 		}
 		instance = null;
 	}
-
 	protected static void stopReceivingThread() {
 		alive = false;
+	}
+	protected boolean readyToSend(int deviceNumber) {
+		//TODO
+		if (coordsToSend[deviceNumber].size() >= Config.getMinCoordsPerPacket()) {
+			return true;
+		}
+		return false;
 	}
 
 	protected abstract void protocolSpecificDestroy();

@@ -1,9 +1,11 @@
 package uk.ac.cam.jk510.part2project.settings;
 
+import java.util.LinkedList;
 import java.util.Random;
 
 import uk.ac.cam.jk510.part2project.protocol.Proto;
 import uk.ac.cam.jk510.part2project.session.SessionEnum;
+import uk.ac.cam.jk510.part2project.store.Coords;
 import uk.ac.cam.jk510.part2project.store.CoordsType;
 import uk.ac.cam.jk510.part2project.store.HistoryType;
 import android.graphics.Color;
@@ -17,6 +19,7 @@ public class Config {
 	//private static String name = "John";	//Name of local player TODO lookup from OS?
 	private static String name = String.valueOf(Math.random());	//TODO temp fix: random name for each device
 	private static final int keepAlivePeriod = 10000;
+	private static final int minCoordsPerPacket = 5;
 	
 	//Colors
 	private static int bgColor = Color.WHITE;	
@@ -24,11 +27,11 @@ public class Config {
 	private static float posIndicatorSize = 10;	//Radius of circle
 	
 	//Protocol
-	private static Proto protocol = Proto.p2p;
+	private static Proto protocol = Proto.clientServer;
 	private static SessionEnum sesh = SessionEnum.singleSession;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
-	private static final boolean localOnly = (protocol == Proto.p2p);	//Only operate over local network. (e.g wifi) - so dont use external IP addresses.
+	private static final boolean localOnly = (protocol == Proto.p2p) || true;	//Only operate over local network. (e.g wifi) - so dont use external IP addresses.
 	
 	//GPS Updates
 	private static final int gpsUpdateTime = 0;	//minTime between GPS position updates
@@ -36,8 +39,8 @@ public class Config {
 	
 	//Hard-coded app data
 	private static final String UUIDString = "fa87c0d0-afac-11de-8a39-0800200c9a66"; //Randomly created string for use with this app
-	//private static final String serverIP = "78.150.171.124";
-	private static final String localServerIP = "192.168.1.20";
+
+	private static final String localServerIP = "192.168.137.1";
 	private static final String globalServerIP = "jknoxville.no-ip.org";
 	private static final int serverPort = 60000;
 	private static final int defaultClientPort = 60001;
@@ -122,5 +125,8 @@ public class Config {
 	}
 	public static boolean debugMode() {
 		return debugModeOn;
+	}
+	public static int getMinCoordsPerPacket() {
+		return minCoordsPerPacket;
 	}
 }
