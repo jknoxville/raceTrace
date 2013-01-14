@@ -94,6 +94,7 @@ public class Session {
 	
 	public static void destroy() {
 		session = null;
+		Device.reset();
 	}
 
 	public static int getIndex(Device device) {

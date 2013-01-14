@@ -15,7 +15,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import uk.ac.cam.jk510.part2project.protocol.Logger;
+import uk.ac.cam.jk510.part2project.protocol.Proto;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
+import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionPackage;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -23,6 +25,7 @@ import uk.ac.cam.jk510.part2project.settings.Config;
 public class DataConnectionManager {
 
 	private static DatagramSocket socket;
+	private static Socket[] TCPsockets;
 	private static ArrayList<Long> lastSendTimers;
 
 	public static String getMyIP() throws SocketException {
@@ -68,7 +71,7 @@ public class DataConnectionManager {
 		oos.writeObject(pack);
 		updateLastSendTime(0);
 	}
-	
+
 	public static void receive(DatagramPacket datagram) throws IOException {
 		socket.receive(datagram);
 		Logger.download(datagram.getLength());	//TODO +header size
@@ -80,11 +83,11 @@ public class DataConnectionManager {
 	 * Keepalive message contains ids of all alive peers including their last heard from time.
 	 */
 
-	
+
 	private static void updateLastSendTime(int device) {
 		lastSendTimers.add(device, System.currentTimeMillis());
 	}
-	
+
 	public static void keepAlive() {
 		int index = 0;
 		for(Long timer: lastSendTimers) {
@@ -102,11 +105,22 @@ public class DataConnectionManager {
 
 	public static void initDataSocket() {
 		if(socket == null) {
-			try {
-				socket = new DatagramSocket(Config.getDefaultClientPort());
-			} catch (SocketException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(Config.transportProtocol() == Transport.UDP) {
+				try {
+					socket = new DatagramSocket(Config.getDefaultClientPort());
+				} catch (SocketException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				//TCP:
+				if(Config.getProtocol() == Proto.clientServer) {
+					TCPsockets = new Socket[Session.getSession().numDevices()];
+					for(Device d: Session.getSession().getDevices()) {
+						TCPsockets[d.getDeviceID()] = new Socket();	//TODO finish.
+					}
+				}
+
 			}
 		}
 	}

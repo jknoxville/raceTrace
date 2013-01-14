@@ -17,7 +17,7 @@ public abstract class NewSessionActivity extends Activity {
 	 * This activity is always the predecessor of MapDisplayScreen.
 	 */
 
-	Session session;
+	//Session session;
 	Exception exception;
 	static NewSessionActivity instance;
 	
@@ -82,7 +82,9 @@ public abstract class NewSessionActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		ProtocolManager.destroy();
+		Session.destroy();		//TODO added on 14th jan (may break something)
 		instance = null;
 	}
 	

@@ -3,6 +3,7 @@ package uk.ac.cam.jk510.part2project.settings;
 import java.util.LinkedList;
 import java.util.Random;
 
+import uk.ac.cam.jk510.part2project.network.Transport;
 import uk.ac.cam.jk510.part2project.protocol.Proto;
 import uk.ac.cam.jk510.part2project.session.SessionEnum;
 import uk.ac.cam.jk510.part2project.store.Coords;
@@ -31,7 +32,8 @@ public class Config {
 	private static SessionEnum sesh = SessionEnum.singleSession;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
-	private static final boolean localOnly = (protocol == Proto.p2p) || true;	//Only operate over local network. (e.g wifi) - so dont use external IP addresses.
+	private static final boolean localOnly = (protocol == Proto.p2p);	//Only operate over local network. (e.g wifi) - so dont use external IP addresses.
+	private static final Transport transportProtocol = Transport.UDP;
 	
 	//GPS Updates
 	private static final int gpsUpdateTime = 0;	//minTime between GPS position updates
@@ -128,5 +130,8 @@ public class Config {
 	}
 	public static int getMinCoordsPerPacket() {
 		return minCoordsPerPacket;
+	}
+	public static Transport transportProtocol() {
+		return transportProtocol;
 	}
 }

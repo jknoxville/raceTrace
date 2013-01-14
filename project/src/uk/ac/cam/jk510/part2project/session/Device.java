@@ -38,4 +38,9 @@ public class Device {
 		return handle;
 	}
 
+	public static void reset() {
+		deviceCount = 0;
+		
+	}
+
 }

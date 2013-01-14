@@ -2,6 +2,7 @@ package uk.ac.cam.jk510.part2project.graphics;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
@@ -26,7 +27,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 	ArrayList<DevicePath> devicePathList;
 	Path[] pathsToDraw;
 	Session session = Session.getSession();
-	ArrayList<Device> devices;
+	//ArrayList<Device> devices;
 	boolean[] pathIsNew;
 	boolean atLeastOnePointIsOnScreen = false;
 	boolean needToRedraw = true;
@@ -63,7 +64,9 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		vertices.setStyle(Paint.Style.FILL);
 		vertices.setColor(Color.BLACK);
 		this.setBackgroundColor(Config.getBackgroundColor());
+		devicePathList = new ArrayList<DevicePath>();
 		reset();
+		System.out.println("DEVICEPATH SIZE: "+devicePathList.get(0).pathCache.size());
 	}
 
 	private void initPaint(int p) {
@@ -74,9 +77,9 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 	}
 
 	//Resets all state to new state GCing the old state, should be called whenever a new session starts.
-	public void reset() {
+	public synchronized void reset() {
 		session = Session.getSession();
-		devices = session.getDevices();
+		List<Device> devices = session.getDevices();
 		pathsToDraw = new Path[devices.size()];
 		pathIsNew = new boolean[devices.size()];
 		lines = new Paint[devices.size()];
@@ -84,14 +87,16 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 			lines[device] = new Paint();
 			initPaint(device);
 		}
-		devicePathList = new ArrayList<DevicePath>();
+		devicePathList.clear();
 		for(Device d: devices) {
 			devicePathList.add(d.getDeviceID(), new DevicePath());
 		}
+		System.out.println(devicePathList.get(0));
 		PositionStore.subscribeToUpdates(this);
 	}
 
 	private synchronized void updateDeviceTrail(Device device) {
+		System.out.println(device.getDeviceID());
 		DevicePath dp = devicePathList.get(device.getDeviceID());
 		pathsToDraw[device.getDeviceID()] = dp.makePath();	//replace existing path
 		pathsToDraw[device.getDeviceID()].computeBounds(bounds, true);	//debug
@@ -226,7 +231,8 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 
 		//quick fix: always remake all path objects before scaling so they are all scaled correctly.
 		//TODO make this better. its not efficient to redo all paths on every new update
-		for(Device dev: devices) {
+		for(Device dev: Session.getSession().getDevices()) {	//TODO remove all uses of devices variable.
+			System.out.println(dev.getDeviceID());
 			updateDeviceTrail(dev);
 		}
 		this.post(new Runnable() {	//do invalidate() in UI thread
