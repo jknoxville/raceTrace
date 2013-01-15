@@ -24,6 +24,8 @@ import uk.ac.cam.jk510.part2project.store.PositionStore;
 public abstract class ProtocolManager {
 
 	protected LinkedList<Coords>[] coordsToSend;	//one linkedlist for each device to send to. Client server so only one.
+	protected LinkedList<Integer>[] requestArray;
+	private long lastMissingCheck = 0;
 
 	private static ProtocolManager instance;
 	private static boolean alive = true;
@@ -114,6 +116,13 @@ public abstract class ProtocolManager {
 
 	public static void insertNetworkDataPoint(int fromDevice, Coords coords) {
 		PositionStore.insert(fromDevice, coords);
+		if(instance.missingEnoughData()) {
+			instance.sendMissingRequest();
+		}
+	}
+
+	private boolean missingEnoughData() {
+		return updateRequestArray() >= Config.missingDataThreshold();
 	}
 
 	public abstract void spawnReceivingThread();
@@ -144,16 +153,30 @@ public abstract class ProtocolManager {
 		}
 		return false;
 	}
-	
-	protected LinkedList<Integer>[] getRequestArray() {
+
+	protected int updateRequestArray() {
 		@SuppressWarnings("unchecked")
-		LinkedList<Integer>[] requests = new LinkedList[Session.getSession().numDevices()];
-		for(Device device: Session.getSession().getDevices()) {
-			requests[device.getDeviceID()] = device.getAbsentList();
+		//cache this so doesnt get recomputed everytime.
+		int size = 0;
+		if(lastMissingCheck >= System.currentTimeMillis() - Config.missingCheckTimer()) {
+			//too soon, dont recompute.
+		} else {
+			lastMissingCheck = System.currentTimeMillis();
+			LinkedList<Integer>[] requests = new LinkedList[Session.getSession().numDevices()];
+
+			for(Device device: Session.getSession().getDevices()) {
+				requests[device.getDeviceID()] = device.getAbsentList();
+				size += requests[device.getDeviceID()].size();
+			}
+			requestArray = requests;
 		}
-		return requests;
+		return size;
 	}
 	
+	protected LinkedList<Integer>[] getRequestArray() {
+		return requestArray;
+	}
+
 	protected abstract void sendMissingRequest();
 
 	protected abstract void protocolSpecificDestroy();

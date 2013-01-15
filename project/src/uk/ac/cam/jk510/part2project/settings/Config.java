@@ -21,6 +21,8 @@ public class Config {
 	private static String name = String.valueOf(Math.random());	//TODO temp fix: random name for each device
 	private static final int keepAlivePeriod = 10000;
 	private static final int minCoordsPerPacket = 5;
+	private static final int missingDataThreshold = 1;	
+	private static final int missingDataTimeThreshold = 10*1000;	//millisec //TODO make thread update this if no arrivals come.
 	
 	//Colors
 	private static int bgColor = Color.WHITE;	
@@ -133,5 +135,11 @@ public class Config {
 	}
 	public static Transport transportProtocol() {
 		return transportProtocol;
+	}
+	public static int missingDataThreshold() {
+		return missingDataThreshold;
+	}
+	public static long missingCheckTimer() {
+		return missingDataTimeThreshold;
 	}
 }
