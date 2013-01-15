@@ -8,6 +8,7 @@ import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import uk.ac.cam.jk510.part2project.store.Coords;
+import uk.ac.cam.jk510.part2project.store.DevicePath;
 import uk.ac.cam.jk510.part2project.store.PositionStore;
 import uk.ac.cam.jk510.part2project.store.PositionStoreSubscriber;
 import android.content.Context;
@@ -66,7 +67,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		this.setBackgroundColor(Config.getBackgroundColor());
 		devicePathList = new ArrayList<DevicePath>();
 		reset();
-		System.out.println("DEVICEPATH SIZE: "+devicePathList.get(0).pathCache.size());
+		System.out.println("DEVICEPATH SIZE: "+devicePathList.get(0).getPathCache().size());
 	}
 
 	private void initPaint(int p) {
@@ -89,7 +90,9 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		}
 		devicePathList.clear();
 		for(Device d: devices) {
-			devicePathList.add(d.getDeviceID(), new DevicePath());
+			DevicePath dp = new DevicePath();
+			d.setDevicePath(dp);
+			devicePathList.add(d.getDeviceID(), dp);
 		}
 		System.out.println(devicePathList.get(0));
 		PositionStore.subscribeToUpdates(this);

@@ -1,7 +1,10 @@
 package uk.ac.cam.jk510.part2project.session;
 
+import java.util.LinkedList;
+
 import uk.ac.cam.jk510.part2project.protocol.Protocol;
 import uk.ac.cam.jk510.part2project.store.DeviceHistory;
+import uk.ac.cam.jk510.part2project.store.DevicePath;
 
 public class Device {
 	
@@ -11,6 +14,7 @@ public class Device {
 	//private int deviceID;
 	private DeviceHandle handle;
 	private DeviceHistory history;
+	private DevicePath devicePath;	//may be null before it gets set by MapDrawer
 	
 	public Device(String name, DeviceHandle handle, Protocol protocol) throws IllegalAccessException, InstantiationException {
 		this.name = name;
@@ -41,6 +45,13 @@ public class Device {
 	public static void reset() {
 		deviceCount = 0;
 		
+	}
+
+	public void setDevicePath(DevicePath dp) {
+		devicePath = dp;
+	}
+	public LinkedList<Integer> getAbsentList() {
+		return devicePath.getAbsentList();
 	}
 
 }

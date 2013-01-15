@@ -115,9 +115,9 @@ public class Logger {
 		instance.networkDataUpload += bytes;
 	}
 
-	public static void receivedPoint(Device device, int index) {
+	public static void receivedPoint(int aboutDevice, int index) {
 		long time = System.currentTimeMillis();
-		instance.timeOfLastReceipt[device.getDeviceID()] = System.currentTimeMillis();
+		instance.timeOfLastReceipt[aboutDevice] = System.currentTimeMillis();
 
 		extendArrays(index);
 
@@ -126,7 +126,7 @@ public class Logger {
 		int offset = index % blockSize;
 
 		//Set dataPointPresent value to true
-		ArrayList<long[]> arra = instance.receiptTimes[device.getDeviceID()];
+		ArrayList<long[]> arra = instance.receiptTimes[Session.getDevice(aboutDevice).getDeviceID()];
 		long[] array = arra.get(arrayNumber);
 		array[offset] = time;
 

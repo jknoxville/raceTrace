@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import uk.ac.cam.jk510.part2project.network.Message;
+import uk.ac.cam.jk510.part2project.network.MessageType;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
 import uk.ac.cam.jk510.part2project.session.Session;
@@ -133,8 +134,12 @@ public class ServerState implements PositionStoreSubscriber {
 
 		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
 
-		byte[] data = new byte[(5*coordsList.size())*4];	//5 (int|float)s for each coord
+		byte[] data = new byte[(2 + 5*coordsList.size())*4];	//1 int for header, 1 int for fromID + 5 (int|float)s for each coord
 		ByteBuffer bb = ByteBuffer.wrap(data);
+		
+		bb.putInt(MessageType.datapoints.ordinal());	//put header
+		
+		bb.putInt(-1);	//server ID
 
 		for(Coords coords: coordsList) {
 

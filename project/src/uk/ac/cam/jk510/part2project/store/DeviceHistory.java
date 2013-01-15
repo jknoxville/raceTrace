@@ -27,6 +27,8 @@ public abstract class DeviceHistory {
 		
 		//if index is not within range of currently allocated arrays then allocate until it is.
 		int index = coords.getLClock();
+		
+		//TODO Sanity check here before allocation.
 		while(!(index<historyLength())) {
 			System.err.println("Allocating new block, index: "+index+" historyLength: "+historyLength());	//debug
 			for(ArrayList<float[]> l: listOfLists) {
@@ -57,6 +59,8 @@ public abstract class DeviceHistory {
 		
 		//Add point to device's newPoints list
 		newPoints.add(index);
+		
+		
 	}
 	
 	protected int arrayNumber(int index) {
@@ -84,10 +88,6 @@ public abstract class DeviceHistory {
 	}
 
 	public static DeviceHistory newHistory(int device) {
-//		ProtocolManager mgr = ProtocolManager.getProtocolManager();
-//		if(mgr == null) {//debug
-//			System.err.println("mgr is null");
-//		}
 		HistoryType historyType = Config.getHistoryType();
 		DeviceHistory history = null;
 		switch(historyType) {

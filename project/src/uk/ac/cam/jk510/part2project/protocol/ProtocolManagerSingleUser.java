@@ -44,4 +44,9 @@ public class ProtocolManagerSingleUser extends ProtocolManager {
 		
 	}
 
+	@Override
+	protected void sendMissingRequest() {
+		//no-one to send to.
+	}
+
 }

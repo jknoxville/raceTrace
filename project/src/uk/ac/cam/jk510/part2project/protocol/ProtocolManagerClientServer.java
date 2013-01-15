@@ -2,20 +2,14 @@ package uk.ac.cam.jk510.part2project.protocol;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.Message;
 import uk.ac.cam.jk510.part2project.session.Device;
-import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import uk.ac.cam.jk510.part2project.store.Coords;
@@ -55,7 +49,7 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					Message.processServerDatagram(datagram);
+					Message.processDatagram(datagram);
 				}
 			}
 		}).start();
@@ -77,7 +71,7 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	private void sendCoordsToServer(Device aboutDevice, List<Coords> coordsList) {
 
 		checkInit();
-		sendCoordsToAddress(serverSocketAddress, aboutDevice, coordsList);
+		DataConnectionManager.sendCoordsToAddress(serverSocketAddress, aboutDevice, coordsList);
 
 	}
 
@@ -101,5 +95,20 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	@Override
 	public void sendKeepAliveMessage(int device) {
 		//TODO send it.
+	}
+
+	@Override
+	protected void sendMissingRequest() {
+		try {
+		checkInit();
+		DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(serverSocketAddress, getRequestArray());
+		DataConnectionManager.send(datagram);
+		} catch (SocketException e) {
+			//TODO 
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

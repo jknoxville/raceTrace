@@ -50,7 +50,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					Message.processPeerDatagram(datagram);
+					Message.processDatagram(datagram);
 				}
 			}
 		}).start();
@@ -70,7 +70,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 		System.out.println(coordsToSend[toDevice.getDeviceID()]);	//debug
 		coordsToSend[toDevice.getDeviceID()].add(coords);
 		if(readyToSend(toDevice.getDeviceID())) {
-			sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), aboutDevice, coordsToSend[toDevice.getDeviceID()]);
+			DataConnectionManager.sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), aboutDevice, coordsToSend[toDevice.getDeviceID()]);
 			coordsToSend[toDevice.getDeviceID()].clear();
 		}
 	}
@@ -97,6 +97,26 @@ public class ProtocolManagerP2P extends ProtocolManager {
 	public void sendKeepAliveMessage(int index) {
 		// TODO Send it
 
+	}
+
+	@Override
+	protected void sendMissingRequest() {
+		// TODO this
+		try {
+			checkSocketIsOpen();
+			//send request to all devices
+			//TODO make recieve discard packets from self.
+			for(Device toDevice: Session.getSession().getDevices()) {
+				DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), getRequestArray());
+				DataConnectionManager.send(datagram);
+			}
+		} catch (SocketException e) {
+			//TODO 
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

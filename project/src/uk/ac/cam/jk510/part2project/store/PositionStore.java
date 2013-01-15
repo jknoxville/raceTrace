@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
 import uk.ac.cam.jk510.part2project.protocol.Logger;
 import uk.ac.cam.jk510.part2project.session.Device;
+import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 
@@ -20,18 +21,20 @@ public class PositionStore {
 		return d.getHistory().getCoord(index);
 	}
 
-	public static void insert(Device device, Coords coords) {
+	public static void insert(int fromDevice, Coords coords) {
+		//note fromDevice not used. might want it for logger though.
 
 		try {
+			Device aboutDevice = Session.getDevice(coords.getDevice());
 			//insert into the deviceHistory object, this method also adds it to it's newPoints.
-			(device.getHistory()).insert(coords);
+			(aboutDevice.getHistory()).insert(coords);
 			
 			//tell logger
-			Logger.receivedPoint(device, coords.getLClock());
+			Logger.receivedPoint(aboutDevice.getDeviceID(), coords.getLClock());
 
 			//check for subscriber notification condition
-			if(updateReady(device)) {
-				notifyObservers(device);	//TODO move this to after a bunch of points are inserted. not after each point.
+			if(updateReady(aboutDevice)) {
+				notifyObservers(aboutDevice);	//TODO move this to after a bunch of points are inserted. not after each point.
 			}
 		} catch (DataPointPresentException e) {	//Already have the dataPoint being inserted
 			//TODO Log this?
