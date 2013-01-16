@@ -3,11 +3,11 @@ package uk.ac.cam.jk510.part2project.store;
 import java.util.LinkedList;
 
 import uk.ac.cam.jk510.part2project.session.Device;
+import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 
 public class PositionStore {
-	
 
 	private static LinkedList<PositionStoreSubscriber> subscribers = new LinkedList<PositionStoreSubscriber>();
 
@@ -18,21 +18,38 @@ public class PositionStore {
 	public static Coords getCoord(Device d, int index) {
 		return d.getHistory().getCoord(index);
 	}
+	
+	public static LinkedList<Coords> fulfillRequest(LinkedList<Integer>[] requestArray) {
+		LinkedList<Coords> coordsList = new LinkedList<Coords>();
+		//add all matching points to coordsList from each device
+		for(Device d: Session.getSession().getDevices()) {
+			int id = d.getDeviceID();
+			coordsList.addAll(d.getHistory().fulfillRequest(requestArray[id]));
+		}
+		
+		return coordsList;
+	}
 
-	public static void insert(Device device, Coords coords) throws IncompatibleCoordsException {
+	public static void insert(int fromDevice, Coords coords) {
+		//note fromDevice not used. might want it for logger though.
 
 		try {
+			Device aboutDevice = Session.getDevice(coords.getDevice());
 			//insert into the deviceHistory object, this method also adds it to it's newPoints.
-			(device.getHistory()).insert(coords);
-
+			(aboutDevice.getHistory()).insert(coords);
 			
+			//TODO log this in server?
+
 			//check for subscriber notification condition
-			if(updateReady(device)) {
-				notifyObservers(device);
+			if(updateReady(aboutDevice)) {
+				notifyObservers(aboutDevice);	//TODO move this to after a bunch of points are inserted. not after each point.
 			}
 		} catch (DataPointPresentException e) {	//Already have the dataPoint being inserted
 			//TODO Log this?
+			System.err.println("just threw DataPointPresentException so shouldnt notify mapdrawer.");
 			//Want to do anything else here?
+		} catch (IncompatibleCoordsException e) {
+			e.printStackTrace();
 		}
 	}
 

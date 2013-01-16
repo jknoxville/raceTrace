@@ -7,7 +7,7 @@ import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 public abstract class DeviceHistory {
-	
+
 	protected int blockSize;
 	//listOfLists contains all of the float Lists used, so that they can be iterated through to update all lists.
 	protected ArrayList<ArrayList<float[]>> listOfLists;
@@ -17,17 +17,17 @@ public abstract class DeviceHistory {
 	protected int device;
 
 	protected abstract Coords getCoord(int index);
-	
+
 	protected synchronized void insert(Coords coords) throws IncompatibleCoordsException, DataPointPresentException {
 		//Check that right type of Coords object has been provided
 		if (!(checkClass(coords))) {
 			System.err.println(coords.coordsType+" "+coordsType);
 			throw new IncompatibleCoordsException();
 		}
-		
+
 		//if index is not within range of currently allocated arrays then allocate until it is.
 		int index = coords.getLClock();
-		
+
 		//TODO Sanity check here before allocation.
 		while(!(index<historyLength())) {
 			System.err.println("Allocating new block, index: "+index+" historyLength: "+historyLength());	//debug
@@ -36,11 +36,11 @@ public abstract class DeviceHistory {
 			}
 			dataPointPresentList.add(new boolean[blockSize]);
 		}
-		
+
 		//Calculate which array and the offset within it.
 		int arrayNumber = arrayNumber(index);
 		int offset = offset(index);
-		
+
 		//Check to see if already have data for this time range.
 		if(dataPointPresentList.get(arrayNumber)[offset]) {
 			System.err.println("Datapoint already present");	//debug
@@ -48,7 +48,7 @@ public abstract class DeviceHistory {
 		} else {
 			System.err.println("Datapoint not present");	//debug
 		}
-		
+
 		// Let i = the coordinate dimension. Store each coordinate in corresponding array.
 		for(int i = 0; i<coords.getSize(); i++) {
 			ArrayList<float[]> l = listOfLists.get(i);
@@ -56,33 +56,33 @@ public abstract class DeviceHistory {
 		}
 		//Set dataPointPresent value to true
 		dataPointPresentList.get(arrayNumber)[offset] = true;
-		
+
 		//Add point to device's newPoints list
 		newPoints.add(index);
-		
-		
+
+
 	}
-	
+
 	protected int arrayNumber(int index) {
 		return index / blockSize;
 	}
-	
+
 	protected int offset(int index) {
 		return index % blockSize;
 	}
-	
+
 	private boolean checkClass(Coords coords) {
 		return coords.coordsType==coordsType;
 	}
-	
+
 	protected int historyLength() {
 		return dataPointPresentList.size()*blockSize;
 	}
-	
+
 	protected LinkedList<Integer> getNewPoints() {
 		return newPoints;
 	}
-	
+
 	protected void emptyNewPoints() {
 		newPoints.clear();
 	}
@@ -94,12 +94,27 @@ public abstract class DeviceHistory {
 		case XYA: history = new DeviceHistoryXYA(device);
 		break;
 		default: try {
-				throw new Exception();
-			} catch (Exception e) {
-				// TODO anything in this case?
-				e.printStackTrace();
-			}
+			throw new Exception();
+		} catch (Exception e) {
+			// TODO anything in this case?
+			e.printStackTrace();
+		}
 		}
 		return history;
+	}
+
+	public LinkedList<Coords> fulfillRequest(LinkedList<Integer> list) {
+		LinkedList<Coords> response = new LinkedList<Coords>();
+		for(Integer index: list) {
+			//Calculate which array and the offset within it.
+			int arrayNumber = arrayNumber(index);
+			int offset = offset(index);
+
+			//if have this point then get it and add it to the return list
+			if(dataPointPresentList.get(arrayNumber)[offset]) {
+				response.add(getCoord(index));
+			}
+		}
+		return response;
 	}
 }

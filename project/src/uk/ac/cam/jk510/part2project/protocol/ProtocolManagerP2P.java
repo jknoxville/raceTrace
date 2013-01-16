@@ -7,12 +7,14 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.List;
 
 import android.widget.TextView;
 
 import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
-import uk.ac.cam.jk510.part2project.network.Message;
+import uk.ac.cam.jk510.part2project.network.ClientMessage;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
 import uk.ac.cam.jk510.part2project.session.Session;
@@ -50,7 +52,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					Message.processDatagram(datagram);
+					ClientMessage.processDatagram(datagram);
 				}
 			}
 		}).start();
@@ -58,19 +60,39 @@ public class ProtocolManagerP2P extends ProtocolManager {
 	}
 
 	@Override
-	protected void giveToNetwork(Device aboutDevice, Coords coords) {
+	protected void giveToNetwork(Coords coords) {
 		checkSocketIsOpen();
 		for(Device toDevice: Session.getSession().getDevices()) {
 			System.out.println("Sending to device "+toDevice.getDeviceID());	//debug
-			sendCoordsToPeer(toDevice, aboutDevice, coords);
+			sendCoordsToPeer(toDevice, coords);
 		}
 	}
 
-	public void sendCoordsToPeer(Device toDevice, Device aboutDevice, Coords coords) {
+	@Override
+	protected void respondToNetwork(int requester, List<Coords> response) {
+		if(Config.replyToRequestsToMultiplePeers()) {
+			for(Device toDevice: relientPeers()) {
+				sendCoordsListToPeer(toDevice, response);
+			}
+		} else {
+			sendCoordsListToPeer(Session.getDevice(requester), response);
+		}
+	}
+
+	public void sendCoordsToPeer(Device toDevice, Coords coords) {
 		System.out.println(coordsToSend[toDevice.getDeviceID()]);	//debug
 		coordsToSend[toDevice.getDeviceID()].add(coords);
 		if(readyToSend(toDevice.getDeviceID())) {
-			DataConnectionManager.sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), aboutDevice, coordsToSend[toDevice.getDeviceID()]);
+			DataConnectionManager.sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), coordsToSend[toDevice.getDeviceID()]);
+			coordsToSend[toDevice.getDeviceID()].clear();
+		}
+	}
+
+	public void sendCoordsListToPeer(Device toDevice, List<Coords> coordsList) {
+		System.out.println(coordsToSend[toDevice.getDeviceID()]);	//debug
+		coordsToSend[toDevice.getDeviceID()].addAll(coordsList);
+		if(readyToSend(toDevice.getDeviceID())) {
+			DataConnectionManager.sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), coordsToSend[toDevice.getDeviceID()]);
 			coordsToSend[toDevice.getDeviceID()].clear();
 		}
 	}
@@ -106,7 +128,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 			checkSocketIsOpen();
 			//send request to all devices
 			//TODO make recieve discard packets from self.
-			for(Device toDevice: Session.getSession().getDevices()) {
+			for(Device toDevice: requestablePeers()) {
 				DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), getRequestArray());
 				DataConnectionManager.send(datagram);
 			}
@@ -118,5 +140,14 @@ public class ProtocolManagerP2P extends ProtocolManager {
 			e.printStackTrace();
 		}
 	}
-
+	@Override
+	protected List<Device> requestablePeers() {
+		//TODO use setting from config to decide which peers you can request from. e.g have a request circle / tree etc.
+		return Session.getSession().getDevices();
+	}
+	@Override
+	protected List<Device> relientPeers() {
+		//TODO use setting from config to decide which peers you can request from. e.g have a request circle / tree etc.
+		return Session.getSession().getDevices();
+	}
 }

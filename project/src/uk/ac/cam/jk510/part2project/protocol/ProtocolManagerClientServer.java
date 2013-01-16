@@ -5,10 +5,11 @@ import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.LinkedList;
 import java.util.List;
 
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
-import uk.ac.cam.jk510.part2project.network.Message;
+import uk.ac.cam.jk510.part2project.network.ClientMessage;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -21,13 +22,23 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	private static boolean alive = true;
 
 	@Override
-	protected void giveToNetwork(Device aboutDevice, Coords coords) {
+	protected synchronized void giveToNetwork(Coords coords) {
 		checkInit();
 
 		coordsToSend[0].add(coords);
 
 		if(readyToSend(0)) {
-			sendCoordsToServer(aboutDevice, coordsToSend[0]);	//TODO move the "getThisDevice" to a later stage
+			sendCoordsToServer(coordsToSend[0]);
+			coordsToSend[0].clear();
+		}
+	}
+	
+	protected synchronized void respondToNetwork(int requester, List<Coords> response) {
+		checkInit();
+		
+		coordsToSend[0].addAll(response);
+		if(readyToSend(0)) {
+			sendCoordsToServer(coordsToSend[0]);
 			coordsToSend[0].clear();
 		}
 	}
@@ -49,7 +60,8 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					Message.processDatagram(datagram);
+					//TODO this in a new thread, so that it can receive while processing it.
+					ClientMessage.processDatagram(datagram);
 				}
 			}
 		}).start();
@@ -72,10 +84,10 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	}
 
 	//this method was based on Server -> NetworkInterface.sendCoordsToDevice
-	private void sendCoordsToServer(Device aboutDevice, List<Coords> coordsList) {
+	private void sendCoordsToServer(List<Coords> coordsList) {
 
 		checkInit();
-		DataConnectionManager.sendCoordsToAddress(serverSocketAddress, aboutDevice, coordsList);
+		DataConnectionManager.sendCoordsToAddress(serverSocketAddress, coordsList);
 
 	}
 
@@ -114,5 +126,15 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	//TODO these arent strictly correct since in strict c/s protocol, only peer is the server.
+	@Override
+	protected List<Device> requestablePeers() {
+		return Session.getSession().getDevices();
+	}
+	@Override
+	protected List<Device> relientPeers() {
+		return Session.getSession().getDevices();
 	}
 }

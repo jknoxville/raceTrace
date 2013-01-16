@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import uk.ac.cam.jk510.part2project.network.Message;
+import uk.ac.cam.jk510.part2project.network.ServerMessage;
 import uk.ac.cam.jk510.part2project.network.MessageType;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
@@ -126,7 +126,7 @@ public class ServerState implements PositionStoreSubscriber {
 
 		//listen for incoming data and process it:
 		while(true) {
-			Message.processDatagram(net.receiveDatagram());
+			ServerMessage.processDatagram(net.receiveDatagram());
 		}
 	}
 
@@ -136,9 +136,9 @@ public class ServerState implements PositionStoreSubscriber {
 
 		byte[] data = new byte[(2 + 5*coordsList.size())*4];	//1 int for header, 1 int for fromID + 5 (int|float)s for each coord
 		ByteBuffer bb = ByteBuffer.wrap(data);
-		
+
 		bb.putInt(MessageType.datapoints.ordinal());	//put header
-		
+
 		bb.putInt(-1);	//server ID
 
 		for(Coords coords: coordsList) {
@@ -197,20 +197,24 @@ public class ServerState implements PositionStoreSubscriber {
 					}
 				}
 			}
-			for(Device toDevice: Session.getSession().getDevices()) {
-				if(!coordsToSend[toDevice.getDeviceID()].isEmpty()) {
-					InetSocketAddress sockadd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
-					sendCoordsToAddress(sockadd, coordsToSend[toDevice.getDeviceID()]);
-					coordsToSend[toDevice.getDeviceID()].clear();
-				}
-			}
 			for(LinkedList<Integer> list: globalNewPoints) {	//clear newPointsLists
 				list.clear();
 			}
-			numNewPoints = 0;
-			timeOfLastSend = System.currentTimeMillis();	//reset timer
+			sendCoordsInQueue();
 
+			numNewPoints = 0;
 		}
+	}
+
+	private static synchronized void sendCoordsInQueue() {
+		for(Device toDevice: Session.getSession().getDevices()) {
+			if(!coordsToSend[toDevice.getDeviceID()].isEmpty()) {
+				InetSocketAddress sockadd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
+				sendCoordsToAddress(sockadd, coordsToSend[toDevice.getDeviceID()]);
+				coordsToSend[toDevice.getDeviceID()].clear();
+			}
+		}
+		timeOfLastSend = System.currentTimeMillis();	//reset timer
 	}
 
 	@Override
@@ -242,5 +246,16 @@ public class ServerState implements PositionStoreSubscriber {
 		}
 
 	}
-	//TODO want to send session object just created to devices then start tracking.
+
+	public static void serviceRequest(int fromID, LinkedList<Integer>[] requestArray) {
+		LinkedList<Coords> response = PositionStore.fulfillRequest(requestArray);
+		respondToNetwork(fromID, response);
+		//TODO issue new request to culprit to get the remaining points.
+	}
+
+	//note this doesnt wait before sending. Will respond as soon as it can.
+	private static synchronized void respondToNetwork(int fromID, LinkedList<Coords> response) {
+		coordsToSend[fromID].addAll(response);
+		sendCoordsInQueue();
+	}
 }

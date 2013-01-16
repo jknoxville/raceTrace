@@ -2,7 +2,6 @@ package uk.ac.cam.jk510.part2project.store;
 
 import java.util.LinkedList;
 
-import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
 import uk.ac.cam.jk510.part2project.protocol.Logger;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
@@ -19,6 +18,17 @@ public class PositionStore {
 
 	public static Coords getCoord(Device d, int index) {
 		return d.getHistory().getCoord(index);
+	}
+	
+	public static LinkedList<Coords> fulfillRequest(LinkedList<Integer>[] requestArray) {
+		LinkedList<Coords> coordsList = new LinkedList<Coords>();
+		//add all matching points to coordsList from each device
+		for(Device d: Session.getSession().getDevices()) {
+			int id = d.getDeviceID();
+			coordsList.addAll(d.getHistory().fulfillRequest(requestArray[id]));
+		}
+		
+		return coordsList;
 	}
 
 	public static void insert(int fromDevice, Coords coords) {

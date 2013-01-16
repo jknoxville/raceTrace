@@ -31,7 +31,8 @@ public class DataConnectionManager {
 
 	private static DatagramSocket socket;
 	private static Socket[] TCPsockets;
-	private static ArrayList<Long> lastSendTimers;
+	private static long[] keepAliveTimers;	//only for keepAlive messages
+	private static long timeOfLastSend;	//one timer for all recipents.
 
 	public static String getMyIP() throws SocketException {
 
@@ -90,13 +91,13 @@ public class DataConnectionManager {
 
 
 	private static void updateLastSendTime(int device) {
-		lastSendTimers.add(device, System.currentTimeMillis());
+		keepAliveTimers[device] = System.currentTimeMillis();
 	}
 
 	public static void keepAlive() {
 		int index = 0;
-		for(Long timer: lastSendTimers) {
-			if(timer == null || timer+Config.getKeepAlivePeriod()<System.currentTimeMillis()) {
+		for(long timer: keepAliveTimers) {
+			if(timer == 0 || timer+Config.getKeepAlivePeriod()<System.currentTimeMillis()) {
 				//TODO send keep alive message
 				ProtocolManager.getProtocolManager().sendKeepAliveMessage(index);
 			}
@@ -106,6 +107,7 @@ public class DataConnectionManager {
 
 	public static void send(DatagramPacket datagram) throws IOException {
 		socket.send(datagram);
+		timeOfLastSend = System.currentTimeMillis();
 	}
 
 	public static void initDataSocket() {
@@ -129,7 +131,7 @@ public class DataConnectionManager {
 		}
 	}
 	
-	public static void sendCoordsToAddress(final InetSocketAddress toSocketAddress, Device aboutDevice, List<Coords> coordsList) {
+	public static void sendCoordsToAddress(final InetSocketAddress toSocketAddress, List<Coords> coordsList) {
 
 		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
 		int fromDeviceID = Session.getThisDevice().getDeviceID();	//used to identify sender to the recipent.
@@ -138,12 +140,12 @@ public class DataConnectionManager {
 		ByteBuffer bb = ByteBuffer.wrap(data);
 		
 		bb.putInt(MessageType.datapoints.ordinal());	//put message header
-		bb.putInt(fromDeviceID);	//	TODO this is added, update all recipents so it doesnt shift everything wrongly
+		bb.putInt(fromDeviceID);	//
 		//							This are to go at the start of each packet, not each coordinate (if >1 coord per packet)
 
 		for(Coords coords: coordsList) {
 
-			int aboutDeviceID = aboutDevice.getDeviceID();	//deviceID of the device whose location this point is.
+			int aboutDeviceID = coords.getDevice();	//deviceID of the device whose location this point is.
 			int lClock = coords.getLClock();
 			float x = coords.getCoord(0);
 			float y = coords.getCoord(1);
@@ -186,15 +188,17 @@ public class DataConnectionManager {
 				numMissingDevices += 1;
 			}
 		}
-		byte[] data = new byte[4+4*size+8*numMissingDevices];
+		byte[] data = new byte[4+4+4*size+8*numMissingDevices];
 		/*
 		 * 4 byte int header to identify the request message
+		 * 4 byte int fromID
 		 * 4 byte int for each missing point, of which there are size
 		 * 2 4 byte ints preceeding each list of missing points for those devices that have any. thats a -1 marker, and then device ID
 		 */
 		ByteBuffer bb = ByteBuffer.wrap(data);
 		
 		bb.putInt(MessageType.request.ordinal());	//first 4 bytes: request header
+		bb.putInt(Session.getThisDevice().getDeviceID());	//put fromID
 		
 		for(int device = 0; device<Session.getSession().numDevices(); device++) {
 			if(requestArray[device].size() > 0) {
@@ -207,5 +211,8 @@ public class DataConnectionManager {
 		}
 		DatagramPacket datagram = new DatagramPacket(data, data.length, socketAddress);
 		return datagram;
+	}
+	public static long timeOfLastSend() {
+		return timeOfLastSend;
 	}
 }

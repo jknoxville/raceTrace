@@ -25,6 +25,7 @@ import uk.ac.cam.jk510.part2project.store.PositionStore;
 public abstract class ProtocolManager {
 
 	protected LinkedList<Coords>[] coordsToSend;	//one linkedlist for each device to send to. Client server so only one.
+	protected long[] timeOfLastSend;
 	private long timeSinceastMissingCheck = 0;
 	private long pointsSinceLastMissingCheck = 0;
 
@@ -106,7 +107,7 @@ public abstract class ProtocolManager {
 		new Thread(new Runnable() {
 			public void run() {
 				// TODO Auto-generated method stub
-				instance.giveToNetwork(device, coords);
+				instance.giveToNetwork(coords);
 			}
 		}).start();
 
@@ -120,6 +121,9 @@ public abstract class ProtocolManager {
 	public static synchronized void insertNetworkDataPoint(int fromDevice, Coords coords) {
 		PositionStore.insert(fromDevice, coords);
 		instance.pointsSinceLastMissingCheck++;
+
+		//TODO ideally should be done at the end of processing the whole packet, not each point in the packet
+		//also consider the case where the recieved packet is full of missing data, this will increment counter and trigger a missingCheck. Probably desirable.
 		if(instance.pointsSinceLastMissingCheck >= Config.missingDataCheckThreshold()) {
 			instance.sendMissingRequest();
 		}
@@ -127,7 +131,7 @@ public abstract class ProtocolManager {
 
 
 
-	protected abstract void giveToNetwork(Device device, Coords coords);
+	protected abstract void giveToNetwork(Coords coords);
 
 	public static void destroy() {
 		ProtocolManager.stopReceivingThread();
@@ -143,6 +147,10 @@ public abstract class ProtocolManager {
 		//TODO
 		if (coordsToSend[deviceNumber].size() >= Config.getMinCoordsPerPacket()) {
 			return true;
+		} else {
+			if(DataConnectionManager.timeOfLastSend() + Config.getSendTimeout() <= System.currentTimeMillis() && coordsToSend[deviceNumber].size()>0) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -165,22 +173,51 @@ public abstract class ProtocolManager {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					if(pointsSinceLastMissingCheck > 0) {
+					if(timeSinceastMissingCheck + Config.missingCheckTimer() <= System.currentTimeMillis()) {
 						sendMissingRequest();
 					}
 				}
 			}
 		}).start();
 	}
+	
+	public void spawnSendingTimeoutThread() {
+		new Thread(new Runnable() {
+			public void run() {
+				while(alive) {
+					try {
+						Thread.sleep(Config.getSendTimeout());
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//TODO this sort of thing:
+//					if(ready(i)) {
+//						instance.sendCoordsQueue();
+//					}
+				}
+			}
+		}).start();
+	}
 
+	public static void serviceRequestAsClient(int fromID, LinkedList<Integer>[] requestArray) {
+		instance.serviceRequest(fromID, requestArray);
+	}
+	private void serviceRequest(int fromID, LinkedList<Integer>[] requestArray) {
+		LinkedList<Coords> response = PositionStore.fulfillRequest(requestArray);
+		respondToNetwork(fromID, response);
+	}
+
+	protected abstract void respondToNetwork(int requester, List<Coords> response);
+	protected abstract List<Device> requestablePeers();
+	protected abstract List<Device> relientPeers();
 	public abstract void spawnReceivingThread();
-
 	protected abstract void sendMissingRequest();
-
 	protected abstract void protocolSpecificDestroy();
-
 	public abstract void distributeSession(Session session) throws UnknownHostException, IOException;
-
 	public abstract void sendKeepAliveMessage(int index);
+	
+
+
 
 }
