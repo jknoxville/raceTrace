@@ -56,15 +56,19 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	}
 
 	public void spawnKeepAliveThread() {
-		while(alive) {
-			try {
-				Thread.sleep(Config.getKeepAlivePeriod());
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		new Thread(new Runnable() {
+			public void run() {
+				while(alive) {
+					try {
+						Thread.sleep(Config.getKeepAlivePeriod());
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					DataConnectionManager.keepAlive();
+				}
 			}
-			DataConnectionManager.keepAlive();
-		}
+		}).start();
 	}
 
 	//this method was based on Server -> NetworkInterface.sendCoordsToDevice
@@ -100,9 +104,9 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	@Override
 	protected void sendMissingRequest() {
 		try {
-		checkInit();
-		DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(serverSocketAddress, getRequestArray());
-		DataConnectionManager.send(datagram);
+			checkInit();
+			DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(serverSocketAddress, getRequestArray());
+			DataConnectionManager.send(datagram);
 		} catch (SocketException e) {
 			//TODO 
 			e.printStackTrace();

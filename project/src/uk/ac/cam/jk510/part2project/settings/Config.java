@@ -21,8 +21,11 @@ public class Config {
 	private static String name = String.valueOf(Math.random());	//TODO temp fix: random name for each device
 	private static final int keepAlivePeriod = 10000;
 	private static final int minCoordsPerPacket = 5;
-	private static final int missingDataThreshold = 1;	
-	private static final int missingDataTimeThreshold = 10*1000;	//millisec //TODO make thread update this if no arrivals come.
+	
+	//Missing Data / Requests
+	private static final int missingDataThreshold = 1;	//number of missing points before request is sent to other devices.
+	private static final int missingDataTimeThreshold = 10*1000;	//millisec max time between checks for missing data.
+	private static final int missingDataCheckThreshold = 10;	//number of network points received that triggers missing check.
 	
 	//Colors
 	private static int bgColor = Color.WHITE;	
@@ -141,5 +144,8 @@ public class Config {
 	}
 	public static long missingCheckTimer() {
 		return missingDataTimeThreshold;
+	}
+	public static long missingDataCheckThreshold() {
+		return missingDataCheckThreshold;
 	}
 }

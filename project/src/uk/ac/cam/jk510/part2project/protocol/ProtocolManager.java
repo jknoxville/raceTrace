@@ -12,6 +12,7 @@ import java.util.List;
 
 import android.widget.TextView;
 
+import uk.ac.cam.jk510.part2project.graphics.MapDrawer;
 import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.session.Device;
@@ -24,8 +25,8 @@ import uk.ac.cam.jk510.part2project.store.PositionStore;
 public abstract class ProtocolManager {
 
 	protected LinkedList<Coords>[] coordsToSend;	//one linkedlist for each device to send to. Client server so only one.
-	protected LinkedList<Integer>[] requestArray;
-	private long lastMissingCheck = 0;
+	private long timeSinceastMissingCheck = 0;
+	private long pointsSinceLastMissingCheck = 0;
 
 	private static ProtocolManager instance;
 	private static boolean alive = true;
@@ -45,6 +46,7 @@ public abstract class ProtocolManager {
 				}
 			}
 			instance.spawnReceivingThread();
+			instance.spawnMissingCheckTimerThread();
 		}
 		return instance;
 	}
@@ -114,25 +116,16 @@ public abstract class ProtocolManager {
 		PositionStore.insert(device.getDeviceID(), coords);
 	}
 
-	public static void insertNetworkDataPoint(int fromDevice, Coords coords) {
+	//sync because increments counter
+	public static synchronized void insertNetworkDataPoint(int fromDevice, Coords coords) {
 		PositionStore.insert(fromDevice, coords);
-		if(instance.missingEnoughData()) {
+		instance.pointsSinceLastMissingCheck++;
+		if(instance.pointsSinceLastMissingCheck >= Config.missingDataCheckThreshold()) {
 			instance.sendMissingRequest();
 		}
 	}
 
-	private boolean missingEnoughData() {
-		return updateRequestArray() >= Config.missingDataThreshold();
-	}
 
-	public abstract void spawnReceivingThread();
-
-	//	@Deprecated
-	//	public static MapDrawer initialiseMapDrawer(Context context) throws IllegalAccessException, InstantiationException {
-	//		MapDrawer mapDrawer = new MapDrawer(context, session);
-	//		mapDrawer.setBackgroundColor(Config.getBackgroundColor());
-	//		return mapDrawer;
-	//	}
 
 	protected abstract void giveToNetwork(Device device, Coords coords);
 
@@ -154,28 +147,33 @@ public abstract class ProtocolManager {
 		return false;
 	}
 
-	protected int updateRequestArray() {
-		@SuppressWarnings("unchecked")
-		//cache this so doesnt get recomputed everytime.
-		int size = 0;
-		if(lastMissingCheck >= System.currentTimeMillis() - Config.missingCheckTimer()) {
-			//too soon, dont recompute.
-		} else {
-			lastMissingCheck = System.currentTimeMillis();
-			LinkedList<Integer>[] requests = new LinkedList[Session.getSession().numDevices()];
-
-			for(Device device: Session.getSession().getDevices()) {
-				requests[device.getDeviceID()] = device.getAbsentList();
-				size += requests[device.getDeviceID()].size();
-			}
-			requestArray = requests;
-		}
-		return size;
-	}
-	
 	protected LinkedList<Integer>[] getRequestArray() {
+		LinkedList<Integer>[] requestArray = new LinkedList[Session.getSession().numDevices()];
+		for(Device d: Session.getSession().getDevices()) {
+			requestArray[d.getDeviceID()] = d.getAbsentList();
+		}
 		return requestArray;
 	}
+
+	public void spawnMissingCheckTimerThread() {
+		new Thread(new Runnable() {
+			public void run() {
+				while(alive) {
+					try {
+						Thread.sleep(Config.missingCheckTimer());
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if(pointsSinceLastMissingCheck > 0) {
+						sendMissingRequest();
+					}
+				}
+			}
+		}).start();
+	}
+
+	public abstract void spawnReceivingThread();
 
 	protected abstract void sendMissingRequest();
 
