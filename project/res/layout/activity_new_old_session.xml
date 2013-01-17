@@ -4,19 +4,39 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-	<Button
-	    android:layout_weight="1"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:text="@string/button_new_session"
-	    android:onClick="newSession"
-	    />
-	<Button
-	    android:layout_weight="1"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:text="@string/button_load_session"
-	    android:onClick="loadSession"
-	    />
-	    
+    <!-- <Button -->
+    <!-- android:layout_width="match_parent" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:layout_weight="1" -->
+    <!-- android:onClick="newSession" -->
+    <!-- android:text="@string/button_newSession" /> -->
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:onClick="internetSetup"
+        android:text="@string/button_internet_setup" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:onClick="bluetoothSetup"
+        android:text="@string/button_bluetooth_setup" />
+
+    <!-- <Button -->
+    <!-- android:layout_width="match_parent" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:layout_weight="1" -->
+    <!-- android:onClick="loadSession" -->
+    <!-- android:text="@string/button_load_session" /> -->
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:onClick="settings"
+        android:text="@string/button_settings" />
+
 </LinearLayout>

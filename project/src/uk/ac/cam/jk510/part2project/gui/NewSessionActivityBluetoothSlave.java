@@ -2,6 +2,8 @@ package uk.ac.cam.jk510.part2project.gui;
 
 import uk.ac.cam.jk510.part2project.R;
 import uk.ac.cam.jk510.part2project.session.SessionManagerBluetooth;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -39,5 +41,13 @@ public class NewSessionActivityBluetoothSlave extends NewSessionActivity {
 	protected void setUpSession() throws Exception {
 		// TODO Auto-generated method stub
 
+	}
+	
+	protected void onActivityResult(int pRequestCode, int resultCode, Intent data) {
+		if(pRequestCode == SessionManagerBluetooth.REQUEST_ENABLE_BT) {
+			if (resultCode == Activity.RESULT_CANCELED) {
+				onBackPressed();
+			}
+		}
 	}
 }

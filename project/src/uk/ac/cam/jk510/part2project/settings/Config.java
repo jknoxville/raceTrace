@@ -12,20 +12,25 @@ import uk.ac.cam.jk510.part2project.store.HistoryType;
 import android.graphics.Color;
 
 public class Config {
+	
+	/*
+	 * Currently used to store all settings and values.
+	 * Will eventually be used only for hard coded app data, with PreferenceManager catering for the adjustable settings.
+	 */
 
 	private static final int MinUpdateRedrawSize = 1;	//number of new points to recieve before redrawing
-	private static int MapLineThickness = 2;	//thickness of paths drawn in MapDisplayScreen
+	private static int MapLineThickness = 3;	//thickness of paths drawn in MapDisplayScreen
 	private static int arrayBlockSize = 600;		// At 1 per second, thats 10 mins per chunk
 	private static int arrayIndexFrequency = 10;	// Finest granularity of points. In samples per 10 sec.
 	//private static String name = "John";	//Name of local player TODO lookup from OS?
 	private static String name = String.valueOf(Math.random());	//TODO temp fix: random name for each device
 	private static final int keepAlivePeriod = 10000;
 	private static final int minCoordsPerPacket = 5;
-	private static final long sendTimeout = 10*1000;	//max t=time to wait before sending an incomplete packet.
+	private static final long sendTimeout = 5*1000;	//max t=time to wait before sending an incomplete packet.
 	
 	//Missing Data / Requests
 	private static final int missingDataThreshold = 1;	//number of missing points before request is sent to other devices.
-	private static final int missingDataTimeThreshold = 10*1000;	//millisec max time between checks for missing data.
+	private static final int missingDataTimeThreshold = 20*1000;	//millisec max time between checks for missing data.
 	private static final int missingDataCheckThreshold = 10;	//number of network points received that triggers missing check.
 	private static final boolean replyToRequestsToMultiplePeers = false;	/*	when set, whenever a device responds to a missing request, it will send its response
 																		to all requestable peers and not just the requester. */
@@ -35,8 +40,11 @@ public class Config {
 	private static int[] colors = {Color.BLUE, Color.GREEN, Color.RED};	//TODO add more colours
 	private static float posIndicatorSize = 10;	//Radius of circle
 	
+	//Map Displaying
+	private static final int charsOfNameToShow = 6;
+	
 	//Protocol
-	private static Proto protocol = Proto.clientServer;
+	private static Proto protocol = Proto.p2p;
 	private static SessionEnum sesh = SessionEnum.singleSession;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
@@ -60,10 +68,12 @@ public class Config {
 	private static final int nameSize = 4;
 	
 	//Debug
-	private static final boolean debugModeOn = true;
-	/*
-	 * Send all p2p packets to server as well
-	 */
+	private static final boolean debugModeOn = true;	//Send all p2p packets to server as well
+	private static final int sampleXDerby = 712026;
+	private static final int sampleYDerby = 9828785;
+	private static final int sampleXCam = 11195;
+	private static final int sampleYCam = 634959;
+	private static final boolean testingInCam = true;
 	
 	//Getter methods
 	public static int getMapLineThickness() {
@@ -157,4 +167,17 @@ public class Config {
 	public static long getSendTimeout() {
 		return sendTimeout;
 	}
+	public static int getSampleX() {
+		return testingInCam?sampleXCam:sampleXDerby;
+	}
+	public static int getSampleY() {
+		return testingInCam?sampleYCam:sampleYDerby;
+	}
+	public static int charsOfNameToShow() {
+		return charsOfNameToShow;
+	}
+//	public static String getExternalServerIP() {
+//		//Only to be used for session setup. For main server comms should use getServerIP().
+//		return globalServerIP;
+//	}
 }

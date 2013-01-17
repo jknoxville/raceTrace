@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.View;
 
@@ -16,6 +17,7 @@ public class NewOldSession extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         setContentView(R.layout.activity_new_old_session);
     }
 
@@ -26,6 +28,8 @@ public class NewOldSession extends Activity {
     }
     
     //go to set up session screen
+    //Use this method in the case that the setup method is stored in app preferences and always used. Instead of having several different setup buttons.
+    @Deprecated
     public void newSession(final View view) throws Exception {
     	final Context context = this;
     	new Thread(new Runnable() {
@@ -61,8 +65,63 @@ public class NewOldSession extends Activity {
     			});
     		}
     	}).start();
-
-    	
+    }
+    
+    public void internetSetup(final View view) throws Exception {
+    	final Context context = this;
+    	new Thread(new Runnable() {
+    		/*
+    		 * State left on thread exit:
+    		 * some NewSessionActivity has been started.
+    		 */
+    		public void run() {
+    			//get UI thread to advance
+    			view.post(new Runnable() {
+    				public void run() {
+    					Intent intent = new Intent(context, NewSessionActivitySingleSession.class);
+    					startActivityForResult(intent, 1);
+    				}
+    			});
+    		}
+    	}).start();
+    }
+    
+    public void bluetoothSetup(final View view) throws Exception {
+    	final Context context = this;
+    	new Thread(new Runnable() {
+    		/*
+    		 * State left on thread exit:
+    		 * some NewSessionActivity has been started.
+    		 */
+    		public void run() {
+    			//get UI thread to advance
+    			view.post(new Runnable() {
+    				public void run() {
+    					Intent intent = new Intent(context, SMBTserverorclient.class);
+    					startActivityForResult(intent, 1);
+    				}
+    			});
+    		}
+    	}).start();
+    }
+    
+    public void settings(final View view) throws Exception {
+    	final Context context = this;
+    	new Thread(new Runnable() {
+    		/*
+    		 * State left on thread exit:
+    		 * some NewSessionActivity has been started.
+    		 */
+    		public void run() {
+    			//get UI thread to advance
+    			view.post(new Runnable() {
+    				public void run() {
+    					Intent intent = new Intent(context, SettingsActivity.class);
+    					startActivity(intent);
+    				}
+    			});
+    		}
+    	}).start();
     }
     
     public void loadSession(View view) {

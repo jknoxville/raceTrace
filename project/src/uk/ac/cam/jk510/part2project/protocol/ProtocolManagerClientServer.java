@@ -32,10 +32,10 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 			coordsToSend[0].clear();
 		}
 	}
-	
+
 	protected synchronized void respondToNetwork(int requester, List<Coords> response) {
 		checkInit();
-		
+
 		coordsToSend[0].addAll(response);
 		if(readyToSend(0)) {
 			sendCoordsToServer(coordsToSend[0]);
@@ -71,13 +71,14 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 		new Thread(new Runnable() {
 			public void run() {
 				while(alive) {
+					DataConnectionManager.keepAlive();
 					try {
 						Thread.sleep(Config.getKeepAlivePeriod());
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					DataConnectionManager.keepAlive();
+					
 				}
 			}
 		}).start();
@@ -118,7 +119,9 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 		try {
 			checkInit();
 			DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(serverSocketAddress, getRequestArray());
-			DataConnectionManager.send(datagram);
+			if(datagram != null) {
+				DataConnectionManager.send(datagram);
+			}
 		} catch (SocketException e) {
 			//TODO 
 			e.printStackTrace();

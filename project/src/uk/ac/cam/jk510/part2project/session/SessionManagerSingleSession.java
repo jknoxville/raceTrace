@@ -47,9 +47,7 @@ public class SessionManagerSingleSession extends SessionManager {
 							view.post(new Runnable() {
 
 								public void run() {
-
 									try {
-
 										//TODO go to mapdisplayscreen
 										activity.onSetupComplete();
 
@@ -60,7 +58,7 @@ public class SessionManagerSingleSession extends SessionManager {
 								}
 
 							});
-
+							
 						} catch (UnknownHostException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

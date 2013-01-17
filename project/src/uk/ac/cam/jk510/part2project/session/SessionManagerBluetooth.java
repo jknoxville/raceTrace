@@ -31,7 +31,7 @@ import android.widget.ListView;
 
 public class SessionManagerBluetooth extends SessionManager {
 
-	private static final int REQUEST_ENABLE_BT = 1;
+	public static final int REQUEST_ENABLE_BT = 1;
 	private static BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 	private static ArrayList<BluetoothDevice> deviceList;
 	private static LinkedList<BluetoothDevice> selectedList;

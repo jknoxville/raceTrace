@@ -72,7 +72,7 @@ public abstract class ProtocolManager {
 		//adds some random data for test
 		Device deviceObject = Session.getDevice(device);
 		for(int i=0; i<1; i++) {
-			Coords coords = new CoordsTXYA(device, (int) (Math.random()*100), (int) (Math.random()*100)+712026, (int) (Math.random()*100)+9828785, (int) (Math.random()*100));
+			Coords coords = new CoordsTXYA(device, (int) (Math.random()*100), (int) (Math.random()*100)+Config.getSampleX(), (int) (Math.random()*100)+Config.getSampleY(), (int) (Math.random()*100));
 			System.err.println("now inserting test index: "+coords.getLClock()+" to device "+device);	//debug
 			insertOriginalDataPoint(deviceObject, coords);
 			System.err.println("Finished inputting test data");	//debug
@@ -166,35 +166,45 @@ public abstract class ProtocolManager {
 	public void spawnMissingCheckTimerThread() {
 		new Thread(new Runnable() {
 			public void run() {
-				while(alive) {
+				while(!MapDrawer.initialised()) {
 					try {
 						Thread.sleep(Config.missingCheckTimer());
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+				}
+				while(alive) {
 					if(timeSinceastMissingCheck + Config.missingCheckTimer() <= System.currentTimeMillis()) {
 						sendMissingRequest();
 					}
+					try {
+						Thread.sleep(Config.missingCheckTimer());
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
 				}
 			}
 		}).start();
 	}
-	
+
 	public void spawnSendingTimeoutThread() {
 		new Thread(new Runnable() {
 			public void run() {
 				while(alive) {
+					//TODO this sort of thing:
+					//					if(ready(i)) {
+					//						instance.sendCoordsQueue();
+					//					}
 					try {
 						Thread.sleep(Config.getSendTimeout());
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					//TODO this sort of thing:
-//					if(ready(i)) {
-//						instance.sendCoordsQueue();
-//					}
+
 				}
 			}
 		}).start();
@@ -216,7 +226,7 @@ public abstract class ProtocolManager {
 	protected abstract void protocolSpecificDestroy();
 	public abstract void distributeSession(Session session) throws UnknownHostException, IOException;
 	public abstract void sendKeepAliveMessage(int index);
-	
+
 
 
 

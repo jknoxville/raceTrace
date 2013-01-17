@@ -179,6 +179,7 @@ public class DataConnectionManager {
 	}
 
 	public static DatagramPacket createRequestMessageWithAddress(final InetSocketAddress socketAddress, LinkedList<Integer>[] requestArray) throws SocketException {
+		//TODO move this to a more sensible place
 		
 		int size = 0;	//total number of absent points
 		int numMissingDevices = 0;
@@ -188,6 +189,7 @@ public class DataConnectionManager {
 				numMissingDevices += 1;
 			}
 		}
+		if(numMissingDevices == 0) {return null;}	//no need to make empty datagram
 		byte[] data = new byte[4+4+4*size+8*numMissingDevices];
 		/*
 		 * 4 byte int header to identify the request message
@@ -201,6 +203,7 @@ public class DataConnectionManager {
 		bb.putInt(Session.getThisDevice().getDeviceID());	//put fromID
 		
 		for(int device = 0; device<Session.getSession().numDevices(); device++) {
+			System.out.println("requesting for device "+device);	//debug
 			if(requestArray[device].size() > 0) {
 				bb.putInt(-1);
 				bb.putInt(device);

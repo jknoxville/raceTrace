@@ -24,10 +24,12 @@ import android.view.View;
 public class MapDrawer extends View implements PositionStoreSubscriber {
 	//Paint line = new Paint();
 	Paint[] lines;
+	Paint[] labels;
 	Paint vertices = new Paint();
 	ArrayList<DevicePath> devicePathList;
 	Path[] pathsToDraw;
 	Session session = Session.getSession();
+	private static MapDrawer instance;
 	//ArrayList<Device> devices;
 	boolean[] pathIsNew;
 	boolean atLeastOnePointIsOnScreen = false;
@@ -35,6 +37,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 	float oldScale;
 	float oldpTop;
 	float oldpLeft;
+	String[] names;
 
 	RectF bounds = new RectF();
 	Matrix mat = new Matrix();
@@ -62,12 +65,14 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 
 	public MapDrawer(Context context, AttributeSet att) throws IllegalAccessException, InstantiationException {
 		super(context);
+		instance = this;
 		vertices.setStyle(Paint.Style.FILL);
 		vertices.setColor(Color.BLACK);
 		this.setBackgroundColor(Config.getBackgroundColor());
 		devicePathList = new ArrayList<DevicePath>();
 		reset();
 		System.out.println("DEVICEPATH SIZE: "+devicePathList.get(0).getPathCache().size());
+		
 	}
 
 	private void initPaint(int p) {
@@ -75,6 +80,10 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		paint.setStrokeWidth(Config.getMapLineThickness());
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setColor(Config.getColor(p));
+		Paint label = labels[p];
+		label.setTextSize(30);
+		label.setStyle(Paint.Style.FILL);
+		label.setColor(Config.getColor(p));
 	}
 
 	//Resets all state to new state GCing the old state, should be called whenever a new session starts.
@@ -84,8 +93,11 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		pathsToDraw = new Path[devices.size()];
 		pathIsNew = new boolean[devices.size()];
 		lines = new Paint[devices.size()];
+		labels = new Paint[devices.size()];
+		names = session.getDeviceNames();
 		for(int device=0; device<devices.size(); device++) {
 			lines[device] = new Paint();
+			labels[device] = new Paint();
 			initPaint(device);
 		}
 		devicePathList.clear();
@@ -191,18 +203,17 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 
 			//draw all paths regardless of new or not
 			canvas.drawPath(path, lines[device]);
-
+			
 			//draw position Indicators
 			DevicePath dp = devicePathList.get(device);
 			if(needToRedraw) {
 				oldScale = scale;
 				oldpTop = pTop;
 				oldpLeft = pLeft;
-				canvas.drawCircle((dp.getPositionX()-pLeft)*scale, (dp.getPositionY()-pTop)*scale, Config.getPosIndicatorSize(), lines[device]);
+				drawPositionIndicator(canvas, dp, pLeft, pTop, scale, device);
 				needToRedraw = false;
 			} else {
-				canvas.drawCircle((dp.getPositionX()-oldpLeft)*oldScale, (dp.getPositionY()-oldpTop)*oldScale, Config.getPosIndicatorSize(), lines[device]);
-				
+				drawPositionIndicator(canvas, dp, pLeft, pTop, scale, device);
 				/*
 				 * Why is this (^^^) needed?
 				 * For some reason, onDraw sometimes gets called when it doesnt need to be.
@@ -217,6 +228,11 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		}
 		mat.reset();
 
+	}
+	
+	private void drawPositionIndicator(Canvas canvas, DevicePath dp, float pLeft, float pTop, float scale, int device) {
+		canvas.drawCircle((dp.getPositionX()-oldpLeft)*oldScale, (dp.getPositionY()-oldpTop)*oldScale, Config.getPosIndicatorSize(), labels[device]);
+		canvas.drawText(names[device], 0, Config.charsOfNameToShow(), (dp.getPositionX()-pLeft)*scale+(Config.getPosIndicatorSize()*2), (dp.getPositionY()-pTop)*scale, labels[device]);
 	}
 
 	//Called by PositionStore when new points are ready
@@ -246,6 +262,10 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 
 		System.err.println("MapDrawer has finished being notified of update");	//debug
 
+	}
+	
+	public static boolean initialised() {
+		return instance != null;
 	}
 
 }

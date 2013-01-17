@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+   <PreferenceCategory 
+        android:title="Protocol"
+        android:key="pref_key_storage_settings">
+        
+       <ListPreference
+           android:key="topology"
+           android:title="@string/topology_title"
+           android:dialogTitle="@string/topology_dialog"
+           android:defaultValue="@string/topology_default"
+           android:entries="@array/topology_entries"
+           android:entryValues="@array/topology_values"
+           />
+
+    </PreferenceCategory>
+       <PreferenceCategory 
+        android:title="Personal">
+        
+       <EditTextPreference
+           android:key="username"
+           android:title="@string/username_title"
+           android:dialogTitle="@string/username_dialog"
+           android:defaultValue="@string/username_default"
+           />
+
+    </PreferenceCategory>
+</PreferenceScreen>

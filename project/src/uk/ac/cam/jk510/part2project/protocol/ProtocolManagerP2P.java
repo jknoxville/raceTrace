@@ -79,7 +79,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 		}
 	}
 
-	public void sendCoordsToPeer(Device toDevice, Coords coords) {
+	public synchronized void sendCoordsToPeer(Device toDevice, Coords coords) {
 		System.out.println(coordsToSend[toDevice.getDeviceID()]);	//debug
 		coordsToSend[toDevice.getDeviceID()].add(coords);
 		if(readyToSend(toDevice.getDeviceID())) {
@@ -88,7 +88,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 		}
 	}
 
-	public void sendCoordsListToPeer(Device toDevice, List<Coords> coordsList) {
+	public synchronized void sendCoordsListToPeer(Device toDevice, List<Coords> coordsList) {
 		System.out.println(coordsToSend[toDevice.getDeviceID()]);	//debug
 		coordsToSend[toDevice.getDeviceID()].addAll(coordsList);
 		if(readyToSend(toDevice.getDeviceID())) {

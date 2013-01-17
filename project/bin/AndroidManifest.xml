@@ -64,6 +64,10 @@
             android:name="uk.ac.cam.jk510.part2project.gui.NewSessionActivitySingleSession"
             android:label="@string/title_activity_new_session_activity_single_session" >
         </activity>
+        <activity
+            android:name="uk.ac.cam.jk510.part2project.gui.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
     </application>
 
 </manifest>

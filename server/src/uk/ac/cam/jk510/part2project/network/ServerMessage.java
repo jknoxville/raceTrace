@@ -40,8 +40,8 @@ public class ServerMessage {
 			switch(type) {
 			case datapoints: processDatapointDatagram(bb, datagram); break;
 			case request: processRequestDatagram(bb, datagram); break;
-			default: break;
-			}		
+			default: System.out.println("ERROR: not datapoints or request"); break;
+			}
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -91,9 +91,11 @@ public class ServerMessage {
 			if((i = bb.getInt()) == -1) {
 				//device seperator
 				currentDevice = bb.getInt();
+				System.out.println("Device "+currentDevice+" requesting: ");
 			} else {
 				//request data
 				requestArray[currentDevice].add(i);
+				System.out.print(i+" ");
 			}
 		}
 		
