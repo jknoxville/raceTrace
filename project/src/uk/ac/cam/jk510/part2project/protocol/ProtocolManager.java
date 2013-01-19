@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import android.widget.TextView;
 
@@ -128,12 +129,12 @@ public abstract class ProtocolManager {
 		//for actual checking, this is better since only check when enough new points come in, but for sending requests?
 		//How about, in the timer thread, instead of using a boolean, having a received count, and the threshold gets smaller as time gap gets bigger? TODO
 		//		instance.pointsSinceLastMissingCheck++;
-//		//TODO ideally should be done at the end of processing the whole packet, not each point in the packet
-//		//also consider the case where the recieved packet is full of missing data, this will increment counter and trigger a missingCheck. Probably desirable.
-//		if(instance.pointsSinceLastMissingCheck >= Config.missingDataCheckThreshold()) {
-//			instance.missingCheck();
-//			instance.sendMissingRequest();
-//		}
+		//		//TODO ideally should be done at the end of processing the whole packet, not each point in the packet
+		//		//also consider the case where the recieved packet is full of missing data, this will increment counter and trigger a missingCheck. Probably desirable.
+		//		if(instance.pointsSinceLastMissingCheck >= Config.missingDataCheckThreshold()) {
+		//			instance.missingCheck();
+		//			instance.sendMissingRequest();
+		//		}
 	}
 
 
@@ -229,7 +230,39 @@ public abstract class ProtocolManager {
 	private void serviceRequest(int fromID, LinkedList<Integer>[] requestArray) {
 		Response[] responses = PositionStore.fulfillRequest(requestArray);
 		List<Coords> coordsList = Response.getCoordsList(responses);
-		respondToNetwork(fromID, coordsList);
+		if(willRespondToThisRequest(requestArray, coordsList)) {
+			respondToNetwork(fromID, coordsList);
+		}
+	}
+	private boolean willRespondToThisRequest(List<Integer>[] requestArray, List<Coords> coordsList) {
+		
+		/*
+		 * ratio = responseSize / requestSize
+		 * if responseRatio ~0:	dont want to reply
+		 * if responseRatio ~1:	may want to reply (depending on liklihood of others also having ratio ~1.
+		 * 						this liklehood decreases with the size of the request.)
+		 */
+		int requestSize = 0;
+		for(List<Integer> list: requestArray) {
+			requestSize += list.size();
+		}
+		int responseSize = coordsList.size();
+		float responseRatio = Float.valueOf(responseSize)/Float.valueOf(requestSize);
+		
+		switch(Config.responseDecider()) {
+		case always: 					return true; 
+		case probability: 				return Math.random() <= 1.0/Session.getSession().numDevices();
+		case responseRatioThresh: 		return responseRatio<=0.5;
+		case responseRatioProbability:	return Math.random() <= responseRatio;
+		case youAreRequestee:		return requestArray[Session.getThisDevice().getDeviceID()].size() > 0;
+		case youAreLargestRequestee:		int mySize = requestArray[Session.getThisDevice().getDeviceID()].size();
+										for(int i=0; i<requestArray.length; i++) {
+											if(requestArray[i].size() > mySize) {
+												return false;
+											}
+										} return true;
+		default: System.err.println("ResponseDecider not catered for: "+Config.responseDecider().name()); return false;
+		}	
 	}
 
 	protected void missingCheck() {

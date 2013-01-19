@@ -56,6 +56,8 @@ public class Config {
 	private static HistoryType historyType = HistoryType.XYA;
 	private static boolean localOnly = (protocol == Proto.p2p);	//Only operate over local network. (e.g wifi) - so dont use external IP addresses.
 	private static final Transport transportProtocol = Transport.UDP;
+	private static final ResponseDecider decider = ResponseDecider.always;
+	private static boolean responseDecisionProbabilityInfluencedByRequestSize = true;
 
 	//GPS Updates
 	private static final int gpsUpdateTime = 0;	//minTime between GPS position updates
@@ -206,6 +208,12 @@ public class Config {
 	}
 	public static boolean sendOnTimeout() {
 		return sendOnTimeout;
+	}
+	public static ResponseDecider responseDecider() {
+		return decider;
+	}
+	public static boolean responseDecisionProbabilityWithRequestSize() {
+		return responseDecisionProbabilityInfluencedByRequestSize;
 	}
 	//	public static String getExternalServerIP() {
 	//		//Only to be used for session setup. For main server comms should use getServerIP().
