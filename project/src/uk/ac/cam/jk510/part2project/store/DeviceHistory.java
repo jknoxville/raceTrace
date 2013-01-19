@@ -103,8 +103,8 @@ public abstract class DeviceHistory {
 		return history;
 	}
 
-	public LinkedList<Coords> fulfillRequest(LinkedList<Integer> list) {
-		LinkedList<Coords> response = new LinkedList<Coords>();
+	public Response fulfillRequest(LinkedList<Integer> list) {
+		Response response = new Response();
 		for(Integer index: list) {
 			//Calculate which array and the offset within it.
 			int arrayNumber = arrayNumber(index);
@@ -112,7 +112,9 @@ public abstract class DeviceHistory {
 
 			//if have this point then get it and add it to the return list
 			if(dataPointPresentList.get(arrayNumber)[offset]) {
-				response.add(getCoord(index));
+				response.matches.add(getCoord(index));
+			} else {
+				response.remainingPoints.add(index);
 			}
 		}
 		return response;

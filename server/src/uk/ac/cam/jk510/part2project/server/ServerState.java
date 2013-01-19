@@ -21,6 +21,7 @@ import uk.ac.cam.jk510.part2project.settings.Config;
 import uk.ac.cam.jk510.part2project.store.Coords;
 import uk.ac.cam.jk510.part2project.store.PositionStore;
 import uk.ac.cam.jk510.part2project.store.PositionStoreSubscriber;
+import uk.ac.cam.jk510.part2project.store.Response;
 
 
 public class ServerState implements PositionStoreSubscriber {
@@ -248,13 +249,15 @@ public class ServerState implements PositionStoreSubscriber {
 	}
 
 	public static void serviceRequest(int fromID, LinkedList<Integer>[] requestArray) {
-		LinkedList<Coords> response = PositionStore.fulfillRequest(requestArray);
-		respondToNetwork(fromID, response);
+		Response[] responses = PositionStore.fulfillRequest(requestArray);
+		//LinkedList<Coords> response = PositionStore.fulfillRequest(requestArray);
+		List<Coords> coordsList = Response.getCoordsList(responses);
+		respondToNetwork(fromID, coordsList);
 		//TODO issue new request to culprit to get the remaining points.
 	}
 
 	//note this doesnt wait before sending. Will respond as soon as it can.
-	private static synchronized void respondToNetwork(int fromID, LinkedList<Coords> response) {
+	private static synchronized void respondToNetwork(int fromID, List<Coords> response) {
 		coordsToSend[fromID].addAll(response);
 		sendCoordsInQueue();
 	}

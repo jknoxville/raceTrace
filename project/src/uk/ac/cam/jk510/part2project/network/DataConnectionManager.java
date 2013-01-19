@@ -56,7 +56,8 @@ public class DataConnectionManager {
 			whatismyip = new URL("http://checkip.amazonaws.com");
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-			return in.readLine();
+			String ip = in.readLine();
+			return ip;
 
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -88,7 +89,6 @@ public class DataConnectionManager {
 	 * How about:
 	 * Keepalive message contains ids of all alive peers including their last heard from time.
 	 */
-
 
 	private static void updateLastSendTime(int device) {
 		keepAliveTimers[device] = System.currentTimeMillis();

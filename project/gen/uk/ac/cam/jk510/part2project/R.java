@@ -17,12 +17,13 @@ public final class R {
     public static final class drawable {
         public static final int ic_action_search=0x7f020000;
         public static final int ic_launcher=0x7f020001;
+        public static final int ic_launcherold=0x7f020002;
     }
     public static final class id {
-        public static final int debugInfo=0x7f090001;
+        public static final int debugInfo=0x7f090002;
         public static final int done_button=0x7f090008;
-        public static final int mapDrawer=0x7f090000;
-        public static final int mapScreenInfo=0x7f090002;
+        public static final int mapDrawer=0x7f090001;
+        public static final int mapScreenInfo=0x7f090003;
         public static final int menu_settings=0x7f09000c;
         public static final int progressBar1=0x7f090004;
         public static final int progressList=0x7f09000a;
@@ -31,34 +32,36 @@ public final class R {
         public static final int selected_players=0x7f090006;
         public static final int slave_setup_progress=0x7f090009;
         public static final int stringy=0x7f090005;
-        public static final int textView1=0x7f090003;
+        public static final int textView1=0x7f090000;
     }
     public static final class layout {
-        public static final int activity_map_display_screen=0x7f030000;
-        public static final int activity_new_old_session=0x7f030001;
-        public static final int activity_new_session=0x7f030002;
-        public static final int activity_new_session_activity_predefined=0x7f030003;
-        public static final int activity_new_session_activity_single_session=0x7f030004;
-        public static final int activity_new_session_activity_single_user=0x7f030005;
-        public static final int activity_session_setup=0x7f030006;
-        public static final int activity_session_setup_slave=0x7f030007;
-        public static final int activity_smbtserverorclient=0x7f030008;
-        public static final int bluetooth_progress_layout=0x7f030009;
-        public static final int bluetooth_progress_row=0x7f03000a;
-        public static final int select_player_row=0x7f03000b;
+        public static final int activity_main_menu=0x7f030000;
+        public static final int activity_map_display_screen=0x7f030001;
+        public static final int activity_new_old_session=0x7f030002;
+        public static final int activity_new_session=0x7f030003;
+        public static final int activity_new_session_activity_predefined=0x7f030004;
+        public static final int activity_new_session_activity_single_session=0x7f030005;
+        public static final int activity_new_session_activity_single_user=0x7f030006;
+        public static final int activity_session_setup=0x7f030007;
+        public static final int activity_session_setup_slave=0x7f030008;
+        public static final int activity_smbtserverorclient=0x7f030009;
+        public static final int bluetooth_progress_layout=0x7f03000a;
+        public static final int bluetooth_progress_row=0x7f03000b;
+        public static final int select_player_row=0x7f03000c;
     }
     public static final class menu {
-        public static final int activity_map_display_screen=0x7f080000;
-        public static final int activity_new_old_session=0x7f080001;
-        public static final int activity_new_session=0x7f080002;
-        public static final int activity_new_session_activity_predefined=0x7f080003;
-        public static final int activity_new_session_activity_single_session=0x7f080004;
-        public static final int activity_new_session_activity_single_user=0x7f080005;
-        public static final int activity_session_setup=0x7f080006;
-        public static final int activity_session_setup_slave=0x7f080007;
-        public static final int activity_smbtserverorclient=0x7f080008;
-        public static final int activity_view_map_screen=0x7f080009;
-        public static final int preferences=0x7f08000a;
+        public static final int activity_main_menu=0x7f080000;
+        public static final int activity_map_display_screen=0x7f080001;
+        public static final int activity_new_old_session=0x7f080002;
+        public static final int activity_new_session=0x7f080003;
+        public static final int activity_new_session_activity_predefined=0x7f080004;
+        public static final int activity_new_session_activity_single_session=0x7f080005;
+        public static final int activity_new_session_activity_single_user=0x7f080006;
+        public static final int activity_session_setup=0x7f080007;
+        public static final int activity_session_setup_slave=0x7f080008;
+        public static final int activity_smbtserverorclient=0x7f080009;
+        public static final int activity_view_map_screen=0x7f08000a;
+        public static final int preferences=0x7f08000b;
     }
     public static final class string {
         public static final int addTestData=0x7f05000f;
@@ -80,6 +83,7 @@ public final class R {
         public static final int selected_players_list=0x7f050013;
         public static final int skip=0x7f05000e;
         public static final int talking_to_server=0x7f050019;
+        public static final int title_activity_main_menu=0x7f050021;
         public static final int title_activity_map_display_screen=0x7f050005;
         public static final int title_activity_new_old_session=0x7f050003;
         public static final int title_activity_new_session=0x7f050004;

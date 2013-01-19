@@ -21,6 +21,7 @@ import uk.ac.cam.jk510.part2project.settings.Config;
 import uk.ac.cam.jk510.part2project.store.Coords;
 import uk.ac.cam.jk510.part2project.store.CoordsTXYA;
 import uk.ac.cam.jk510.part2project.store.PositionStore;
+import uk.ac.cam.jk510.part2project.store.Response;
 
 public abstract class ProtocolManager {
 
@@ -214,11 +215,12 @@ public abstract class ProtocolManager {
 		instance.serviceRequest(fromID, requestArray);
 	}
 	private void serviceRequest(int fromID, LinkedList<Integer>[] requestArray) {
-		LinkedList<Coords> response = PositionStore.fulfillRequest(requestArray);
-		respondToNetwork(fromID, response);
+		Response[] responses = PositionStore.fulfillRequest(requestArray);
+		List<Coords> coordsList = Response.getCoordsList(responses);
+		respondToNetwork(fromID, coordsList);
 	}
 
-	protected abstract void respondToNetwork(int requester, List<Coords> response);
+	protected abstract void respondToNetwork(int requester, List<Coords> coordsList);
 	protected abstract List<Device> requestablePeers();
 	protected abstract List<Device> relientPeers();
 	public abstract void spawnReceivingThread();

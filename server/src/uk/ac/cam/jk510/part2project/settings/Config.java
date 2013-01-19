@@ -21,7 +21,7 @@ public class Config {
 	 */
 
 	//Protocol
-	private static Proto protocol = Proto.singleUser;
+	private static Proto protocol = Proto.clientServer;
 	private static SessionEnum sesh = SessionEnum.bluetooth;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;

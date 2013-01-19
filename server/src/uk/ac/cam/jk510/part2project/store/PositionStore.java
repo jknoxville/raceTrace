@@ -19,15 +19,14 @@ public class PositionStore {
 		return d.getHistory().getCoord(index);
 	}
 	
-	public static LinkedList<Coords> fulfillRequest(LinkedList<Integer>[] requestArray) {
-		LinkedList<Coords> coordsList = new LinkedList<Coords>();
+	public static Response[] fulfillRequest(LinkedList<Integer>[] requestArray) {
+		Response[] responses = new Response[Session.getSession().numDevices()];
 		//add all matching points to coordsList from each device
 		for(Device d: Session.getSession().getDevices()) {
 			int id = d.getDeviceID();
-			coordsList.addAll(d.getHistory().fulfillRequest(requestArray[id]));
+			responses[d.getDeviceID()] = d.getHistory().fulfillRequest(requestArray[id]);
 		}
-		
-		return coordsList;
+		return responses;
 	}
 
 	public static void insert(int fromDevice, Coords coords) {
@@ -38,7 +37,7 @@ public class PositionStore {
 			//insert into the deviceHistory object, this method also adds it to it's newPoints.
 			(aboutDevice.getHistory()).insert(coords);
 			
-			//TODO log this in server?
+			//TODO log this
 
 			//check for subscriber notification condition
 			if(updateReady(aboutDevice)) {

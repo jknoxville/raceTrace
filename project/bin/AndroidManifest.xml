@@ -68,6 +68,10 @@
             android:name="uk.ac.cam.jk510.part2project.gui.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
+        <activity
+            android:name="uk.ac.cam.jk510.part2project.gui.MainMenu"
+            android:label="@string/title_activity_main_menu" >
+        </activity>
     </application>
 
 </manifest>
