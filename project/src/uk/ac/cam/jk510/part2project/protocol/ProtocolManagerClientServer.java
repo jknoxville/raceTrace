@@ -26,11 +26,14 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 		checkInit();
 
 		coordsToSend[0].add(coords);
-
 		if(readyToSend(0)) {
-			sendCoordsToServer(coordsToSend[0]);
-			coordsToSend[0].clear();
+			flushToNetwork(0);	//0 is server
 		}
+	}
+
+	protected void flushToNetwork(int device) {
+		sendCoordsToServer(coordsToSend[device]);
+		coordsToSend[device].clear();
 	}
 
 	protected synchronized void respondToNetwork(int requester, List<Coords> response) {
@@ -78,7 +81,7 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
+
 				}
 			}
 		}).start();
@@ -118,7 +121,7 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	protected void sendMissingRequest() {
 		try {
 			checkInit();
-			DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(serverSocketAddress, getRequestArray());
+			DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(serverSocketAddress, requestArray);
 			if(datagram != null) {
 				DataConnectionManager.send(datagram);
 			}

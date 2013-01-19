@@ -67,4 +67,9 @@ public class ProtocolManagerSingleUser extends ProtocolManager {
 		return null;
 	}
 
+	@Override
+	protected void flushToNetwork(int device) {
+		// nothing to do
+	}
+
 }

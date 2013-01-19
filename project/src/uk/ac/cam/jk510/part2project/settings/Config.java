@@ -80,6 +80,7 @@ public class Config {
 	private static final int sampleXCam = 11195;
 	private static final int sampleYCam = 634959;
 	private static final boolean testingInCam = true;
+	private static final boolean sendOnTimeout = false;
 	
 	//Config own variables
 	private static boolean checkedForLocalServer = false;
@@ -202,6 +203,9 @@ public class Config {
 	}
 	public static int charsOfNameToShow() {
 		return charsOfNameToShow;
+	}
+	public static boolean sendOnTimeout() {
+		return sendOnTimeout;
 	}
 	//	public static String getExternalServerIP() {
 	//		//Only to be used for session setup. For main server comms should use getServerIP().

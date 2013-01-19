@@ -84,18 +84,17 @@ public class ServerMessage {
 		for(int dev = 0; dev<requestArray.length; dev++) {
 			requestArray[dev] = new LinkedList<Integer>();
 		}
-		
+		System.out.println(datagram.getAddress().getHostName()+" requesting from: ");
 		int currentDevice = -1;
 		while(bb.hasRemaining()) {
 			int i;
 			if((i = bb.getInt()) == -1) {
 				//device seperator
 				currentDevice = bb.getInt();
-				System.out.println("Device "+currentDevice+" requesting: ");
+				System.out.println(currentDevice);
 			} else {
 				//request data
 				requestArray[currentDevice].add(i);
-				System.out.print(i+" ");
 			}
 		}
 		
@@ -123,9 +122,11 @@ public class ServerMessage {
 				numMissingDevices += 1;
 			}
 		}
-		byte[] data = new byte[4+4*size+8*numMissingDevices];
+		System.out.println("Sending request to "+socketAddress.getHostName()+" of size "+size);
+		byte[] data = new byte[4+4+4*size+8*numMissingDevices];
 		/*
 		 * 4 byte int header to identify the request message
+		 * 4 byte fromID
 		 * 4 byte int for each missing point, of which there are size
 		 * 2 4 byte ints preceeding each list of missing points for those devices that have any. thats a -1 marker, and then device ID
 		 */

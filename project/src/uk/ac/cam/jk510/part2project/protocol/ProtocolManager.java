@@ -29,6 +29,8 @@ public abstract class ProtocolManager {
 	protected long[] timeOfLastSend;
 	private long timeSinceastMissingCheck = 0;
 	private long pointsSinceLastMissingCheck = 0;
+	protected boolean checkedMissingSinceLastReceipt = false;
+	protected LinkedList<Integer>[] requestArray;
 
 	private static ProtocolManager instance;
 	private static boolean alive = true;
@@ -121,13 +123,17 @@ public abstract class ProtocolManager {
 	//sync because increments counter
 	public static synchronized void insertNetworkDataPoint(int fromDevice, Coords coords) {
 		PositionStore.insert(fromDevice, coords);
-		instance.pointsSinceLastMissingCheck++;
 
-		//TODO ideally should be done at the end of processing the whole packet, not each point in the packet
-		//also consider the case where the recieved packet is full of missing data, this will increment counter and trigger a missingCheck. Probably desirable.
-		if(instance.pointsSinceLastMissingCheck >= Config.missingDataCheckThreshold()) {
-			instance.sendMissingRequest();
-		}
+		//the following code makes the system reckeck for missing points on a number of points basis as opposed to amount of time, may be more logical
+		//for actual checking, this is better since only check when enough new points come in, but for sending requests?
+		//How about, in the timer thread, instead of using a boolean, having a received count, and the threshold gets smaller as time gap gets bigger? TODO
+		//		instance.pointsSinceLastMissingCheck++;
+//		//TODO ideally should be done at the end of processing the whole packet, not each point in the packet
+//		//also consider the case where the recieved packet is full of missing data, this will increment counter and trigger a missingCheck. Probably desirable.
+//		if(instance.pointsSinceLastMissingCheck >= Config.missingDataCheckThreshold()) {
+//			instance.missingCheck();
+//			instance.sendMissingRequest();
+//		}
 	}
 
 
@@ -149,25 +155,27 @@ public abstract class ProtocolManager {
 		if (coordsToSend[deviceNumber].size() >= Config.getMinCoordsPerPacket()) {
 			return true;
 		} else {
-			if(DataConnectionManager.timeOfLastSend() + Config.getSendTimeout() <= System.currentTimeMillis() && coordsToSend[deviceNumber].size()>0) {
-				return true;
+			if(Config.sendOnTimeout()) {
+				if(DataConnectionManager.timeOfLastSend() + Config.getSendTimeout() <= System.currentTimeMillis() && coordsToSend[deviceNumber].size()>0) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
-	protected LinkedList<Integer>[] getRequestArray() {
-		LinkedList<Integer>[] requestArray = new LinkedList[Session.getSession().numDevices()];
+	protected void updateRequestArray() {
+		requestArray = new LinkedList[Session.getSession().numDevices()];
 		for(Device d: Session.getSession().getDevices()) {
 			requestArray[d.getDeviceID()] = d.getAbsentList();
 		}
-		return requestArray;
 	}
 
 	public void spawnMissingCheckTimerThread() {
+		//TODO should ideally be called after MapDrawer is constructed
 		new Thread(new Runnable() {
 			public void run() {
-				while(!MapDrawer.initialised()) {
+				while(!MapDrawer.initialised()) {	//missingCheck relies on objects constructed when MapDrawer is inflated.
 					try {
 						Thread.sleep(Config.missingCheckTimer());
 					} catch (InterruptedException e) {
@@ -177,6 +185,9 @@ public abstract class ProtocolManager {
 				}
 				while(alive) {
 					if(timeSinceastMissingCheck + Config.missingCheckTimer() <= System.currentTimeMillis()) {
+						if(!checkedMissingSinceLastReceipt) {
+							missingCheck();
+						}
 						sendMissingRequest();
 					}
 					try {
@@ -195,10 +206,11 @@ public abstract class ProtocolManager {
 		new Thread(new Runnable() {
 			public void run() {
 				while(alive) {
-					//TODO this sort of thing:
-					//					if(ready(i)) {
-					//						instance.sendCoordsQueue();
-					//					}
+					for(int i=0; i<Session.getSession().numDevices(); i++) {
+						if(readyToSend(i)) {
+							flushToNetwork(i);
+						}
+					}
 					try {
 						Thread.sleep(Config.getSendTimeout());
 					} catch (InterruptedException e) {
@@ -220,6 +232,10 @@ public abstract class ProtocolManager {
 		respondToNetwork(fromID, coordsList);
 	}
 
+	protected void missingCheck() {
+		updateRequestArray();
+	}
+	protected abstract void flushToNetwork(int device);
 	protected abstract void respondToNetwork(int requester, List<Coords> coordsList);
 	protected abstract List<Device> requestablePeers();
 	protected abstract List<Device> relientPeers();

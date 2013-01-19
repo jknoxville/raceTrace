@@ -83,24 +83,27 @@ public class ProtocolManagerP2P extends ProtocolManager {
 		System.out.println(coordsToSend[toDevice.getDeviceID()]);	//debug
 		coordsToSend[toDevice.getDeviceID()].add(coords);
 		if(readyToSend(toDevice.getDeviceID())) {
-			DataConnectionManager.sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), coordsToSend[toDevice.getDeviceID()]);
-			coordsToSend[toDevice.getDeviceID()].clear();
+			flushToNetwork(toDevice.getDeviceID());
 		}
+	}
+	
+	protected void flushToNetwork(int device) {
+		Device toDevice = Session.getSession().getDevice(device);
+		DataConnectionManager.sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), coordsToSend[toDevice.getDeviceID()]);
+		coordsToSend[device].clear();
 	}
 
 	public synchronized void sendCoordsListToPeer(Device toDevice, List<Coords> coordsList) {
 		System.out.println(coordsToSend[toDevice.getDeviceID()]);	//debug
 		coordsToSend[toDevice.getDeviceID()].addAll(coordsList);
 		if(readyToSend(toDevice.getDeviceID())) {
-			DataConnectionManager.sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), coordsToSend[toDevice.getDeviceID()]);
-			coordsToSend[toDevice.getDeviceID()].clear();
+			flushToNetwork(toDevice.getDeviceID());
 		}
 	}
 
 	@Override
 	protected void protocolSpecificDestroy() {
 		alive = false;	//TODO see ProtocolManagerClientServer.
-
 	}
 
 	private void checkSocketIsOpen() {
@@ -129,7 +132,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 			//send request to all devices
 			//TODO make recieve discard packets from self.
 			for(Device toDevice: requestablePeers()) {
-				DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), getRequestArray());
+				DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), requestArray);
 				DataConnectionManager.send(datagram);
 			}
 		} catch (SocketException e) {

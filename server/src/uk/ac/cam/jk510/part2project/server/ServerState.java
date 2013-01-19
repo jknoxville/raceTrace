@@ -253,7 +253,24 @@ public class ServerState implements PositionStoreSubscriber {
 		//LinkedList<Coords> response = PositionStore.fulfillRequest(requestArray);
 		List<Coords> coordsList = Response.getCoordsList(responses);
 		respondToNetwork(fromID, coordsList);
-		//TODO issue new request to culprit to get the remaining points.
+		LinkedList<Integer>[] newRequestArray = new LinkedList[Session.getSession().numDevices()];
+		for(int i=0; i<Session.getSession().numDevices(); i++) {
+			newRequestArray[i] = responses[i].remainingPoints;
+		}
+		
+		//issue new request to culprit to get the remaining points.
+		Device toDevice = Session.getSession().getDevice(fromID);
+		InetSocketAddress sockAdd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
+		try {
+			DatagramPacket datagram = ServerMessage.createRequestMessageWithAddress(sockAdd, newRequestArray);
+			NetworkInterface.getInstance().sendDatagram(datagram);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	//note this doesnt wait before sending. Will respond as soon as it can.
