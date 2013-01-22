@@ -106,7 +106,9 @@ public class DataConnectionManager {
 	}
 
 	public static void send(DatagramPacket datagram) throws IOException {
-		socket.send(datagram);
+		if(!Config.droppingPackets()) {
+			socket.send(datagram);
+		}
 		timeOfLastSend = System.currentTimeMillis();
 	}
 
@@ -130,7 +132,7 @@ public class DataConnectionManager {
 			}
 		}
 	}
-	
+
 	public static void sendCoordsToAddress(final InetSocketAddress toSocketAddress, List<Coords> coordsList) {
 
 		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
@@ -138,7 +140,7 @@ public class DataConnectionManager {
 
 		byte[] data = new byte[(1+1+5*coordsList.size())*4];	//1 int for coords header, 1 int for fromID, plus 5 (int|float)s for each coord
 		ByteBuffer bb = ByteBuffer.wrap(data);
-		
+
 		bb.putInt(MessageType.datapoints.ordinal());	//put message header
 		bb.putInt(fromDeviceID);	//
 		//							This are to go at the start of each packet, not each coordinate (if >1 coord per packet)
@@ -164,7 +166,7 @@ public class DataConnectionManager {
 			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
 			DataConnectionManager.send(datagram);
 
-			if(Config.debugMode()) {
+			if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
 				DatagramPacket datagram2 = new DatagramPacket(data, data.length, new InetSocketAddress(Config.getServerIP(), Config.getServerPort()));
 				DataConnectionManager.send(datagram2);
 			}
@@ -180,7 +182,7 @@ public class DataConnectionManager {
 
 	public static DatagramPacket createRequestMessageWithAddress(final InetSocketAddress socketAddress, LinkedList<Integer>[] requestArray) throws SocketException {
 		//TODO move this to a more sensible place
-		
+
 		int size = 0;	//total number of absent points
 		int numMissingDevices = 0;
 		for(int i=0; i<Session.getSession().numDevices(); i++) {
@@ -198,10 +200,10 @@ public class DataConnectionManager {
 		 * 2 4 byte ints preceeding each list of missing points for those devices that have any. thats a -1 marker, and then device ID
 		 */
 		ByteBuffer bb = ByteBuffer.wrap(data);
-		
+
 		bb.putInt(MessageType.request.ordinal());	//first 4 bytes: request header
 		bb.putInt(Session.getThisDevice().getDeviceID());	//put fromID
-		
+
 		for(int device = 0; device<Session.getSession().numDevices(); device++) {
 			System.out.println("requesting for device "+device);	//debug
 			if(requestArray[device].size() > 0) {

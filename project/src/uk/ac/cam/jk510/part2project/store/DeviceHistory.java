@@ -3,6 +3,7 @@ package uk.ac.cam.jk510.part2project.store;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import uk.ac.cam.jk510.part2project.protocol.Logger;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
@@ -15,6 +16,7 @@ public abstract class DeviceHistory {
 	protected LinkedList<Integer> newPoints;
 	protected CoordsType coordsType;
 	protected int device;
+	protected int indexOfLatestPoint;
 
 	protected abstract Coords getCoord(int index);
 
@@ -56,6 +58,13 @@ public abstract class DeviceHistory {
 		}
 		//Set dataPointPresent value to true
 		dataPointPresentList.get(arrayNumber)[offset] = true;
+		
+		if(index > indexOfLatestPoint) {
+			indexOfLatestPoint = index;
+			Logger.newLatestPoint(coords.aboutDevice);
+		}
+		
+		
 
 		//Add point to device's newPoints list
 		newPoints.add(index);

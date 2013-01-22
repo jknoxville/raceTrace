@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Random;
 
+import org.apache.http.client.CircularRedirectException;
+
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.Transport;
 import uk.ac.cam.jk510.part2project.protocol.Proto;
@@ -58,6 +60,7 @@ public class Config {
 	private static final Transport transportProtocol = Transport.UDP;
 	private static final ResponseDecider decider = ResponseDecider.always;
 	private static boolean responseDecisionProbabilityInfluencedByRequestSize = true;
+	private static boolean dontSendPointsToOwner = true;	//Never send coordinates about device d, to device d.
 
 	//GPS Updates
 	private static final int gpsUpdateTime = 0;	//minTime between GPS position updates
@@ -70,7 +73,17 @@ public class Config {
 	private static final String globalServerIP = "jknoxville.no-ip.org";
 	private static final int serverPort = 60000;
 	private static final int defaultClientPort = 60001;
-
+	
+	//Logging options
+	private static final long screenShotTimer = 20*1000;	//time between saving screenshots
+	
+	//Simulation
+	private static final boolean markovPacketDroppingSimulation = true;
+	private static boolean currentlyDropping = false;
+	private static long lastConnectionCheck = 0;
+	private static final double loseConnectionRate = 0.1;	//chance you lose connection in a given second
+	private static final double reconnectRate = 0.3;
+	private static final double dropRate = 0.2;
 
 	//Datagram Format
 	private static final int nameSize = 4;
@@ -82,7 +95,7 @@ public class Config {
 	private static final int sampleXCam = 11195;
 	private static final int sampleYCam = 634959;
 	private static final boolean testingInCam = true;
-	private static final boolean sendOnTimeout = false;
+	private static final boolean sendOnTimeout = true;	//allows sending of not full packets if timer expires
 	
 	//Config own variables
 	private static boolean checkedForLocalServer = false;
@@ -215,8 +228,28 @@ public class Config {
 	public static boolean responseDecisionProbabilityWithRequestSize() {
 		return responseDecisionProbabilityInfluencedByRequestSize;
 	}
+	public static boolean dontSendPointsToOwner() {
+		return dontSendPointsToOwner;
+	}
 	//	public static String getExternalServerIP() {
 	//		//Only to be used for session setup. For main server comms should use getServerIP().
 	//		return globalServerIP;
 	//	}
+	public static long getScreenShotTimer() {
+		return screenShotTimer;
+	}
+	public static boolean droppingPackets() {
+		if(markovPacketDroppingSimulation) {
+
+				if(Math.random() <= (currentlyDropping?reconnectRate:loseConnectionRate)) {
+					currentlyDropping = !currentlyDropping;
+				}
+				return currentlyDropping;
+		} else {
+			if(Math.random() <= dropRate) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

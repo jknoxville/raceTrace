@@ -33,7 +33,6 @@ public class NewSessionActivitySingleSession extends NewSessionActivity {
 	@Override
 	protected void setUpSession() throws Exception {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

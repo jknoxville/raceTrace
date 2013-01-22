@@ -121,7 +121,7 @@ public abstract class ProtocolManager {
 		PositionStore.insert(device.getDeviceID(), coords);
 	}
 
-	//sync because increments counter
+	//sync'd because increments counter
 	public static synchronized void insertNetworkDataPoint(int fromDevice, Coords coords) {
 		PositionStore.insert(fromDevice, coords);
 
@@ -157,7 +157,7 @@ public abstract class ProtocolManager {
 			return true;
 		} else {
 			if(Config.sendOnTimeout()) {
-				if(DataConnectionManager.timeOfLastSend() + Config.getSendTimeout() <= System.currentTimeMillis() && coordsToSend[deviceNumber].size()>0) {
+				if(coordsToSend[deviceNumber].size()>0 && DataConnectionManager.timeOfLastSend() + Config.getSendTimeout() <= System.currentTimeMillis()) {
 					return true;
 				}
 			}
@@ -261,6 +261,7 @@ public abstract class ProtocolManager {
 												return false;
 											}
 										} return true;
+		case never:	return false;
 		default: System.err.println("ResponseDecider not catered for: "+Config.responseDecider().name()); return false;
 		}	
 	}
@@ -277,6 +278,10 @@ public abstract class ProtocolManager {
 	protected abstract void protocolSpecificDestroy();
 	public abstract void distributeSession(Session session) throws UnknownHostException, IOException;
 	public abstract void sendKeepAliveMessage(int index);
+
+	public static boolean isAlive() {
+		return alive;
+	}
 
 
 

@@ -20,6 +20,7 @@ public abstract class NewSessionActivity extends Activity {
 	//Session session;
 	Exception exception;
 	static NewSessionActivity instance;
+	private static final int NEXT_SCREEN = 1;
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -66,11 +67,18 @@ public abstract class NewSessionActivity extends Activity {
 		//TODO new thread?:
 		ProtocolManager.initialiseProtocolManager(Session.getSession());
 		Intent intent = new Intent(this, MapDisplayScreen.class);    	
-		startActivity(intent);
+		startActivityForResult(intent, NEXT_SCREEN);
 	}
 	
 	public void onSetupComplete() throws Exception {
 		onSetupComplete(null);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == NEXT_SCREEN) {
+			onBackPressed();
+		}
 	}
 	
 	//destroy all state as if this activity was never created.

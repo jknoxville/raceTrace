@@ -25,6 +25,7 @@ public class Config {
 	private static SessionEnum sesh = SessionEnum.bluetooth;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
+	private static boolean dontSendPointsToOwner = true;
 
 	//GPS Updates
 	private static final int gpsUpdateTime = 0;	//minTime between GPS position updates
@@ -129,5 +130,8 @@ public class Config {
 	}
 	public static boolean listenOnly() {
 		return listenOnly;
+	}
+	public static boolean dontSendPointsToOwner() {
+		return dontSendPointsToOwner;
 	}
 }

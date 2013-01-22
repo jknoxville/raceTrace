@@ -181,14 +181,17 @@ public class ServerState implements PositionStoreSubscriber {
 			for(LinkedList<Integer> list: globalNewPoints) {
 				int deviceNumber = globalNewPoints.indexOf(list);
 				Device fromDevice = Session.getSession().getDevice(deviceNumber);
-				NetworkInterface net = NetworkInterface.getInstance();
 
 				for(int index: list) {
 					Coords coords = PositionStore.getCoord(fromDevice, index);
 					for(Device toDevice: Session.getSession().getDevices()) {
-
-						coordsToSend[toDevice.getDeviceID()].add(coords);
-
+						
+						if(Config.dontSendPointsToOwner() && (coords.getDevice() == toDevice.getDeviceID())) {
+							//don't send
+						} else {
+							//do send
+							coordsToSend[toDevice.getDeviceID()].add(coords);
+						}
 
 						//byte[] data = new byte[1024];
 						//DatagramPacket datagram = new DatagramPacket(data, data.length, sockadd);

@@ -12,6 +12,7 @@ import uk.ac.cam.jk510.part2project.store.DevicePath;
 import uk.ac.cam.jk510.part2project.store.PositionStore;
 import uk.ac.cam.jk510.part2project.store.PositionStoreSubscriber;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -72,7 +73,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		devicePathList = new ArrayList<DevicePath>();
 		reset();
 		System.out.println("DEVICEPATH SIZE: "+devicePathList.get(0).getPathCache().size());
-		
+
 	}
 
 	private void initPaint(int p) {
@@ -203,7 +204,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 
 			//draw all paths regardless of new or not
 			canvas.drawPath(path, lines[device]);
-			
+
 			//draw position Indicators
 			DevicePath dp = devicePathList.get(device);
 			if(needToRedraw) {
@@ -229,7 +230,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		mat.reset();
 
 	}
-	
+
 	private void drawPositionIndicator(Canvas canvas, DevicePath dp, float pLeft, float pTop, float scale, int device) {
 		canvas.drawCircle((dp.getPositionX()-oldpLeft)*oldScale, (dp.getPositionY()-oldpTop)*oldScale, Config.getPosIndicatorSize(), labels[device]);
 		canvas.drawText(names[device], 0, Config.charsOfNameToShow(), (dp.getPositionX()-pLeft)*scale+(Config.getPosIndicatorSize()*2), (dp.getPositionY()-pTop)*scale, labels[device]);
@@ -263,7 +264,15 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		System.err.println("MapDrawer has finished being notified of update");	//debug
 
 	}
-	
+
+	public static Bitmap getScreenShot() {
+		if(!instance.isDrawingCacheEnabled()) {
+			instance.setDrawingCacheEnabled(true);
+		}
+		Bitmap bm = instance.getDrawingCache();
+		return bm;
+	}
+
 	public static boolean initialised() {
 		return instance != null;
 	}

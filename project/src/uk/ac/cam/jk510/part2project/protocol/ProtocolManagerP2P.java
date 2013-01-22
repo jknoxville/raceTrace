@@ -64,7 +64,13 @@ public class ProtocolManagerP2P extends ProtocolManager {
 		checkSocketIsOpen();
 		for(Device toDevice: Session.getSession().getDevices()) {
 			System.out.println("Sending to device "+toDevice.getDeviceID());	//debug
-			sendCoordsToPeer(toDevice, coords);
+			if(Config.dontSendPointsToOwner() && (coords.getDevice() == toDevice.getDeviceID())) {
+				//don't send
+			} else {
+				//do send
+				sendCoordsToPeer(toDevice, coords);
+			}
+			
 		}
 	}
 
