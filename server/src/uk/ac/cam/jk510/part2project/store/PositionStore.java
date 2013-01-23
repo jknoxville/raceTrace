@@ -45,8 +45,6 @@ public class PositionStore {
 			}
 		} catch (DataPointPresentException e) {	//Already have the dataPoint being inserted
 			//TODO Log this?
-			System.err.println("just threw DataPointPresentException so shouldnt notify mapdrawer.");
-			//Want to do anything else here?
 		} catch (IncompatibleCoordsException e) {
 			e.printStackTrace();
 		}

@@ -29,9 +29,9 @@ import uk.ac.cam.jk510.part2project.store.Coords;
 
 public class DataConnectionManager {
 
-	private static DatagramSocket socket;
-	private static Socket[] TCPsockets;
-	private static long[] keepAliveTimers;	//only for keepAlive messages
+	//private static DatagramSocket socket;
+	//private static DeviceConnection[] connections;
+	private static long[] keepAliveTimers;	//only for keepAlive messages	//TODO move this to deviceConnection class - its responsible for keeping itself alive
 	private static long timeOfLastSend;	//one timer for all recipents.
 
 	public static String getMyIP() throws SocketException {
@@ -79,9 +79,10 @@ public class DataConnectionManager {
 		updateLastSendTime(0);
 	}
 
-	public static void receive(DatagramPacket datagram) throws IOException {
-		socket.receive(datagram);
-		Logger.download(datagram.getLength());	//TODO +header size
+	public static ByteBuffer receive(DeviceConnection conn, byte[] data) throws IOException {
+		ByteBuffer bb = conn.receiveData(data);
+		Logger.download(data.length);	//TODO log header size?
+		return bb;
 	}
 
 	//TODO What about p2p where each peer should have individual keepalive?
@@ -105,37 +106,15 @@ public class DataConnectionManager {
 		}
 	}
 
-	public static void send(DatagramPacket datagram) throws IOException {
+	public static void send(byte[] data, DeviceConnection conn) throws IOException {
 		if(!Config.droppingPackets()) {
-			socket.send(datagram);
+			conn.send(data, data.length);
 		}
 		timeOfLastSend = System.currentTimeMillis();
 	}
 
-	public static void initDataSocket() {
-		if(socket == null) {
-			if(Config.transportProtocol() == Transport.UDP) {
-				try {
-					socket = new DatagramSocket(Config.getDefaultClientPort());
-				} catch (SocketException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				//TCP:
-				if(Config.getProtocol() == Proto.clientServer) {
-					TCPsockets = new Socket[Session.getSession().numDevices()];
-					for(Device d: Session.getSession().getDevices()) {
-						TCPsockets[d.getDeviceID()] = new Socket();	//TODO finish.
-					}
-				}
-			}
-		}
-	}
+	public static void sendCoordsToDevice(DeviceConnection conn, List<Coords> coordsList) {
 
-	public static void sendCoordsToAddress(final InetSocketAddress toSocketAddress, List<Coords> coordsList) {
-
-		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
 		int fromDeviceID = Session.getThisDevice().getDeviceID();	//used to identify sender to the recipent.
 
 		byte[] data = new byte[(1+1+5*coordsList.size())*4];	//1 int for coords header, 1 int for fromID, plus 5 (int|float)s for each coord
@@ -161,26 +140,57 @@ public class DataConnectionManager {
 			System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
 
 		}
-		try {
-			//checkInit();
-			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
-			DataConnectionManager.send(datagram);
-
-			if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
-				DatagramPacket datagram2 = new DatagramPacket(data, data.length, new InetSocketAddress(Config.getServerIP(), Config.getServerPort()));
-				DataConnectionManager.send(datagram2);
-			}
-
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//checkInit();
+		conn.send(data, data.length);
 	}
+//	public static void sendCoordsToAddress(final InetSocketAddress toSocketAddress, List<Coords> coordsList) {
+//
+//		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
+//		int fromDeviceID = Session.getThisDevice().getDeviceID();	//used to identify sender to the recipent.
+//
+//		byte[] data = new byte[(1+1+5*coordsList.size())*4];	//1 int for coords header, 1 int for fromID, plus 5 (int|float)s for each coord
+//		ByteBuffer bb = ByteBuffer.wrap(data);
+//
+//		bb.putInt(MessageType.datapoints.ordinal());	//put message header
+//		bb.putInt(fromDeviceID);	//
+//		//							This are to go at the start of each packet, not each coordinate (if >1 coord per packet)
+//
+//		for(Coords coords: coordsList) {
+//
+//			int aboutDeviceID = coords.getDevice();	//deviceID of the device whose location this point is.
+//			int lClock = coords.getLClock();
+//			float x = coords.getCoord(0);
+//			float y = coords.getCoord(1);
+//			float alt = coords.getCoord(2);
+//
+//			bb.putInt(aboutDeviceID);
+//			bb.putInt(lClock);
+//			bb.putFloat(x);
+//			bb.putFloat(y);
+//			bb.putFloat(alt);
+//			System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
+//
+//		}
+//		try {
+//			//checkInit();
+//			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
+//			DataConnectionManager.send(datagram);
+//
+//			if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
+//				DatagramPacket datagram2 = new DatagramPacket(data, data.length, new InetSocketAddress(Config.getServerIP(), Config.getServerPort()));
+//				DataConnectionManager.send(datagram2);
+//			}
+//
+//		} catch (SocketException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
-	public static DatagramPacket createRequestMessageWithAddress(final InetSocketAddress socketAddress, LinkedList<Integer>[] requestArray) throws SocketException {
+	public static byte[] createRequestMessageWithAddress(final InetSocketAddress socketAddress, LinkedList<Integer>[] requestArray) throws SocketException {
 		//TODO move this to a more sensible place
 
 		int size = 0;	//total number of absent points
@@ -214,8 +224,8 @@ public class DataConnectionManager {
 				}
 			}
 		}
-		DatagramPacket datagram = new DatagramPacket(data, data.length, socketAddress);
-		return datagram;
+		//DatagramPacket datagram = new DatagramPacket(data, data.length, socketAddress);
+		return data;
 	}
 	public static long timeOfLastSend() {
 		return timeOfLastSend;

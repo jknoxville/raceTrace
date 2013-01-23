@@ -58,7 +58,6 @@ public class ServerMessage {
 
 		for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
 			int aboutDeviceID = bb.getInt();
-			System.out.println("Iteration "+dataPoint);	//debug
 			int lTime = bb.getInt();
 			float x = bb.getFloat();
 			float y = bb.getFloat();
@@ -84,14 +83,14 @@ public class ServerMessage {
 		for(int dev = 0; dev<requestArray.length; dev++) {
 			requestArray[dev] = new LinkedList<Integer>();
 		}
-		System.out.println(datagram.getAddress().getHostName()+" requesting from: ");
+		System.out.println(datagram.getAddress().getHostName()+" is requesting data from: ");
 		int currentDevice = -1;
 		while(bb.hasRemaining()) {
 			int i;
 			if((i = bb.getInt()) == -1) {
 				//device seperator
 				currentDevice = bb.getInt();
-				System.out.println(currentDevice);
+				System.out.println("device "+currentDevice);
 			} else {
 				//request data
 				requestArray[currentDevice].add(i);
@@ -121,6 +120,9 @@ public class ServerMessage {
 			if(size>0) {
 				numMissingDevices += 1;
 			}
+		}
+		if(size == 0) {
+			return null;
 		}
 		System.out.println("Sending request to "+socketAddress.getHostName()+" of size "+size);
 		byte[] data = new byte[4+4+4*size+8*numMissingDevices];

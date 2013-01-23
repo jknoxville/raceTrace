@@ -1,6 +1,7 @@
 package uk.ac.cam.jk510.part2project.test;
 
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
+import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import android.test.AndroidTestCase;
 
 public class MessageTest extends AndroidTestCase {
@@ -13,7 +14,7 @@ public class MessageTest extends AndroidTestCase {
 		/*
 		 * open netwrok connection with self
 		 */
-		DataConnectionManager.initDataSocket();
+		//ProtocolManager.initDataSocket();
 	}
 	
 	@Override

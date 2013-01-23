@@ -44,7 +44,7 @@ public class Config {
 																		to all requestable peers and not just the requester. */
 
 	//Colors
-	private static int bgColor = Color.WHITE;	
+	private static int bgColor = Color.WHITE;
 	private static int[] colors = {Color.BLUE, Color.GREEN, Color.RED};	//TODO add more colours
 	private static float posIndicatorSize = 10;	//Radius of circle
 
@@ -73,14 +73,14 @@ public class Config {
 	private static final String globalServerIP = "jknoxville.no-ip.org";
 	private static final int serverPort = 60000;
 	private static final int defaultClientPort = 60001;
-	
+
 	//Logging options
 	private static final long screenShotTimer = 20*1000;	//time between saving screenshots
-	
+
 	//Simulation
+	private static final boolean droppingEnabled = false;
 	private static final boolean markovPacketDroppingSimulation = true;
 	private static boolean currentlyDropping = false;
-	private static long lastConnectionCheck = 0;
 	private static final double loseConnectionRate = 0.1;	//chance you lose connection in a given second
 	private static final double reconnectRate = 0.3;
 	private static final double dropRate = 0.2;
@@ -96,7 +96,7 @@ public class Config {
 	private static final int sampleYCam = 634959;
 	private static final boolean testingInCam = true;
 	private static final boolean sendOnTimeout = true;	//allows sending of not full packets if timer expires
-	
+
 	//Config own variables
 	private static boolean checkedForLocalServer = false;
 
@@ -239,15 +239,17 @@ public class Config {
 		return screenShotTimer;
 	}
 	public static boolean droppingPackets() {
-		if(markovPacketDroppingSimulation) {
+		if(droppingEnabled) {
+			if(markovPacketDroppingSimulation) {
 
 				if(Math.random() <= (currentlyDropping?reconnectRate:loseConnectionRate)) {
 					currentlyDropping = !currentlyDropping;
 				}
 				return currentlyDropping;
-		} else {
-			if(Math.random() <= dropRate) {
-				return true;
+			} else {
+				if(Math.random() <= dropRate) {
+					return true;
+				}
 			}
 		}
 		return false;

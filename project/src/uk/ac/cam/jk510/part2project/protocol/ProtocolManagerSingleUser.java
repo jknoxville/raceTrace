@@ -72,4 +72,10 @@ public class ProtocolManagerSingleUser extends ProtocolManager {
 		// nothing to do
 	}
 
+	@Override
+	protected void initDataSockets() {
+		// no sockets to initialise
+		
+	}
+
 }

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import uk.ac.cam.jk510.part2project.graphics.MapDrawer;
 import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
+import uk.ac.cam.jk510.part2project.network.DeviceConnection;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -32,6 +33,7 @@ public abstract class ProtocolManager {
 	private long pointsSinceLastMissingCheck = 0;
 	protected boolean checkedMissingSinceLastReceipt = false;
 	protected LinkedList<Integer>[] requestArray;
+	protected DeviceConnection[] connections;
 
 	private static ProtocolManager instance;
 	private static boolean alive = true;
@@ -77,7 +79,7 @@ public abstract class ProtocolManager {
 		Device deviceObject = Session.getDevice(device);
 		for(int i=0; i<1; i++) {
 			Coords coords = new CoordsTXYA(device, (int) (Math.random()*100), (int) (Math.random()*100)+Config.getSampleX(), (int) (Math.random()*100)+Config.getSampleY(), (int) (Math.random()*100));
-			System.err.println("now inserting test index: "+coords.getLClock()+" to device "+device);	//debug
+			System.err.println("PM: now generating test index: "+coords.getLClock()+" to device "+device);	//debug
 			insertOriginalDataPoint(deviceObject, coords);
 			System.err.println("Finished inputting test data");	//debug
 		}
@@ -269,6 +271,7 @@ public abstract class ProtocolManager {
 	protected void missingCheck() {
 		updateRequestArray();
 	}
+	protected abstract void initDataSockets();
 	protected abstract void flushToNetwork(int device);
 	protected abstract void respondToNetwork(int requester, List<Coords> coordsList);
 	protected abstract List<Device> requestablePeers();

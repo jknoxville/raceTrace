@@ -15,6 +15,7 @@ import android.widget.TextView;
 import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.ClientMessage;
+import uk.ac.cam.jk510.part2project.network.DeviceConnection;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
 import uk.ac.cam.jk510.part2project.session.Session;
@@ -26,38 +27,66 @@ public class ProtocolManagerP2P extends ProtocolManager {
 	//private DatagramSocket socket;
 	public static boolean alive = true;	//TODO move this to ProtocolManager class and make private and alive().
 
-	@Override
 	public void spawnReceivingThread() {
-		// The following is copied from ProtocolManagerClientServer
-		// could be abstracted? TODO
 
-		new Thread(new Runnable() {
-			public void run() {
-				checkSocketIsOpen();
+		for(final Device device: Session.getSession().getDevices()) {
+			if(!device.equals(Session.getThisDevice())) {
 
-				//debug:
-				TextView debugInfo = MapDisplayScreen.debugInfo;
+				new Thread(new Runnable() {
+					public void run() {
 
-				byte[] receivingData = new byte[1024];
-				DatagramPacket datagram = new DatagramPacket(receivingData, receivingData.length);
-				checkSocketIsOpen();
-				while(alive) {
-					if(MapDisplayScreen.debugInfo != null) {
-						//	debugInfo.setText("Device 0: "+((DeviceHandleIP) Session.getDevice(0).getHandle()).getIP().getHostAddress()+":"+((DeviceHandleIP) Session.getDevice(0).getHandle()).getPort());
+						byte[] receivingData = new byte[1024];
+						checkSocketIsOpen();
+						while(alive) {
+							try {
+								ByteBuffer bb = DataConnectionManager.receive(connections[device.getDeviceID()], receivingData);
+								System.out.println("Recieved datagram");
+								ClientMessage.processData(bb);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+						}
 					}
-					try {
-						DataConnectionManager.receive(datagram);
-						System.out.println("Recieved datagram");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					ClientMessage.processDatagram(datagram);
-				}
+				}).start();
+
 			}
-		}).start();
-
+		}
 	}
+	//commented 23rd jan
+	//	@Override
+	//	public void spawnReceivingThread() {
+	//		// The following is copied from ProtocolManagerClientServer
+	//		// could be abstracted? TODO
+	//
+	//		new Thread(new Runnable() {
+	//			public void run() {
+	//				checkSocketIsOpen();
+	//
+	//				//debug:
+	//				TextView debugInfo = MapDisplayScreen.debugInfo;
+	//
+	//				byte[] receivingData = new byte[1024];
+	//				DatagramPacket datagram = new DatagramPacket(receivingData, receivingData.length);
+	//				checkSocketIsOpen();
+	//				while(alive) {
+	//					if(MapDisplayScreen.debugInfo != null) {
+	//						//	debugInfo.setText("Device 0: "+((DeviceHandleIP) Session.getDevice(0).getHandle()).getIP().getHostAddress()+":"+((DeviceHandleIP) Session.getDevice(0).getHandle()).getPort());
+	//					}
+	//					try {
+	//						DataConnectionManager.receive(datagram);
+	//						System.out.println("Recieved datagram");
+	//					} catch (IOException e) {
+	//						// TODO Auto-generated catch block
+	//						e.printStackTrace();
+	//					}
+	//					ClientMessage.processDatagram(datagram);
+	//				}
+	//			}
+	//		}).start();
+	//
+	//	}
 
 	@Override
 	protected void giveToNetwork(Coords coords) {
@@ -70,12 +99,13 @@ public class ProtocolManagerP2P extends ProtocolManager {
 				//do send
 				sendCoordsToPeer(toDevice, coords);
 			}
-			
+
 		}
 	}
 
 	@Override
 	protected void respondToNetwork(int requester, List<Coords> response) {
+		System.out.println("Got request from "+requester);
 		if(Config.replyToRequestsToMultiplePeers()) {
 			for(Device toDevice: relientPeers()) {
 				sendCoordsListToPeer(toDevice, response);
@@ -92,10 +122,11 @@ public class ProtocolManagerP2P extends ProtocolManager {
 			flushToNetwork(toDevice.getDeviceID());
 		}
 	}
-	
+
 	protected void flushToNetwork(int device) {
 		Device toDevice = Session.getSession().getDevice(device);
-		DataConnectionManager.sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), coordsToSend[toDevice.getDeviceID()]);
+		//DataConnectionManager.sendCoordsToAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), coordsToSend[toDevice.getDeviceID()]);
+		DataConnectionManager.sendCoordsToDevice(connections[toDevice.getDeviceID()], coordsToSend[toDevice.getDeviceID()]);
 		coordsToSend[device].clear();
 	}
 
@@ -114,7 +145,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 
 	private void checkSocketIsOpen() {
 
-		DataConnectionManager.initDataSocket();
+		initDataSockets();
 	}
 
 	@Override
@@ -130,6 +161,21 @@ public class ProtocolManagerP2P extends ProtocolManager {
 
 	}
 
+	public void initDataSockets() {
+		if(connections == null) {
+			connections = new DeviceConnection[Session.getSession().numDevices()];
+			//TODO make it ProtocolManager.numConnections instead or make it do it or something for server and all.
+			for(Device device: Session.getSession().getDevices()) {
+				try {
+					connections[device.getDeviceID()] = DeviceConnection.newConnection(device);
+				} catch (SocketException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
 	@Override
 	protected void sendMissingRequest() {
 		// TODO this
@@ -138,8 +184,8 @@ public class ProtocolManagerP2P extends ProtocolManager {
 			//send request to all devices
 			//TODO make recieve discard packets from self.
 			for(Device toDevice: requestablePeers()) {
-				DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), requestArray);
-				DataConnectionManager.send(datagram);
+				byte[] data = DataConnectionManager.createRequestMessageWithAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), requestArray);
+				DataConnectionManager.send(data, connections[toDevice.getDeviceID()]);
 			}
 		} catch (SocketException e) {
 			//TODO 

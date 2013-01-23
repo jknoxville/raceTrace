@@ -14,6 +14,21 @@ import uk.ac.cam.jk510.part2project.store.IncompatibleCoordsException;
 public class ClientMessage {
 	//TODO, this uses CoordsTXYA hardcoded
 
+	public static void processData(ByteBuffer bb) {
+		int typeHeader = bb.getInt();
+		System.out.println("typeHeader: "+typeHeader);	//debug
+		MessageType type = MessageType.values()[typeHeader];
+		try {
+			switch(type) {
+			case datapoints:	processDatapointDatagram(bb);	break;
+			case request: 		processRequestDatagram(bb);		break;
+			default: 				break;
+			}	} catch (IncompatibleCoordsException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+	}
+
 	public static void processDatagram(final DatagramPacket datagram) {
 		//System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength()); not needed as offset = 0
 		//byte[] data = datagram.getData();	//this is larger than necessary. data.length >= datagram.getLength()
@@ -34,8 +49,8 @@ public class ClientMessage {
 			MessageType type = MessageType.values()[typeHeader];
 
 			switch(type) {
-				case datapoints:	processDatapointDatagram(bb, datagram);	break;
-				case request: 		processRequestDatagram(bb, datagram);	break;
+			case datapoints:	processDatapointDatagram(bb, datagram);	break;
+			case request: 		processRequestDatagram(bb, datagram);	break;
 			default: 				break;
 			}		
 
@@ -81,6 +96,41 @@ public class ClientMessage {
 			e.printStackTrace();
 		}
 	}
+	public static void processDatapointDatagram(ByteBuffer bb) {
+
+		//TODO check header for what type of message it is.
+		//byte[] data = new byte[datagram.getLength()];
+		//System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength()); not needed as offset = 0
+
+		try {
+			//TODO any extra (sync?) data other than coords?
+
+			int numDataPoints = (bb.limit()-4*(2))/(5*4);	//total length - type header - device ID. divided by 5 numbers per each coords.
+
+			//read metadata first
+			//get fromID
+			int deviceID = bb.getInt();
+			System.out.println("Got datapoints from "+deviceID);
+
+
+			for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
+				System.out.println("datapoint in packet "+dataPoint);	//debug
+				int aboutID = bb.getInt();
+				int lTime = bb.getInt();
+				float x = bb.getFloat();
+				float y = bb.getFloat();
+				float alt = bb.getFloat();
+				System.out.println("receiving. from device "+deviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
+				CoordsTXYA coords = new CoordsTXYA(aboutID, lTime, x, y, alt);
+				ProtocolManager.insertNetworkDataPoint(deviceID, coords);
+			}
+			System.out.println("Received");	//debug
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public static void processRequestDatagram(ByteBuffer bb, DatagramPacket datagram) throws IncompatibleCoordsException {
 
@@ -106,6 +156,29 @@ public class ClientMessage {
 		ProtocolManager.serviceRequestAsClient(fromDeviceID, requestArray);
 
 		updatePort(fromDeviceID, datagram);
+	}
+	public static void processRequestDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
+
+		int fromDeviceID = bb.getInt();
+
+		LinkedList<Integer>[] requestArray = new LinkedList[Session.getSession().numDevices()];
+		for(int dev = 0; dev<requestArray.length; dev++) {
+			requestArray[dev] = new LinkedList<Integer>();
+		}
+
+		int currentDevice = -1;
+		while(bb.hasRemaining()) {
+			int i;
+			if((i = bb.getInt()) == -1) {
+				//device seperator
+				currentDevice = bb.getInt();
+			} else {
+				//request data
+				requestArray[currentDevice].add(i);
+			}
+		}
+
+		ProtocolManager.serviceRequestAsClient(fromDeviceID, requestArray);
 	}
 
 	private static void updatePort(int deviceID, DatagramPacket datagram) {

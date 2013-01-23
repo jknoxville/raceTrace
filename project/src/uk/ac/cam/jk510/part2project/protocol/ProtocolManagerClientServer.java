@@ -5,11 +5,13 @@ import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.ClientMessage;
+import uk.ac.cam.jk510.part2project.network.DeviceConnection;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -53,18 +55,19 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 			public void run() {
 				checkInit();
 				byte[] receivingData = new byte[1024];
-				DatagramPacket datagram = new DatagramPacket(receivingData, receivingData.length);
+				//DatagramPacket datagram = new DatagramPacket(receivingData, receivingData.length);
 				while(alive) {
 					try {
 						//socket.receive(datagram);
-						DataConnectionManager.receive(datagram);	//this is a destructive method on the datagram object
+						ByteBuffer bb = DataConnectionManager.receive(connections[0], receivingData);	//this is a destructive method on the datagram object
 						System.out.println("Recieved datagram");
+						ClientMessage.processData(bb);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					//TODO this in a new thread, so that it can receive while processing it.
-					ClientMessage.processDatagram(datagram);
+					
 				}
 			}
 		}).start();
@@ -91,14 +94,27 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	private void sendCoordsToServer(List<Coords> coordsList) {
 
 		checkInit();
-		DataConnectionManager.sendCoordsToAddress(serverSocketAddress, coordsList);
+		DataConnectionManager.sendCoordsToDevice(connections[0], coordsList);
 
 	}
 
 	private void checkInit() {
-		DataConnectionManager.initDataSocket();
+		initDataSockets();
 		if(serverSocketAddress == null) {
 			serverSocketAddress = new InetSocketAddress(Config.getServerIP(), Config.getServerPort());
+		}
+	}
+	public void initDataSockets() {
+		if(connections == null) {
+			connections = new DeviceConnection[1];	//just one connection for server
+			//TODO make it ProtocolManager.numConnections instead or make it do it or something for server and all.
+
+					try {
+						connections[0] = DeviceConnection.newConnection(null);
+					} catch (SocketException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 		}
 	}
 
@@ -121,9 +137,9 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	protected void sendMissingRequest() {
 		try {
 			checkInit();
-			DatagramPacket datagram = DataConnectionManager.createRequestMessageWithAddress(serverSocketAddress, requestArray);
-			if(datagram != null) {
-				DataConnectionManager.send(datagram);
+			byte[] data = DataConnectionManager.createRequestMessageWithAddress(serverSocketAddress, requestArray);
+			if(data != null) {
+				DataConnectionManager.send(data, connections[0]);
 			}
 		} catch (SocketException e) {
 			//TODO 

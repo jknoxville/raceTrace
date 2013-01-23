@@ -185,7 +185,7 @@ public class ServerState implements PositionStoreSubscriber {
 				for(int index: list) {
 					Coords coords = PositionStore.getCoord(fromDevice, index);
 					for(Device toDevice: Session.getSession().getDevices()) {
-						
+
 						if(Config.dontSendPointsToOwner() && (coords.getDevice() == toDevice.getDeviceID())) {
 							//don't send
 						} else {
@@ -240,7 +240,7 @@ public class ServerState implements PositionStoreSubscriber {
 	}
 	private static boolean ready() {
 		//Note ready is always false when there is just one device in session.
-		return (timeOfLastSend + Config.getServerResendPeriodMillis() <= System.currentTimeMillis()) || (numNewPoints>=Config.getServerNewPointsThreshold()) && Session.getSession().numDevices()!=1;
+		return (timeOfLastSend + Config.getServerResendPeriodMillis() <= System.currentTimeMillis()) || (numNewPoints>=Config.getServerNewPointsThreshold()) && Session.getSession().numDevices()>1;
 	}
 
 	public static void sendSessionToAllDevices(Session session) {
@@ -256,23 +256,41 @@ public class ServerState implements PositionStoreSubscriber {
 		//LinkedList<Coords> response = PositionStore.fulfillRequest(requestArray);
 		List<Coords> coordsList = Response.getCoordsList(responses);
 		respondToNetwork(fromID, coordsList);
+		
+		/*
+		 * This is server code, so since server doesnt have the "remainder" data,
+		 * only the generator of it does, so send each device a request asking
+		 * for just their contribution.
+		 */
+		
+		//initialise array with empty lists
 		LinkedList<Integer>[] newRequestArray = new LinkedList[Session.getSession().numDevices()];
 		for(int i=0; i<Session.getSession().numDevices(); i++) {
-			newRequestArray[i] = responses[i].remainingPoints;
+			newRequestArray[i] = new LinkedList<Integer>();
 		}
 		
-		//issue new request to culprit to get the remaining points.
-		Device toDevice = Session.getSession().getDevice(fromID);
-		InetSocketAddress sockAdd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
-		try {
-			DatagramPacket datagram = ServerMessage.createRequestMessageWithAddress(sockAdd, newRequestArray);
-			NetworkInterface.getInstance().sendDatagram(datagram);
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		//clear all lists so only send one devices request:
+		for(int i=0; i<Session.getSession().numDevices(); i++) {
+			for(int j=0; j<Session.getSession().numDevices(); j++) {
+				newRequestArray[j].clear();
+			}
+			newRequestArray[i] = responses[i].remainingPoints;
+			
+			//issue new request to culprit to get the remaining points.
+			Device toDevice = Session.getSession().getDevice(i);
+			InetSocketAddress sockAdd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
+			try {
+				DatagramPacket datagram = ServerMessage.createRequestMessageWithAddress(sockAdd, newRequestArray);
+				if(datagram != null) {
+					NetworkInterface.getInstance().sendDatagram(datagram);
+				}
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
