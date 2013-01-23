@@ -23,30 +23,32 @@ import uk.ac.cam.jk510.part2project.store.Coords;
 
 public class NetworkInterface {
 
-	private DatagramSocket socket;
+	//private DatagramSocket socket;
 	byte[] receiveData = new byte[1024];
 	private InetSocketAddress[] socketAddresses;
 
 	private static NetworkInterface net;
 
-	private NetworkInterface() {
-		byte[] data = new byte[1024];	//TODO check this hard limit is ok
-		DatagramPacket datagram = new DatagramPacket(data, data.length);
-		DatagramSocket sock;
-		try {
-			sock = new DatagramSocket(Config.getServerPort());
-			socket = sock;
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Session session = Session.getSession();
-		socketAddresses = new InetSocketAddress[session.numDevices()];
-		for(Device d: session.getDevices()) {
-			socketAddresses[d.getDeviceID()] = new InetSocketAddress(((DeviceHandleIP) d.getHandle()).getIP().getHostName(), ((DeviceHandleIP) d.getHandle()).getPort());
-		}
-		net = this;
-	}
+	
+	//commented 23 Jan
+//	private NetworkInterface() {
+//		byte[] data = new byte[1024];	//TODO check this hard limit is ok
+//		DatagramPacket datagram = new DatagramPacket(data, data.length);
+//		DatagramSocket sock;
+//		try {
+//			sock = new DatagramSocket(Config.getServerPort());
+//			socket = sock;
+//		} catch (SocketException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		Session session = Session.getSession();
+//		socketAddresses = new InetSocketAddress[session.numDevices()];
+//		for(Device d: session.getDevices()) {
+//			socketAddresses[d.getDeviceID()] = new InetSocketAddress(((DeviceHandleIP) d.getHandle()).getIP().getHostName(), ((DeviceHandleIP) d.getHandle()).getPort());
+//		}
+//		net = this;
+//	}
 
 	public static NetworkInterface getInstance() {
 		if(net == null) {
@@ -126,20 +128,21 @@ public class NetworkInterface {
 //		}
 //	}
 	
-	public void sendDatagram(DatagramPacket datagram) throws IOException {
-		socket.send(datagram);
-	}
-
-	public synchronized DatagramPacket receiveDatagram() {
-		try {
-			DatagramPacket datagram = new DatagramPacket(receiveData, receiveData.length);
-			socket.receive(datagram);
-			return datagram;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-	}
+	//commented 23 Jan
+//	public void sendDatagram(DatagramPacket datagram) throws IOException {
+//		socket.send(datagram);
+//	}
+//
+//	public synchronized DatagramPacket receiveDatagram() {
+//		try {
+//			DatagramPacket datagram = new DatagramPacket(receiveData, receiveData.length);
+//			socket.receive(datagram);
+//			return datagram;
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			return null;
+//		}
+//
+//	}
 
 }

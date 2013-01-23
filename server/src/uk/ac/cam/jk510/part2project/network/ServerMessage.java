@@ -19,27 +19,49 @@ public class ServerMessage {
 
 	private static int sizeOfDataPoint = 4*4;	//4 times size of int, as in CoordsTXYA. TODO change it to use char or something.
 
-	public static void processDatagram(final DatagramPacket datagram) {
+	//Commented out 23rd Jan
+//	public static void processDatagram(final DatagramPacket datagram) {
+//		//System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength()); not needed as offset = 0
+//		//byte[] data = datagram.getData();	//this is larger than necessary. data.length >= datagram.getLength()
+//		System.out.println("offset = "+datagram.getOffset());
+//		try {
+//			//TODO any extra (sync?) data other than coords?
+//
+//			System.out.println("Length of received packet: "+datagram.getLength()+" offset: "+datagram.getOffset());	//debug
+//			//			int numDataPoints = (datagram.getLength()-4*(1+1))/(5*4);	//type header, fromID
+//			//			System.out.println("Number of datapoints in this packet: "+numDataPoints);	//debug
+//
+//			ByteBuffer bb = ByteBuffer.wrap(datagram.getData());
+//			bb.limit(datagram.getLength());	//set bb limit
+//
+//			//read metadata first
+//			int typeHeader = bb.getInt();
+//			MessageType type = MessageType.values()[typeHeader];
+//
+//			switch(type) {
+//			case datapoints: processDatapointDatagram(bb, datagram); break;
+//			case request: processRequestDatagram(bb, datagram); break;
+//			default: System.out.println("ERROR: not datapoints or request"); break;
+//			}
+//
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+	public static void processData(ByteBuffer bb) {
 		//System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength()); not needed as offset = 0
 		//byte[] data = datagram.getData();	//this is larger than necessary. data.length >= datagram.getLength()
-		System.out.println("offset = "+datagram.getOffset());
+
 		try {
-			//TODO any extra (sync?) data other than coords?
-
-			System.out.println("Length of received packet: "+datagram.getLength()+" offset: "+datagram.getOffset());	//debug
-			//			int numDataPoints = (datagram.getLength()-4*(1+1))/(5*4);	//type header, fromID
-			//			System.out.println("Number of datapoints in this packet: "+numDataPoints);	//debug
-
-			ByteBuffer bb = ByteBuffer.wrap(datagram.getData());
-			bb.limit(datagram.getLength());	//set bb limit
 
 			//read metadata first
 			int typeHeader = bb.getInt();
 			MessageType type = MessageType.values()[typeHeader];
 
 			switch(type) {
-			case datapoints: processDatapointDatagram(bb, datagram); break;
-			case request: processRequestDatagram(bb, datagram); break;
+			case datapoints: processDatapointDatagram(bb); break;
+			case request: processRequestDatagram(bb); break;
 			default: System.out.println("ERROR: not datapoints or request"); break;
 			}
 
@@ -49,12 +71,11 @@ public class ServerMessage {
 		}
 	}
 
-	public static void processDatapointDatagram(ByteBuffer bb, DatagramPacket datagram) throws IncompatibleCoordsException {
+	public static void processDatapointDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
 		
 		int fromDeviceID = bb.getInt();
 
-		int numDataPoints = (datagram.getLength()-8)/(5*4);	//type header, fromID
-		System.out.println("Data length: "+datagram.getLength()+" Number of datapoints in this packet: "+numDataPoints);	//debug
+		int numDataPoints = (bb.limit()-8)/(5*4);	//type header, fromID
 
 		for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
 			int aboutDeviceID = bb.getInt();
@@ -71,11 +92,11 @@ public class ServerMessage {
 				PositionStore.insert(aboutDeviceID+1, coords2);
 			}
 		}
-		updatePort(fromDeviceID, datagram);
 		ServerState.sendIfReady();	//This is in server variant.
 	}
+	
 
-	public static void processRequestDatagram(ByteBuffer bb, DatagramPacket datagram) throws IncompatibleCoordsException {
+	public static void processRequestDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
 		
 		int fromDeviceID = bb.getInt();
 		
@@ -83,7 +104,6 @@ public class ServerMessage {
 		for(int dev = 0; dev<requestArray.length; dev++) {
 			requestArray[dev] = new LinkedList<Integer>();
 		}
-		System.out.println(datagram.getAddress().getHostName()+" is requesting data from: ");
 		int currentDevice = -1;
 		while(bb.hasRemaining()) {
 			int i;
@@ -99,7 +119,6 @@ public class ServerMessage {
 		
 		ServerState.serviceRequest(fromDeviceID, requestArray);
 		
-		updatePort(fromDeviceID, datagram);
 	}
 
 	private static void updatePort(int fromDeviceID, DatagramPacket datagram) {

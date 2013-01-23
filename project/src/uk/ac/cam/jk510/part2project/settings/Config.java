@@ -42,7 +42,6 @@ public class Config {
 	private static final int missingDataCheckThreshold = 10;	//number of network points received that triggers missing check.
 	private static final boolean replyToRequestsToMultiplePeers = false;	/*	when set, whenever a device responds to a missing request, it will send its response
 																		to all requestable peers and not just the requester. */
-
 	//Colors
 	private static int bgColor = Color.WHITE;
 	private static int[] colors = {Color.BLUE, Color.GREEN, Color.RED};	//TODO add more colours

@@ -1,5 +1,6 @@
 package uk.ac.cam.jk510.part2project.settings;
 
+import uk.ac.cam.jk510.part2project.network.Transport;
 import uk.ac.cam.jk510.part2project.protocol.Proto;
 import uk.ac.cam.jk510.part2project.protocol.SessionEnum;
 import uk.ac.cam.jk510.part2project.store.CoordsType;
@@ -12,6 +13,7 @@ public class Config {
 	private static int arrayBlockSize = 600;		// At 1 per second, thats 10 mins per chunk
 	private static int arrayIndexFrequency = 10;	// Finest granularity of points. In samples per 10 sec.
 	private static String name = "John";	//Name of local player TODO lookup from OS?
+	private static final int keepAlivePeriod = 10000;	//TODO actually use this!!!
 
 	//Colors - not needed for server
 	/*
@@ -26,7 +28,8 @@ public class Config {
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
 	private static boolean dontSendPointsToOwner = true;
-
+	private static final Transport transportProtocol = Transport.UDP;
+	
 	//GPS Updates
 	private static final int gpsUpdateTime = 0;	//minTime between GPS position updates
 	private static final int gpsUpdateDistance = 0;	//min distance between GPS position updates
@@ -44,6 +47,14 @@ public class Config {
 	private static final long serverResendPeriodSecs = 5;
 	private static final int serverNewPointsThreshold = 5;
 	private static final boolean singleSession = true;
+	
+	//Simulation
+	private static final boolean droppingEnabled = false;
+	private static final boolean markovPacketDroppingSimulation = true;
+	private static boolean currentlyDropping = false;
+	private static final double loseConnectionRate = 0.1;	//chance you lose connection in a given second
+	private static final double reconnectRate = 0.3;
+	private static final double dropRate = 0.2;
 	
 	//Testing
 	private static final boolean serverDuplicationTest = false;
@@ -133,5 +144,27 @@ public class Config {
 	}
 	public static boolean dontSendPointsToOwner() {
 		return dontSendPointsToOwner;
+	}
+	public static Transport transportProtocol() {
+		return transportProtocol;
+	}
+	public static boolean droppingPackets() {
+		if(droppingEnabled) {
+			if(markovPacketDroppingSimulation) {
+
+				if(Math.random() <= (currentlyDropping?reconnectRate:loseConnectionRate)) {
+					currentlyDropping = !currentlyDropping;
+				}
+				return currentlyDropping;
+			} else {
+				if(Math.random() <= dropRate) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	public static long getKeepAlivePeriod() {
+		return keepAlivePeriod;
 	}
 }

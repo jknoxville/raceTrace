@@ -26,7 +26,7 @@ public class ClientMessage {
 			}	} catch (IncompatibleCoordsException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}	
+			}
 	}
 
 	public static void processDatagram(final DatagramPacket datagram) {

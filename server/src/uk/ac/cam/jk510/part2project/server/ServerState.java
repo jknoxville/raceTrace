@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import uk.ac.cam.jk510.part2project.network.ServerMessage;
+import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
+import uk.ac.cam.jk510.part2project.network.DeviceConnection;
 import uk.ac.cam.jk510.part2project.network.MessageType;
+import uk.ac.cam.jk510.part2project.network.ServerMessage;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
 import uk.ac.cam.jk510.part2project.session.Session;
@@ -37,7 +39,9 @@ public class ServerState implements PositionStoreSubscriber {
 	private static boolean initialised = false;
 	private static long timeOfLastSend=0;
 	private static int numNewPoints=0;
+	private static SessionDeviceConnection[] sessionSetupConnections;
 	private static DeviceConnection[] connections;
+	private static boolean alive = true;
 
 	public static void main(String[] args) {
 		/*
@@ -61,7 +65,7 @@ public class ServerState implements PositionStoreSubscriber {
 		if(Config.singleSession()) {
 
 			int numDevices = Integer.parseInt(args[0]);
-			connections = new DeviceConnection[numDevices];
+			sessionSetupConnections = new SessionDeviceConnection[numDevices];
 
 			coordsToSend = new LinkedList[numDevices];
 			for(int i = 0; i<numDevices; i++) {
@@ -74,8 +78,8 @@ public class ServerState implements PositionStoreSubscriber {
 				for(int i=0; i<numDevices; i++) {
 					System.out.println("Waiting for device "+i);
 					Socket sock = serverSock.accept();
-					connections[i] = new DeviceConnection(i, sock, numDevices);
-					connections[i].connectAndReceive();
+					sessionSetupConnections[i] = new SessionDeviceConnection(i, sock, numDevices);
+					sessionSetupConnections[i].connectAndReceive();
 					System.out.println("Connected to device "+i);
 				}
 
@@ -105,13 +109,13 @@ public class ServerState implements PositionStoreSubscriber {
 	}
 
 	public static void startMainProcessing(Session session) {
-		NetworkInterface net = NetworkInterface.getInstance();
+		//NetworkInterface net = NetworkInterface.getInstance();
 		ServerState.init();
 
 		//TODO spawn periodic sending thread
 		new Thread(new Runnable() {
 			public void run() {
-				while(true) {
+				while(alive) {
 					try {
 						Thread.sleep(Config.getServerResendPeriodMillis());
 						ServerState.sendIfReady();
@@ -124,54 +128,93 @@ public class ServerState implements PositionStoreSubscriber {
 		}).start();
 
 		System.out.println("Now listening for data");	//debug
+		initDataSockets();
+		for(final Device device: Session.getSession().getDevices()) {
+
+				new Thread(new Runnable() {
+					public void run() {
+
+						byte[] receivingData = new byte[1024];
+						
+						while(alive) {
+							try {
+								ByteBuffer bb = DataConnectionManager.receive(connections[device.getDeviceID()], receivingData);
+								System.out.println("Recieved datagram");
+								ServerMessage.processData(bb);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+						}
+					}
+				}).start();
+		}
 
 		//listen for incoming data and process it:
-		while(true) {
-			ServerMessage.processDatagram(net.receiveDatagram());
+//		while(true) {
+//			ServerMessage.processDatagram(net.receiveDatagram());
+//		}
+	}
+	
+	public static synchronized void initDataSockets() {
+		if(connections == null) {
+			connections = new DeviceConnection[Session.getSession().numDevices()];
+			//TODO make it ProtocolManager.numConnections instead or make it do it or something for server and all.
+			for(Device device: Session.getSession().getDevices()) {
+				try {
+					System.out.println("device");
+					connections[device.getDeviceID()] = DeviceConnection.newConnection(device);
+				} catch (SocketException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
-	protected static void sendCoordsToAddress(final InetSocketAddress toSocketAddress, List<Coords> coordsList) {
-
-		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
-
-		byte[] data = new byte[(2 + 5*coordsList.size())*4];	//1 int for header, 1 int for fromID + 5 (int|float)s for each coord
-		ByteBuffer bb = ByteBuffer.wrap(data);
-
-		bb.putInt(MessageType.datapoints.ordinal());	//put header
-
-		bb.putInt(-1);	//server ID
-
-		for(Coords coords: coordsList) {
-
-			int aboutDeviceID = coords.getDevice();	//deviceID of the device whose location this point is.
-			int lClock = coords.getLClock();
-			float x = coords.getCoord(0);
-			float y = coords.getCoord(1);
-			float alt = coords.getCoord(2);
-
-			bb.putInt(aboutDeviceID);
-			bb.putInt(lClock);
-			bb.putFloat(x);
-			bb.putFloat(y);
-			bb.putFloat(alt);
-			System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
-
-		}
-		try {
-			//checkInit();
-			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
-			NetworkInterface.getInstance().sendDatagram(datagram);
-
-
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	//commented 23rd Jan
+//	protected static void sendCoordsToAddress(final InetSocketAddress toSocketAddress, List<Coords> coordsList) {
+//
+//		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
+//
+//		byte[] data = new byte[(2 + 5*coordsList.size())*4];	//1 int for header, 1 int for fromID + 5 (int|float)s for each coord
+//		ByteBuffer bb = ByteBuffer.wrap(data);
+//
+//		bb.putInt(MessageType.datapoints.ordinal());	//put header
+//
+//		bb.putInt(-1);	//server ID
+//
+//		for(Coords coords: coordsList) {
+//
+//			int aboutDeviceID = coords.getDevice();	//deviceID of the device whose location this point is.
+//			int lClock = coords.getLClock();
+//			float x = coords.getCoord(0);
+//			float y = coords.getCoord(1);
+//			float alt = coords.getCoord(2);
+//
+//			bb.putInt(aboutDeviceID);
+//			bb.putInt(lClock);
+//			bb.putFloat(x);
+//			bb.putFloat(y);
+//			bb.putFloat(alt);
+//			System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
+//
+//		}
+//		try {
+//			//checkInit();
+//			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
+//			NetworkInterface.getInstance().sendDatagram(datagram);
+//
+//
+//		} catch (SocketException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	public synchronized static void sendIfReady() {
 		//init();	//init moved to Server.main
@@ -214,7 +257,8 @@ public class ServerState implements PositionStoreSubscriber {
 		for(Device toDevice: Session.getSession().getDevices()) {
 			if(!coordsToSend[toDevice.getDeviceID()].isEmpty()) {
 				InetSocketAddress sockadd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
-				sendCoordsToAddress(sockadd, coordsToSend[toDevice.getDeviceID()]);
+				DataConnectionManager.sendCoordsToDevice(connections[toDevice.getDeviceID()], coordsToSend[toDevice.getDeviceID()]);
+				//sendCoordsToAddress(sockadd, coordsToSend[toDevice.getDeviceID()]);
 				coordsToSend[toDevice.getDeviceID()].clear();
 			}
 		}
@@ -245,7 +289,7 @@ public class ServerState implements PositionStoreSubscriber {
 
 	public static void sendSessionToAllDevices(Session session) {
 		SessionPackage pack = new SessionPackage(session);
-		for(DeviceConnection conn: connections) {
+		for(SessionDeviceConnection conn: sessionSetupConnections) {
 			conn.sendSessionPackage(pack);
 		}
 
@@ -280,9 +324,11 @@ public class ServerState implements PositionStoreSubscriber {
 			Device toDevice = Session.getSession().getDevice(i);
 			InetSocketAddress sockAdd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
 			try {
-				DatagramPacket datagram = ServerMessage.createRequestMessageWithAddress(sockAdd, newRequestArray);
-				if(datagram != null) {
-					NetworkInterface.getInstance().sendDatagram(datagram);
+				byte[] data = DataConnectionManager.createRequestMessageWithAddress(sockAdd, newRequestArray);
+				//DatagramPacket datagram = ServerMessage.createRequestMessageWithAddress(sockAdd, newRequestArray);
+				if(data != null) {
+					connections[toDevice.getDeviceID()].sendGeneric(data, data.length);
+					//NetworkInterface.getInstance().sendDatagram(datagram);
 				}
 			} catch (SocketException e) {
 				// TODO Auto-generated catch block

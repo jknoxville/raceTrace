@@ -4,9 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
-import java.net.BindException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
@@ -14,14 +11,9 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import uk.ac.cam.jk510.part2project.protocol.Logger;
-import uk.ac.cam.jk510.part2project.protocol.Proto;
-import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
-import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionPackage;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -81,7 +73,6 @@ public class DataConnectionManager {
 
 	public static ByteBuffer receive(DeviceConnection conn, byte[] data) throws IOException {
 		ByteBuffer bb = conn.receiveData(data);
-		Logger.download(data.length);	//TODO log header size?
 		return bb;
 	}
 
@@ -95,17 +86,6 @@ public class DataConnectionManager {
 		keepAliveTimers[device] = System.currentTimeMillis();
 	}
 
-	public static void keepAlive() {
-		int index = 0;
-		for(long timer: keepAliveTimers) {
-			if(timer == 0 || timer+Config.getKeepAlivePeriod()<System.currentTimeMillis()) {
-				//TODO send keep alive message
-				ProtocolManager.getProtocolManager().sendKeepAliveMessage(index);
-			}
-			index++;
-		}
-	}
-
 	public static void send(byte[] data, DeviceConnection conn) throws IOException {
 		if(!Config.droppingPackets()) {
 			conn.sendGeneric(data, data.length);
@@ -115,7 +95,7 @@ public class DataConnectionManager {
 
 	public static void sendCoordsToDevice(DeviceConnection conn, List<Coords> coordsList) {
 
-		int fromDeviceID = Session.getThisDevice().getDeviceID();	//used to identify sender to the recipent.
+		int fromDeviceID = -1;	//server ID
 
 		byte[] data = new byte[(1+1+5*coordsList.size())*4];	//1 int for coords header, 1 int for fromID, plus 5 (int|float)s for each coord
 		ByteBuffer bb = ByteBuffer.wrap(data);
@@ -212,7 +192,7 @@ public class DataConnectionManager {
 		ByteBuffer bb = ByteBuffer.wrap(data);
 
 		bb.putInt(MessageType.request.ordinal());	//first 4 bytes: request header
-		bb.putInt(Session.getThisDevice().getDeviceID());	//put fromID
+		bb.putInt(-1);	//put fromID
 
 		for(int device = 0; device<Session.getSession().numDevices(); device++) {
 			System.out.println("requesting for device "+device);	//debug

@@ -17,14 +17,14 @@ import uk.ac.cam.jk510.part2project.settings.Config;
 public class UDPConnection extends DeviceConnection {
 
 	UDPConnection(Device device) throws SocketException {
-		System.out.println("Making connection");
+		System.out.println("Making UDP connection");
 		if(device == null) {
 			socketAddress = new InetSocketAddress(Config.getServerIP(), Config.getServerPort());	//server
 		} else {
 			socketAddress = ((DeviceHandleIP) device.getHandle()).getSocketAddress();
 		}
 		if(socket == null) {
-			socket = new DatagramSocket(Config.getDefaultClientPort());
+			socket = new DatagramSocket(Config.getServerPort());
 		}
 	}
 
@@ -38,10 +38,6 @@ public class UDPConnection extends DeviceConnection {
 			datagram = new DatagramPacket(data, length, socketAddress);
 			socket.send(datagram);
 
-			//TODO the following should probably not be here
-			if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
-				//TODO if desired, serverConnection.send(data, length);
-			}
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,6 +51,7 @@ public class UDPConnection extends DeviceConnection {
 	public synchronized ByteBuffer receiveData(byte[] data) throws IOException {
 		DatagramPacket datagram = new DatagramPacket(data, data.length);
 		socket.receive(datagram);
+		System.out.println("Got datagram");
 		//TODO update port of sender
 		updatePort(datagram);
 		ByteBuffer bb = ByteBuffer.wrap(data);
