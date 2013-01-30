@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.7.31)  30 JAN 2013 19:17
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.7.31)  30 JAN 2013 19:38
 entering extended mode
  %&-line parsing enabled.
 **progressreport.tex
@@ -28,8 +28,7 @@ File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 \abovecaptionskip=\skip41
 \belowcaptionskip=\skip42
 \bibindent=\dimen102
-)
-No file progressreport.aux.
+) (./progressreport.aux)
 \openout1 = `progressreport.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 4.
@@ -44,16 +43,17 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 4.
 LaTeX Font Info:    ... okay on input line 4.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 4.
 LaTeX Font Info:    ... okay on input line 4.
+
 [1
 
-] (./progressreport.aux) ) 
+] [2] (./progressreport.aux) ) 
 Here is how much of TeX's memory you used:
- 198 strings out of 493849
- 2149 string characters out of 1152846
+ 205 strings out of 493849
+ 2237 string characters out of 1152846
  52808 words of memory out of 3000000
- 3563 multiletter control sequences out of 15000+50000
- 3640 words of font info for 14 fonts, out of 3000000 for 9000
+ 3566 multiletter control sequences out of 15000+50000
+ 4245 words of font info for 16 fonts, out of 3000000 for 9000
  714 hyphenation exceptions out of 8191
- 23i,4n,17p,372b,107s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 23i,4n,17p,372b,109s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on progressreport.dvi (1 page, 4504 bytes).
+Output written on progressreport.dvi (2 pages, 4676 bytes).
