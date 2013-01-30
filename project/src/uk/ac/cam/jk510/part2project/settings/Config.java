@@ -72,6 +72,7 @@ public class Config {
 	private static final String globalServerIP = "jknoxville.no-ip.org";
 	private static final int serverPort = 60000;
 	private static final int defaultClientPort = 60001;
+	private static final int clientTCPPort = 60000;
 
 	//Logging options
 	private static final long screenShotTimer = 20*1000;	//time between saving screenshots
@@ -171,6 +172,9 @@ public class Config {
 	}
 	public static int getDefaultClientPort() {
 		return defaultClientPort;
+	}
+	public static int getClientTCPPort() {
+		return clientTCPPort;
 	}
 	public static int getDatagramMetadataSize() {
 		return nameSize;	//TODO keep up to date with other metadata fields other than coordinates.

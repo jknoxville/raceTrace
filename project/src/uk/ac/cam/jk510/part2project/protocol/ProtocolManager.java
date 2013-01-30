@@ -17,6 +17,7 @@ import uk.ac.cam.jk510.part2project.graphics.MapDrawer;
 import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.DeviceConnection;
+import uk.ac.cam.jk510.part2project.network.TCPConnection;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -271,7 +272,7 @@ public abstract class ProtocolManager {
 	protected void missingCheck() {
 		updateRequestArray();
 	}
-	protected abstract void initDataSockets();
+	protected abstract void connectToPeers() throws UnknownHostException, IOException;
 	protected abstract void flushToNetwork(int device);
 	protected abstract void respondToNetwork(int requester, List<Coords> coordsList);
 	protected abstract List<Device> requestablePeers();

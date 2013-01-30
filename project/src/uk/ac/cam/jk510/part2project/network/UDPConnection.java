@@ -31,8 +31,7 @@ public class UDPConnection extends DeviceConnection {
 	private SocketAddress socketAddress;
 	private static DatagramSocket socket;	//used for all UDPConnection objects
 
-	protected void send(byte[] data, int length) {
-		try {
+	protected void send(byte[] data, int length) throws IOException {
 
 			DatagramPacket datagram;
 			datagram = new DatagramPacket(data, length, socketAddress);
@@ -42,13 +41,7 @@ public class UDPConnection extends DeviceConnection {
 			if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
 				//TODO if desired, serverConnection.send(data, length);
 			}
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 	}
 
 	//synchronized because only need one at a time

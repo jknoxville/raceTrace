@@ -16,6 +16,7 @@ import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.ClientMessage;
 import uk.ac.cam.jk510.part2project.network.DeviceConnection;
+import uk.ac.cam.jk510.part2project.network.TCPConnection;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
 import uk.ac.cam.jk510.part2project.session.Session;
@@ -36,7 +37,16 @@ public class ProtocolManagerP2P extends ProtocolManager {
 					public void run() {
 
 						byte[] receivingData = new byte[1024];
-						checkSocketIsOpen();
+						//checkSocketIsOpen();
+						try {
+							connectToPeers();
+						} catch (UnknownHostException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						while(alive) {
 							try {
 								ByteBuffer bb = DataConnectionManager.receive(connections[device.getDeviceID()], receivingData);
@@ -90,14 +100,16 @@ public class ProtocolManagerP2P extends ProtocolManager {
 
 	@Override
 	protected void giveToNetwork(Coords coords) {
-		checkSocketIsOpen();
+		//checkSocketIsOpen();
 		for(Device toDevice: Session.getSession().getDevices()) {
 			System.out.println("Sending to device "+toDevice.getDeviceID());	//debug
 			if(Config.dontSendPointsToOwner() && (coords.getDevice() == toDevice.getDeviceID())) {
 				//don't send
 			} else {
 				//do send
-				sendCoordsToPeer(toDevice, coords);
+				if(toDevice != Session.getThisDevice()) {
+					sendCoordsToPeer(toDevice, coords);
+				}
 			}
 
 		}
@@ -143,11 +155,6 @@ public class ProtocolManagerP2P extends ProtocolManager {
 		alive = false;	//TODO see ProtocolManagerClientServer.
 	}
 
-	private void checkSocketIsOpen() {
-
-		initDataSockets();
-	}
-
 	@Override
 	public void distributeSession(Session session) throws UnknownHostException,
 	IOException {
@@ -161,18 +168,19 @@ public class ProtocolManagerP2P extends ProtocolManager {
 
 	}
 
-	public void initDataSockets() {
-		if(connections == null) {
-			connections = new DeviceConnection[Session.getSession().numDevices()];
-			//TODO make it ProtocolManager.numConnections instead or make it do it or something for server and all.
-			for(Device device: Session.getSession().getDevices()) {
-				try {
-					connections[device.getDeviceID()] = DeviceConnection.newConnection(device);
-				} catch (SocketException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+	public void connectToPeers() throws UnknownHostException, IOException {
+		connections = new DeviceConnection[Session.getSession().numDevices()];
+		System.out.println("About to open sockets");
+		switch(Config.transportProtocol()) {
+		case UDP:  for(Device d: Session.getSession().getDevices()) {connections[d.getDeviceID()] = DeviceConnection.newConnection(d);} return;
+		case TCP: {TCPConnection.getConnectable(connections);} break;
+		}
+
+		//TODO make it ProtocolManager.numConnections instead or make it do it or something for server and all.
+		for(Device device: Session.getSession().getDevices()) {
+
+			connections[device.getDeviceID()] = DeviceConnection.newConnection(device);
+
 		}
 	}
 
@@ -180,7 +188,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 	protected void sendMissingRequest() {
 		// TODO this
 		try {
-			checkSocketIsOpen();
+			//checkSocketIsOpen();
 			//send request to all devices
 			//TODO make recieve discard packets from self.
 			for(Device toDevice: requestablePeers()) {

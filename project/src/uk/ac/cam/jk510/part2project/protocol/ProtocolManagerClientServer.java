@@ -99,22 +99,25 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	}
 
 	private void checkInit() {
-		initDataSockets();
+		try {
+			connectToPeers();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(serverSocketAddress == null) {
 			serverSocketAddress = new InetSocketAddress(Config.getServerIP(), Config.getServerPort());
 		}
 	}
-	public void initDataSockets() {
+	public void connectToPeers() throws UnknownHostException, IOException {
 		if(connections == null) {
 			connections = new DeviceConnection[1];	//just one connection for server
 			//TODO make it ProtocolManager.numConnections instead or make it do it or something for server and all.
-
-					try {
 						connections[0] = DeviceConnection.newConnection(null);
-					} catch (SocketException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+
 		}
 	}
 
@@ -137,6 +140,7 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 	protected void sendMissingRequest() {
 		try {
 			checkInit();
+			//TODO shouldnt be usig socketAddress here
 			byte[] data = DataConnectionManager.createRequestMessageWithAddress(serverSocketAddress, requestArray);
 			if(data != null) {
 				DataConnectionManager.send(data, connections[0]);

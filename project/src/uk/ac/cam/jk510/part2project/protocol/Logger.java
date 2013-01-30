@@ -1,5 +1,6 @@
 package uk.ac.cam.jk510.part2project.protocol;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -180,23 +181,8 @@ public class Logger {
 				if(MapDrawer.initialised()) {
 					Bitmap bmp = MapDrawer.getScreenShot();
 					if(dir == null) {
-						boolean mExternalStorageAvailable = false;
-						boolean mExternalStorageWriteable = false;
-						String state = Environment.getExternalStorageState();
-
-						if (Environment.MEDIA_MOUNTED.equals(state)) {
-							// We can read and write the media
-							mExternalStorageAvailable = mExternalStorageWriteable = true;
-						} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-							// We can only read the media
-							mExternalStorageAvailable = true;
-							mExternalStorageWriteable = false;
-						} else {
-							// Something else is wrong. It may be one of many other states, but all we need
-							//  to know is we can neither read nor write
-							mExternalStorageAvailable = mExternalStorageWriteable = false;
-						}
-						if(mExternalStorageWriteable) {
+						
+						if(externalStorageWriteable()) {
 							//MapDisplayScreen.instance.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
 							dir = new File(Environment.getExternalStorageDirectory(), "raceTrace");
@@ -230,6 +216,26 @@ public class Logger {
 
 		}}).start();
 	}
+	
+	private boolean externalStorageWriteable() {
+		boolean mExternalStorageAvailable = false;
+		boolean mExternalStorageWriteable = false;
+		String state = Environment.getExternalStorageState();
+
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+			// We can read and write the media
+			mExternalStorageAvailable = mExternalStorageWriteable = true;
+		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+			// We can only read the media
+			mExternalStorageAvailable = true;
+			mExternalStorageWriteable = false;
+		} else {
+			// Something else is wrong. It may be one of many other states, but all we need
+			//  to know is we can neither read nor write
+			mExternalStorageAvailable = mExternalStorageWriteable = false;
+		}
+		return mExternalStorageAvailable;
+	}
 
 	private static void extendArrays(int index) {
 		while(!(index<historyLength())) {
@@ -242,6 +248,38 @@ public class Logger {
 
 	protected static int historyLength() {
 		return instance.genTimes.size()*blockSize;
+	}
+	public static void spawnLogFlush() {
+		new Thread(new Runnable() {public void run() {
+		
+			instance.writeLogToDisk();
+			
+		}}).start();
+	}
+	private void writeLogToDisk() {
+		File dir = null;
+		if(externalStorageWriteable()) {
+
+			dir = new File(Environment.getExternalStorageDirectory(), "raceTrace");
+			if(!dir.exists()) {
+				dir.mkdir();
+			}
+			
+			FileOutputStream out;
+			try {
+				File newFile = new File(dir, "raceTrace"+System.currentTimeMillis()+".png");
+				out = new FileOutputStream(newFile);
+				BufferedOutputStream bout = new BufferedOutputStream(out);
+				bout.
+				//TODO write all log data to bout.
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		} else {
+			System.err.println("Can't write log to external storage.");
+		}
 	}
 
 }

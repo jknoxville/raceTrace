@@ -73,7 +73,7 @@ public class ProtocolManagerSingleUser extends ProtocolManager {
 	}
 
 	@Override
-	protected void initDataSockets() {
+	protected void connectToPeers() {
 		// no sockets to initialise
 		
 	}
