@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.7.31)  30 JAN 2013 19:42
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.7.31)  30 JAN 2013 19:45
 entering extended mode
  %&-line parsing enabled.
 **progressreport.tex
@@ -44,40 +44,16 @@ LaTeX Font Info:    ... okay on input line 4.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 4.
 LaTeX Font Info:    ... okay on input line 4.
 
-Overfull \hbox (13.89871pt too wide) in paragraph at lines 10--14
-\OT1/cmr/m/n/20.74 re-main-ing two thirds of the eval-u-a-tion stage,
- []
-
 [1
 
-] [2]
-Overfull \hbox (11.65793pt too wide) in paragraph at lines 25--26
-\OT1/cmr/m/n/20.74 user, us-ing GPS and net-work pro-vided data,
- []
-
-
-Overfull \hbox (9.588pt too wide) in paragraph at lines 25--26
-\OT1/cmr/m/n/20.74 and shares this in-for-ma-tion with other users
- []
-
-
-Overfull \hbox (0.97926pt too wide) in paragraph at lines 25--26
-\OT1/cmr/m/n/20.74 in the same ses-sion. On each de-vice screen,
- []
-
-
-Overfull \hbox (10.76547pt too wide) in paragraph at lines 27--33
-[]\OT1/cmr/m/n/20.74 The net-work-ing as-pect is suf-fi-ciently mod-
- []
-
-[3] [4] [5] (./progressreport.aux) ) 
+] [2] (./progressreport.aux) ) 
 Here is how much of TeX's memory you used:
  207 strings out of 493849
  2271 string characters out of 1152846
- 49808 words of memory out of 3000000
+ 52808 words of memory out of 3000000
  3567 multiletter control sequences out of 15000+50000
  4851 words of font info for 18 fonts, out of 3000000 for 9000
  714 hyphenation exceptions out of 8191
- 23i,4n,17p,372b,115s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 23i,4n,17p,372b,109s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on progressreport.dvi (5 pages, 5512 bytes).
+Output written on progressreport.dvi (2 pages, 4724 bytes).
