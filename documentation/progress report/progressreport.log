@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.7.31)  30 JAN 2013 20:36
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.7.31)  30 JAN 2013 20:39
 entering extended mode
  %&-line parsing enabled.
 **progressreport.tex
@@ -50,15 +50,6 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 9.
 
-Overfull \hbox (26.03514pt too wide) in paragraph at lines 9--19
-[][]
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 9--19
-
- []
-
 [1
 
 ]
@@ -77,6 +68,6 @@ Here is how much of TeX's memory you used:
  3594 multiletter control sequences out of 15000+50000
  7894 words of font info for 28 fonts, out of 3000000 for 9000
  714 hyphenation exceptions out of 8191
- 23i,6n,19p,373b,150s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 23i,6n,19p,373b,148s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on progressreport.dvi (2 pages, 5300 bytes).
+Output written on progressreport.dvi (2 pages, 5292 bytes).
