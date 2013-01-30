@@ -30,24 +30,24 @@ All milestones so far have been reached on time, except for the written up evalu
 \subsection*{Revised plan}
 Abandon incomplete protocol features and proceed with evaluation stage.
 Complete the rest of evaluation in the next 2 weeks, while writing the first draft of the introduction chapter of the dissertation in parallel.
-In the week following the evaluation, I plan to finish the introduction, and finalise the general structure of the dissertation.
+In the week following the evaluation, I plan to finish the introduction, and finalize the general structure of the dissertation.
 This will leave me two weeks behind schedule.
 From here I will advance with the initially specified time frames for the remainder of the dissertation. This means letting the writing of the dissertation spill 2 weeks into the easter vacation.
 
 \section*{Accomplishments}
 
-I have implemented an application to be used simultaneously by multiple participants of a race, each with a separate android device. It tracks the location of each user, using GPS and network provided data, and shares this information with other users in the same session. On each device screen, a trace of the paths of every other device is drawn.
+I have implemented an application to be used simultaneously by multiple participants of a race, each with a seperate android device. It tracks the location of each user, using GPS and network provided data, and shares this information with other users in the same session. On each device screen, a trace of the paths of every other device is drawn.
 
 The networking aspect is sufficiently modular that the data sharing protocol may be interchanged. As a module I implemented a client-server protocol, including implementing a desktop server application in Java, whereby all communication between devices goes by, and is coordinated by the server.
 I have also implemented a peer to peer protocol module, eliminating the need for a server.
 I have added a data request function where devices missing data can request it from peers or the server.
-For setting up the session, I have created procedures using either Bluetooth, or an allocation server, these alternative options introduce the devices to the others in their session.
+For setting up the session, I have created procedures using either bluetooth, or an allocation server, these alternative options introduce the devices to the others in their session.
 I have part finished an implementation using TCP as alternative to UDP with requests.
-There is also the ability for devices to share Internet connectivity whenever nearby over WiFi.
+There is also the ability for devices to share internet connectivity whenever nearby over WiFi.
 
 \section*{Unexpected Difficulties}
 \begin{itemize}
-\item{Bluetooth is not available in android virtual devices.}
+\item{Bluetooth is not available in android vitual devices.}
 \item{Some more involved android UI APIs were more complicated than anticipated.}
 \item{Network-internal peer to peer traffic is blocked by mobile networks, meaning the P2P option is only possible when WiFi is available.}
 \item{Maintaining TCP connections was troublesome, with no fix as of yet.}
