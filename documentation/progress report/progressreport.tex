@@ -4,7 +4,6 @@
 \begin{document}
 
 \title{\bf \huge{Progress Report}}
-\author{John Knox}
 
 \maketitle
 
@@ -25,33 +24,32 @@ Overseers:           & Professor Marcelo Fiore                   \\
 
 I have completed the necessary components of the plan up to the beginning of the evaluation stage.
 At this point (12th Jan), I was on schedule but continued to add features that go beyond the requirements laid out in the proposal, rather than immediately advancing to the testing and evaluation phase. The time between then and now has been spent adding further optimisations to the network protocols implemented, causing me to fall behind by 3 weeks.
-While doing the main implementation, I also did approximately one third of the evaluation stage, namely adding functionality for logging, and comparing run-time statistics of the application. The remaining two thirds of the evaluation stage, and part of the Introduction chapter of the dissertation were due to be complete by now. (3 weeks work)
+While doing the main implementation, I also did approximately one third of the evaluation stage, namely adding functionality for logging, and comparing run-time statistics of the application. The remaining two thirds of the evaluation stage, and part of the Introduction chapter of the dissertation were due to be complete by now (3 weeks work).
 All milestones so far have been reached on time, except for the written up evaluation results.
 
 \subsection*{Revised plan}
-Abandon incomplete (and not required) protocol features and proceed with evaluation stage.
+Abandon incomplete protocol features and proceed with evaluation stage.
 Complete the rest of evaluation in the next 2 weeks, while writing the first draft of the introduction chapter of the dissertation in parallel.
-As soon as evaluation is complete to an acceptable standard, I will focus all efforts on dissertation writing.
 In the week following the evaluation, I plan to finish the introduction, and finalize the general structure of the dissertation.
 This will leave me two weeks behind schedule.
-From here I will advance with the initially specified time frames in the proposal for the remainder of the dissertation. This means letting the writing of the dissertation spill 2 weeks into the easter vacation.
+From here I will advance with the initially specified time frames for the remainder of the dissertation. This means letting the writing of the dissertation spill 2 weeks into the easter vacation.
 
 \section*{What has been accomplished}
 
-I have implemented an application to be used simultaneously by multiple participants of a race, each with a seperate android device. It tracks the location of each user, using GPS and network provided data, and shares this information with other users in the same session. On each device screen, a trace of the path of each other device is drawn.
+I have implemented an application to be used simultaneously by multiple participants of a race, each with a seperate android device. It tracks the location of each user, using GPS and network provided data, and shares this information with other users in the same session. On each device screen, a trace of the paths of every other device is drawn.
 
 The networking aspect is sufficiently modular that the data sharing protocol may be interchanged. As a module I implemented a client-server protocol, including implementing a desktop server application in Java, whereby all communication between devices goes by, and is coordinated by the server.
 I have also implemented a peer to peer protocol module, eliminating the need for a server.
 I have added a data request function where devices missing data can request it from peers or the server.
 For setting up the session, I have created procedures using either bluetooth, or an allocation server, these alternative options introduce the devices to the others in their session.
-Have part finished implementation of TCP protocol as alternative to UDP with requests.
-Devices can share internet connection whenever nearby.
+I have part finished an implementation using TCP as alternative to UDP with requests.
+There is also the ability for devices to share internet connectivity whenever nearby over WiFi.
 
 \section*{Unexpected Difficulties}
 \begin{itemize}
-\item{Bluetooth not available in android vitual devices.}
-\item{Working out correct UI API usage.}
-\item{Network-internal peer to peer traffic is blocked by mobile network, meaning the P2P option is only practical when wifi is available.}
-\item{TCP connection maintainance issues.}
+\item{Bluetooth is not available in android vitual devices.}
+\item{Some more involved android UI APIs were more complicated than anticipated.}
+\item{Network-internal peer to peer traffic is blocked by mobile networks, meaning the P2P option is only possible when WiFi is available.}
+\item{Maintaining TCP connections was troublesome, with no fix as of yet.}
 \end{itemize}
 \end{document}
