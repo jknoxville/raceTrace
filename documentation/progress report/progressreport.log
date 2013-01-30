@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.7.31)  30 JAN 2013 20:51
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.7.31)  30 JAN 2013 20:52
 entering extended mode
  %&-line parsing enabled.
 **progressreport.tex
@@ -53,21 +53,21 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 [1
 
 ]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 54.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 52.
  (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 54.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 52.
  [2]
 (./progressreport.aux) ) 
 Here is how much of TeX's memory you used:
- 246 strings out of 493849
- 2806 string characters out of 1152846
+ 245 strings out of 493849
+ 2789 string characters out of 1152846
  51808 words of memory out of 3000000
- 3596 multiletter control sequences out of 15000+50000
- 8500 words of font info for 30 fonts, out of 3000000 for 9000
+ 3595 multiletter control sequences out of 15000+50000
+ 8201 words of font info for 29 fonts, out of 3000000 for 9000
  714 hyphenation exceptions out of 8191
  23i,6n,19p,373b,187s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on progressreport.dvi (2 pages, 5392 bytes).
+Output written on progressreport.dvi (2 pages, 5360 bytes).
