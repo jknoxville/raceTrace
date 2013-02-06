@@ -118,12 +118,17 @@ public class ProtocolManagerP2P extends ProtocolManager {
 	@Override
 	protected void respondToNetwork(int requester, List<Coords> response) {
 		System.out.println("Got request from "+requester);
-		if(Config.replyToRequestsToMultiplePeers()) {
-			for(Device toDevice: relientPeers()) {
-				sendCoordsListToPeer(toDevice, response);
-			}
+		if(requester == -1) {
+			System.out.println("Ignoring request from server");
+
 		} else {
-			sendCoordsListToPeer(Session.getDevice(requester), response);
+			if(Config.replyToRequestsToMultiplePeers()) {
+				for(Device toDevice: relientPeers()) {
+					sendCoordsListToPeer(toDevice, response);
+				}
+			} else {
+				sendCoordsListToPeer(Session.getDevice(requester), response);
+			}
 		}
 	}
 

@@ -266,16 +266,18 @@ public class Logger {
 			}
 			
 			FileOutputStream out;
-			try {
-				File newFile = new File(dir, "raceTrace"+System.currentTimeMillis()+".png");
-				out = new FileOutputStream(newFile);
-				BufferedOutputStream bout = new BufferedOutputStream(out);
-				bout.
-				//TODO write all log data to bout.
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+////				File newFile = new File(dir, "raceTrace"+System.currentTimeMillis()+".png");
+////				out = new FileOutputStream(newFile);
+////				BufferedOutputStream bout = new BufferedOutputStream(out);
+////				Byte[] bytes = makeByteArray();
+////				bout.write(bytes);
+//				//change to use csv or xml, json etc. so can read in in excel
+//				//TODO write all log data to bout.
+//			} catch (FileNotFoundException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			
 		} else {
 			System.err.println("Can't write log to external storage.");

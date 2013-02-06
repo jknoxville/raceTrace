@@ -51,7 +51,7 @@ public class Config {
 	private static final int charsOfNameToShow = 6;	//number of characters of player's name that is shown next to position.
 
 	//Protocol
-	private static Proto protocol = Proto.clientServer;
+	private static Proto protocol = Proto.p2p;
 	private static SessionEnum sesh = SessionEnum.singleSession;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;

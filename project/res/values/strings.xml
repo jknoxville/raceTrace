@@ -17,6 +17,9 @@
     <string name="new_session_text">This Screen will set up a new session</string>
     <string name="skip">Skip</string>
     <string name="addTestData">Add random datapoints</string>
+    
+    <!-- Main Menu -->
+    <string name="menu_logo_alt">raceTrace</string>
 
     <!-- Session Set up -->
     <string name="button_be_server">Create Session</string>
