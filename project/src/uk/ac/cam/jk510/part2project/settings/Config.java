@@ -52,7 +52,7 @@ public class Config {
 
 	//Protocol
 	private static Proto protocol = Proto.p2p;
-	private static SessionEnum sesh = SessionEnum.singleSession;
+	private static SessionEnum sesh = SessionEnum.singleUser;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
 	private static boolean localOnly = (protocol == Proto.p2p);	//Only operate over local network. (e.g wifi) - so dont use external IP addresses.
@@ -70,20 +70,22 @@ public class Config {
 
 	private static final String localServerIP = "192.168.137.1";
 	private static final String globalServerIP = "jknoxville.no-ip.org";
+	private static final String unixServerIP = "127.0.0.1";
 	private static final int serverPort = 60000;
 	private static final int defaultClientPort = 60001;
 	private static final int clientTCPPort = 60000;
 
 	//Logging options
-	private static final long screenShotTimer = 20*1000;	//time between saving screenshots
+	private static final long screenShotTimer = 60*1000;	//time between saving screenshots
 
 	//Simulation
-	private static final boolean droppingEnabled = false;
-	private static final boolean markovPacketDroppingSimulation = true;
+	public static final boolean droppingEnabled = false;
+	public static final boolean markovPacketDroppingSimulation = true;
 	private static boolean currentlyDropping = false;
-	private static final double loseConnectionRate = 0.1;	//chance you lose connection in a given second
-	private static final double reconnectRate = 0.3;
-	private static final double dropRate = 0.2;
+	public static final double loseConnectionRate = 0.1;	//chance you lose connection in a given second
+	public static final double reconnectRate = 0.3;
+	public static final double dropRate = 0.2;
+	private static final long fakeGPSPeriod = 1*1000;	//1 second
 
 	//Datagram Format
 	private static final int nameSize = 4;
@@ -147,6 +149,7 @@ public class Config {
 		return posIndicatorSize;
 	}
 	public static String getServerIP() {
+		
 		String myIP;
 		if(!checkedForLocalServer) {
 			checkedForLocalServer = true;
@@ -256,5 +259,8 @@ public class Config {
 			}
 		}
 		return false;
+	}
+	public static long fakeGPSPeriod() {
+		return fakeGPSPeriod;
 	}
 }

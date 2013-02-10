@@ -105,6 +105,25 @@ public class NewOldSession extends Activity {
     	}).start();
     }
     
+    public void singleUserSetup(final View view) throws Exception {
+    	final Context context = this;
+    	new Thread(new Runnable() {
+    		/*
+    		 * State left on thread exit:
+    		 * some NewSessionActivity has been started.
+    		 */
+    		public void run() {
+    			//get UI thread to advance
+    			view.post(new Runnable() {
+    				public void run() {
+    					Intent intent = new Intent(context, NewSessionActivitySingleUser.class);
+    					startActivityForResult(intent, 1);
+    				}
+    			});
+    		}
+    	}).start();
+    }
+    
     public void settings(final View view) throws Exception {
     	final Context context = this;
     	new Thread(new Runnable() {

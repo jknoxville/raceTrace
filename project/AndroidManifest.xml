@@ -22,16 +22,10 @@
             </intent-filter>
         </activity>
         <activity android:name="uk.ac.cam.jk510.part2project.gui.NewSessionActivity" android:label="@string/title_activity_new_session">
-
-            <!-- <intent-filter>                <action android:name="android.intent.action.MAIN" />                <category android:name="android.intent.category.LAUNCHER" />            </intent-filter> -->
         </activity>
         <activity android:name="uk.ac.cam.jk510.part2project.gui.MapDisplayScreen" android:label="@string/title_activity_map_display_screen">
-
-            <!-- <intent-filter>    <action android:name="android.intent.action.MAIN" />                <category android:name="android.intent.category.LAUNCHER" />      </intent-filter> -->
         </activity>
         <activity android:name="uk.ac.cam.jk510.part2project.gui.NewSessionActivitySingleUser" android:label="@string/title_activity_new_session_activity_single_user">
-
-            <!-- <intent-filter>      <action android:name="android.intent.action.MAIN" />        <category android:name="android.intent.category.LAUNCHER" />     </intent-filter> -->
         </activity>
         <activity android:name="uk.ac.cam.jk510.part2project.gui.SMBTserverorclient" android:label="@string/title_activity_smbtserverorclient">
         </activity>

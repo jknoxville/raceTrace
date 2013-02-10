@@ -65,47 +65,48 @@ public final class R {
         public static final int preferences=0x7f08000b;
     }
     public static final class string {
-        public static final int addTestData=0x7f05000f;
+        public static final int addTestData=0x7f050010;
         public static final int app_name=0x7f050000;
-        public static final int button_be_client=0x7f050012;
+        public static final int button_be_client=0x7f050013;
         /**  Session Set up 
          */
-        public static final int button_be_server=0x7f050011;
+        public static final int button_be_server=0x7f050012;
         public static final int button_bluetooth_setup=0x7f05000b;
         public static final int button_internet_setup=0x7f05000a;
         public static final int button_load_session=0x7f050009;
         public static final int button_new_session=0x7f050008;
-        public static final int button_settings=0x7f05000c;
-        public static final int done=0x7f050016;
+        public static final int button_settings=0x7f05000d;
+        public static final int button_single_user=0x7f05000c;
+        public static final int done=0x7f050017;
         public static final int hello_world=0x7f050001;
         /**  Main Menu 
          */
-        public static final int menu_logo_alt=0x7f050010;
+        public static final int menu_logo_alt=0x7f050011;
         public static final int menu_settings=0x7f050002;
-        public static final int new_session_text=0x7f05000d;
-        public static final int scan_button=0x7f050015;
-        public static final int selected_players_list=0x7f050014;
-        public static final int skip=0x7f05000e;
-        public static final int talking_to_server=0x7f05001a;
-        public static final int title_activity_main_menu=0x7f050022;
+        public static final int new_session_text=0x7f05000e;
+        public static final int scan_button=0x7f050016;
+        public static final int selected_players_list=0x7f050015;
+        public static final int skip=0x7f05000f;
+        public static final int talking_to_server=0x7f05001b;
+        public static final int title_activity_main_menu=0x7f050023;
         public static final int title_activity_map_display_screen=0x7f050005;
         public static final int title_activity_new_old_session=0x7f050003;
         public static final int title_activity_new_session=0x7f050004;
-        public static final int title_activity_new_session_activity_predefined=0x7f050018;
-        public static final int title_activity_new_session_activity_single_session=0x7f050019;
+        public static final int title_activity_new_session_activity_predefined=0x7f050019;
+        public static final int title_activity_new_session_activity_single_session=0x7f05001a;
         public static final int title_activity_new_session_activity_single_user=0x7f050006;
-        public static final int title_activity_session_setup=0x7f050013;
-        public static final int title_activity_session_setup_slave=0x7f050017;
-        public static final int title_activity_settings=0x7f05001b;
+        public static final int title_activity_session_setup=0x7f050014;
+        public static final int title_activity_session_setup_slave=0x7f050018;
+        public static final int title_activity_settings=0x7f05001c;
         public static final int title_activity_smbtserverorclient=0x7f050007;
-        public static final int topology_default=0x7f05001e;
-        public static final int topology_dialog=0x7f05001d;
+        public static final int topology_default=0x7f05001f;
+        public static final int topology_dialog=0x7f05001e;
         /**  Preferences 
          */
-        public static final int topology_title=0x7f05001c;
-        public static final int username_default=0x7f050021;
-        public static final int username_dialog=0x7f050020;
-        public static final int username_title=0x7f05001f;
+        public static final int topology_title=0x7f05001d;
+        public static final int username_default=0x7f050022;
+        public static final int username_dialog=0x7f050021;
+        public static final int username_title=0x7f050020;
     }
     public static final class style {
         public static final int AppTheme=0x7f070000;

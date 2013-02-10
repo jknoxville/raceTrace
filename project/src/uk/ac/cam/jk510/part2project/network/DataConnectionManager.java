@@ -108,9 +108,12 @@ public class DataConnectionManager {
 
 	public static void send(byte[] data, DeviceConnection conn) throws IOException {
 		if(!Config.droppingPackets()) {
+			if(conn == null) System.out.println("Connection is null");
+			if(data == null) System.out.println("Data is null");
 			conn.sendGeneric(data, data.length);
 		}
 		timeOfLastSend = System.currentTimeMillis();
+		Logger.upload(data.length);
 	}
 
 	public static void sendCoordsToDevice(DeviceConnection conn, List<Coords> coordsList) {
@@ -191,7 +194,7 @@ public class DataConnectionManager {
 //	}
 
 	public static byte[] createRequestMessageWithAddress(final InetSocketAddress socketAddress, LinkedList<Integer>[] requestArray) throws SocketException {
-		//TODO move this to a more sensible place
+		System.out.println("Starting to create request data");
 
 		int size = 0;	//total number of absent points
 		int numMissingDevices = 0;
@@ -209,8 +212,9 @@ public class DataConnectionManager {
 		 * 4 byte int for each missing point, of which there are size
 		 * 2 4 byte ints preceeding each list of missing points for those devices that have any. thats a -1 marker, and then device ID
 		 */
+		if(data == null) System.out.println("Data is null before bb.wrap");
 		ByteBuffer bb = ByteBuffer.wrap(data);
-
+		if(data == null) System.out.println("Data is null after bb.wrap");
 		bb.putInt(MessageType.request.ordinal());	//first 4 bytes: request header
 		bb.putInt(Session.getThisDevice().getDeviceID());	//put fromID
 
@@ -225,6 +229,7 @@ public class DataConnectionManager {
 			}
 		}
 		//DatagramPacket datagram = new DatagramPacket(data, data.length, socketAddress);
+		System.out.println("Data: "+data);
 		return data;
 	}
 	public static long timeOfLastSend() {

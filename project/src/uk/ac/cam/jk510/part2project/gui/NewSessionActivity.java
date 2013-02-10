@@ -83,6 +83,7 @@ public abstract class NewSessionActivity extends Activity {
 	
 	//destroy all state as if this activity was never created.
 	private void destroy() {
+		System.out.println("DESTROYING SESSION");
 		SessionManager.killThread();	//this will stop the session setup thread eventually.
 		try {
 			Thread.sleep(100);

@@ -23,13 +23,13 @@ public class MapDisplayScreen extends Activity {
 	static NewSessionActivity sessionActivity;
 	private GPSDriver gpsDriver;
 	public static TextView debugInfo;	//debug
-    
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_map_display_screen);	
-		
+
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		mapDrawer = (MapDrawer) findViewById(R.id.mapDrawer);
 		TextView info = (TextView) findViewById(R.id.mapScreenInfo);
@@ -37,45 +37,51 @@ public class MapDisplayScreen extends Activity {
 		ProtocolManager.debugInfo = debugInfo;
 		gpsDriver = GPSDriver.init(locationManager, info);	//TODO do in seperate thread?
 		instance = this;
-        
-    }
-    
-    //if back is pressed, skip back to the new / old session screen (main menu)
-    @Override
-    public void onBackPressed() {
-    	new AlertDialog.Builder(this)
-    	.setTitle("Quit Session?")
-    	.setMessage("Are you sure you want to quit the current session?")
-    	.setNegativeButton(android.R.string.no, null)
-    	.setPositiveButton(android.R.string.yes, new OnClickListener() {
-    		public void onClick(DialogInterface di, int arg) {
-    			//MapDisplayScreen.super.onBackPressed();
-    			//send intent to main menu activity with FLAG_ACTIVITY_CLEAR_TOP set to clear stack
-    			//startActivity(new Intent(instance, NewOldSession.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-    			
-    			if(gpsDriver != null) {
-    				gpsDriver.destroy();
-    			}
-    			Logger.spawnLogFlush();
-    			instance.finish();
-    		}
-    	}).create().show();
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_map_display_screen, menu);
-        return true;
-    }
-    
-    public void addTestData(View view) {
-    	if(testDataUsed) {
-    		//do nothing
-    	} else {
-    		ProtocolManager.testInputData();
-    		//testDataUsed = true;
-    	}
-    	
-    }
-    
+	}
+
+	//if back is pressed, skip back to the new / old session screen (main menu)
+	@Override
+	public void onBackPressed() {
+		new AlertDialog.Builder(this)
+		.setTitle("Quit Session?")
+		.setMessage("Are you sure you want to quit the current session?")
+		.setNegativeButton(android.R.string.no, null)
+		.setPositiveButton(android.R.string.yes, new OnClickListener() {
+			public void onClick(DialogInterface di, int arg) {
+				exitForSure();
+			}
+		}).create().show();
+	}
+
+	public void exitForSure() {
+		//MapDisplayScreen.super.onBackPressed();
+		//send intent to main menu activity with FLAG_ACTIVITY_CLEAR_TOP set to clear stack
+		//startActivity(new Intent(instance, NewOldSession.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+		if(gpsDriver != null) {
+			gpsDriver.destroy();
+		}
+		Logger.spawnLogFlush();
+		instance.finish();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_map_display_screen, menu);
+		return true;
+	}
+
+	public void addTestData(View view) {
+		if(testDataUsed) {
+			//do nothing
+		} else {
+			testDataUsed = true;
+			//was ProtocolManager.testInputData();
+			ProtocolManager.spawnRandomGPSThread();
+			//testDataUsed = true;
+		}
+
+	}
+
 }

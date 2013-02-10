@@ -20,9 +20,9 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:scaleType="fitCenter"
             android:layout_centerHorizontal="true"
             android:contentDescription="@string/menu_logo_alt"
+            android:scaleType="fitCenter"
             android:src="@drawable/full_logo" />
     </RelativeLayout>
 
@@ -40,12 +40,12 @@
         android:onClick="bluetoothSetup"
         android:text="@string/button_bluetooth_setup" />
 
-    <!-- <Button -->
-    <!-- android:layout_width="match_parent" -->
-    <!-- android:layout_height="wrap_content" -->
-    <!-- android:layout_weight="1" -->
-    <!-- android:onClick="loadSession" -->
-    <!-- android:text="@string/button_load_session" /> -->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:onClick="singleUserSetup"
+        android:text="@string/button_single_user" />
 
     <Button
         android:layout_width="match_parent"

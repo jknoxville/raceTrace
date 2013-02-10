@@ -28,7 +28,7 @@ public class NewSessionActivitySingleUser extends NewSessionActivity {
 		SessionManager smgr = new SessionManagerSingleUser();
 		smgr.newSession(this);
 		System.err.println("Finished setUpSession()");	//debug
-		
+		onSetupComplete();		//Added 7th Feb for testing
 	}
 
 }

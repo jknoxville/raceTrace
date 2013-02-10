@@ -10,7 +10,7 @@ import android.graphics.Path;
 
 public class DevicePath {
 
-	TreeMap<Integer, Segment> pathCache = new TreeMap<Integer, Segment>();
+	private TreeMap<Integer, Segment> pathCache = new TreeMap<Integer, Segment>();
 	private float endX;
 	private float endY;
 	private float lastXinMadePath;

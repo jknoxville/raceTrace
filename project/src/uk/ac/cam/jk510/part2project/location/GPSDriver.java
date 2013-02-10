@@ -38,6 +38,7 @@ public class GPSDriver implements LocationListener {
 		this.tv = tv;
 		tv.setTextColor(Color.BLACK);
 		this.tv.setText("Waiting for location...");
+		
 	}
 
 	static public GPSDriver init(LocationManager lm, TextView tv) {

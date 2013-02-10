@@ -20,6 +20,7 @@ public class SessionManagerSingleUser extends SessionManager {
 		
 		//this constructor saves static link to this instance from Session class
 		new Session(devices, null);
+		System.out.println("1st device: "+Session.getDevice(0));
 
 	}
 

@@ -1,0 +1,24 @@
+CSV file format
+
+Number of devices
+
+//Local info
+
+
+Data Sent, xxx
+Data Recieved, xxx
+
+//gen times
+gentime0, gentime1, gentime2, ...
+
+//Per FromDevice update times
+Average, Min, Max
+Average, Min, Max
+...
+
+//receiptTimes
+0, 0, 0, 0, ...
+receiptTime0, receiptTime1, ...
+receiptTime0, receiptTime1, ...
+...
+

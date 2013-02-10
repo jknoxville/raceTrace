@@ -4,6 +4,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.TimeoutException;
@@ -11,6 +14,7 @@ import java.util.concurrent.TimeoutException;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import au.com.bytecode.opencsv.CSVWriter;
 
 import uk.ac.cam.jk510.part2project.graphics.MapDrawer;
 import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
@@ -24,9 +28,15 @@ public class Logger {
 	private static Logger instance;
 	private static int blockSize = Config.getArrayBlockSize();
 
+	private static long startingTime;
 	private long networkDataUpload = 0;
 	private long networkDataDownload = 0;
+	private int noRequestsSent = 0;
+	private int noRequestsRecieved = 0;
+	private int noRequestsRespondedTo = 0;
 	private long[] timeOfLastReceipt;
+	private int devices;
+	private int thisDevice;
 
 	protected ArrayList<long[]>[] receiptTimes;	//TODO receipt or display time?
 	protected ArrayList<long[]> genTimes;	//time each point was generated
@@ -110,7 +120,8 @@ public class Logger {
 	 */
 
 	public Logger(Session session) {
-		int devices = session.numDevices();
+		devices = session.numDevices();
+		thisDevice = Session.getThisDevice().getDeviceID();
 		timeOfLastReceipt = new long[devices];
 		receiptTimes = new ArrayList[devices];
 		for(int i=0; i<devices; i++) {
@@ -129,6 +140,7 @@ public class Logger {
 		spawnScreenCaptureThread();
 
 		instance = this;
+		startingTime = System.currentTimeMillis();
 	}
 
 	public static void download(int bytes) {
@@ -138,10 +150,22 @@ public class Logger {
 	public static void upload(int bytes) {
 		instance.networkDataUpload += bytes;
 	}
+	
+	public static void sendingRequest() {
+		instance.noRequestsSent++;
+	}
+	
+	public static void receivedRequest() {
+		instance.noRequestsRecieved++;
+	}
+	
+	public static void respondedToRequest() {
+		instance.noRequestsRespondedTo++;
+	}
 
 	public static void receivedPoint(int aboutDevice, int index) {
-		long time = System.currentTimeMillis();
-		instance.timeOfLastReceipt[aboutDevice] = System.currentTimeMillis();
+		long time = System.currentTimeMillis() - startingTime;
+		instance.timeOfLastReceipt[aboutDevice] = time;
 
 		extendArrays(index);
 
@@ -155,7 +179,7 @@ public class Logger {
 
 	}
 	public static void generatedPoint(int index) {
-		long time = System.currentTimeMillis();
+		long time = System.currentTimeMillis() - startingTime;
 
 		extendArrays(index);
 
@@ -167,7 +191,7 @@ public class Logger {
 
 	}
 	public static void newLatestPoint(int device) {
-		long time = System.currentTimeMillis();
+		long time = System.currentTimeMillis() - startingTime;
 
 		instance.latestPointTimes[device].add(time);
 	}
@@ -181,7 +205,7 @@ public class Logger {
 				if(MapDrawer.initialised()) {
 					Bitmap bmp = MapDrawer.getScreenShot();
 					if(dir == null) {
-						
+
 						if(externalStorageWriteable()) {
 							//MapDisplayScreen.instance.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
@@ -189,8 +213,8 @@ public class Logger {
 							if(!dir.exists()) {
 								dir.mkdir();
 							}
-							
-							
+
+
 						} else {
 							System.err.println("Can't write to external storage.");
 						}
@@ -216,7 +240,7 @@ public class Logger {
 
 		}}).start();
 	}
-	
+
 	private boolean externalStorageWriteable() {
 		boolean mExternalStorageAvailable = false;
 		boolean mExternalStorageWriteable = false;
@@ -251,9 +275,9 @@ public class Logger {
 	}
 	public static void spawnLogFlush() {
 		new Thread(new Runnable() {public void run() {
-		
+
 			instance.writeLogToDisk();
-			
+
 		}}).start();
 	}
 	private void writeLogToDisk() {
@@ -264,24 +288,79 @@ public class Logger {
 			if(!dir.exists()) {
 				dir.mkdir();
 			}
-			
-			FileOutputStream out;
-//			try {
-////				File newFile = new File(dir, "raceTrace"+System.currentTimeMillis()+".png");
-////				out = new FileOutputStream(newFile);
-////				BufferedOutputStream bout = new BufferedOutputStream(out);
-////				Byte[] bytes = makeByteArray();
-////				bout.write(bytes);
-//				//change to use csv or xml, json etc. so can read in in excel
-//				//TODO write all log data to bout.
-//			} catch (FileNotFoundException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-			
+
+			try {
+				File newFile = new File(dir, "log"+System.currentTimeMillis()+".csv");
+				FileWriter writer = new FileWriter(newFile);
+
+				writeStats(writer);
+
+				writer.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		} else {
 			System.err.println("Can't write log to external storage.");
 		}
+	}
+
+	private void writeStats(Writer writer) throws IOException {
+		CSVWriter csvWriter = new CSVWriter(writer);
+		String[] topology = {"Topology", Config.getProtocol().name()};
+		String[] protocol = {"Transport", Config.transportProtocol().name()};
+		String[] respDec = {"Responce heuristic", Config.responseDecider().name()};
+		String[] dropping = {"Packet Dropping", Boolean.toString(Config.droppingEnabled)};
+		String[] markov = {null, "Markov dropping", Boolean.toString(Config.markovPacketDroppingSimulation)};
+		String[] loseRate = {null, "Connection lose rate", Double.toString(Config.loseConnectionRate)};
+		String[] reconnectRate = {null, "Reconnect rate", Double.toString(Config.reconnectRate)};
+		String[] dropRate = {null, "Packet drop rate (if not markov)", Double.toString(Config.dropRate)};
+		LinkedList<String[]> settings = new LinkedList<String[]>();
+		settings.add(topology);
+		settings.add(protocol);
+		settings.add(respDec);
+		settings.add(dropping);
+		settings.add(markov);
+		settings.add(loseRate);
+		settings.add(reconnectRate);
+		settings.add(dropRate);
+		csvWriter.writeAll(settings);
+		String[] numDevices = {"Devices", Integer.toString(devices)};
+		String[] thisDeviceA = {"This device:", Integer.toString(thisDevice)};
+		String[] sent = {"Sent", Long.toString(networkDataUpload)};
+		String[] received = {"Received", Long.toString(networkDataDownload)};
+		String[] reqSent = {"Requests sent", Integer.toString(noRequestsSent)};
+		String[] reqReceived = {"Requests received", Integer.toString(noRequestsRecieved)};
+		String[] reqRespondedTo = {"Requests responded to", Integer.toString(noRequestsRespondedTo)};
+		
+		csvWriter.writeNext(numDevices);
+		csvWriter.writeNext(thisDeviceA);
+		csvWriter.writeNext(sent);
+		csvWriter.writeNext(received);
+		csvWriter.writeNext(reqSent);
+		csvWriter.writeNext(reqReceived);
+		csvWriter.writeNext(reqRespondedTo);
+		String[] largeArray = new String[historyLength()];
+		for(int index=0; index<historyLength(); index++) {
+			largeArray[index] = Long.toString(genTimes.get(index/blockSize)[index % blockSize]);
+		}
+		String[] genTimes = {"Generation time"};
+		csvWriter.writeNext(genTimes);
+		csvWriter.writeNext(largeArray);
+		for(int device=0; device<devices; device++) {
+			String[] deviceLable = {"Device "+device};
+			csvWriter.writeNext(deviceLable);
+			for(int index=0; index<historyLength(); index++) {
+				largeArray[index] = Long.toString(receiptTimes[device].get(index/blockSize)[index % blockSize]);
+			}
+			csvWriter.writeNext(largeArray);
+		}
+		csvWriter.flush();
+		csvWriter.close();
 	}
 
 }

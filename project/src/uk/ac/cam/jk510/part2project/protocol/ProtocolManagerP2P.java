@@ -197,8 +197,14 @@ public class ProtocolManagerP2P extends ProtocolManager {
 			//send request to all devices
 			//TODO make recieve discard packets from self.
 			for(Device toDevice: requestablePeers()) {
+				if(toDevice.getHandle() instanceof DeviceHandleIP) {
 				byte[] data = DataConnectionManager.createRequestMessageWithAddress(((DeviceHandleIP) toDevice.getHandle()).getSocketAddress(), requestArray);
+				if(data == null) {return;}	//if no missing data, dont send any request
 				DataConnectionManager.send(data, connections[toDevice.getDeviceID()]);
+				} else {
+					System.err.println("Not sending request because not DeviceHandleIP");
+					break;
+				}
 			}
 		} catch (SocketException e) {
 			//TODO 

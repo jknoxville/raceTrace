@@ -25,6 +25,7 @@ import uk.ac.cam.jk510.part2project.store.Coords;
 import uk.ac.cam.jk510.part2project.store.CoordsTXYA;
 import uk.ac.cam.jk510.part2project.store.PositionStore;
 import uk.ac.cam.jk510.part2project.store.Response;
+import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;;
 
 public abstract class ProtocolManager {
 
@@ -35,6 +36,7 @@ public abstract class ProtocolManager {
 	protected boolean checkedMissingSinceLastReceipt = false;
 	protected LinkedList<Integer>[] requestArray;
 	protected DeviceConnection[] connections;
+	private static boolean networking;	//is the current protocol using the network? (for testing)
 
 	private static ProtocolManager instance;
 	private static boolean alive = true;
@@ -42,25 +44,52 @@ public abstract class ProtocolManager {
 
 	public synchronized static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
 		if(instance == null) {
+			alive = true;
+			networking = (session.getDevice(0).getHandle() instanceof DeviceHandleIP);
+			System.out.println("Networking enabled: "+networking);
 			instance = newProtocolManager();
 			if(instance instanceof ProtocolManagerClientServer) {
 				instance.coordsToSend = new LinkedList[1];
 				instance.coordsToSend[0] = new LinkedList<Coords>();
 			} else if(instance instanceof ProtocolManagerP2P) {
 				instance.coordsToSend = new LinkedList[session.numDevices()];	//TODO make this one size less so none for self.
-				System.out.println("Initialising ProtocolManager and thing is "+instance.coordsToSend[0]);	//debug
+				System.out.println("Initialising ProtocolManager and coordsToSend[0] is "+instance.coordsToSend[0]);	//debug
 				for(int device=0; device < session.numDevices(); device++) {
 					instance.coordsToSend[device] = new LinkedList<Coords>();
 				}
 			}
+			if(networking) {
 			instance.spawnReceivingThread();
 			instance.spawnMissingCheckTimerThread();
+			}
 		}
 		return instance;
 	}
 
 	//TODO when sending to server, must attach the device number thats sending it so server knows which its coming from, not just which it's about. (e.g. for swicthing port numbers)
 
+	public static void spawnRandomGPSThread() {
+		new Thread(new Runnable() {
+			long timeOfLastGenerate = 0;
+			int index = 0;
+			public void run() {
+				while(alive) {
+					if(timeOfLastGenerate + Config.fakeGPSPeriod() <= System.currentTimeMillis()) {
+						testInputData(Session.getThisDevice(), index);
+						index++;
+						timeOfLastGenerate = System.currentTimeMillis();
+					}
+					try {
+						Thread.sleep(Config.fakeGPSPeriod());
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+	}
+	
 	public static void testInputData() {
 		//		for (int dev=0; dev<Session.getSession().numDevices(); dev++) {
 		//			testInputData(dev);
@@ -79,11 +108,18 @@ public abstract class ProtocolManager {
 		//adds some random data for test
 		Device deviceObject = Session.getDevice(device);
 		for(int i=0; i<1; i++) {
-			Coords coords = new CoordsTXYA(device, (int) (Math.random()*100), (int) (Math.random()*100)+Config.getSampleX(), (int) (Math.random()*100)+Config.getSampleY(), (int) (Math.random()*100));
-			System.err.println("PM: now generating test index: "+coords.getLClock()+" to device "+device);	//debug
-			insertOriginalDataPoint(deviceObject, coords);
-			System.err.println("Finished inputting test data");	//debug
+			int index = (int) (Math.random()*100);
+			Coords coords = new CoordsTXYA(device, index, (int) (Math.random()*100)+Config.getSampleX(), (int) (Math.random()*100)+Config.getSampleY(), (int) (Math.random()*100));
+			testInputData(deviceObject, index);
+
 		}
+	}
+
+	public static void testInputData(Device deviceObject, int index) {
+		Coords coords = new CoordsTXYA(deviceObject.getDeviceID(), index, (int) (Math.random()*100)+Config.getSampleX(), (int) (Math.random()*100)+Config.getSampleY(), (int) (Math.random()*100));
+		System.err.println("PM: now generating test index: "+coords.getLClock()+" to device "+deviceObject.getDeviceID());	//debug
+		insertOriginalDataPoint(deviceObject, coords);
+		System.err.println("Finished inputting test data");	//debug
 	}
 
 	private static ProtocolManager newProtocolManager() throws Exception {
@@ -238,7 +274,7 @@ public abstract class ProtocolManager {
 		}
 	}
 	private boolean willRespondToThisRequest(List<Integer>[] requestArray, List<Coords> coordsList) {
-		
+
 		/*
 		 * ratio = responseSize / requestSize
 		 * if responseRatio ~0:	dont want to reply
@@ -251,7 +287,7 @@ public abstract class ProtocolManager {
 		}
 		int responseSize = coordsList.size();
 		float responseRatio = Float.valueOf(responseSize)/Float.valueOf(requestSize);
-		
+
 		switch(Config.responseDecider()) {
 		case always: 					return true; 
 		case probability: 				return Math.random() <= 1.0/Session.getSession().numDevices();
@@ -259,11 +295,11 @@ public abstract class ProtocolManager {
 		case responseRatioProbability:	return Math.random() <= responseRatio;
 		case youAreRequestee:		return requestArray[Session.getThisDevice().getDeviceID()].size() > 0;
 		case youAreLargestRequestee:		int mySize = requestArray[Session.getThisDevice().getDeviceID()].size();
-										for(int i=0; i<requestArray.length; i++) {
-											if(requestArray[i].size() > mySize) {
-												return false;
-											}
-										} return true;
+		for(int i=0; i<requestArray.length; i++) {
+			if(requestArray[i].size() > mySize) {
+				return false;
+			}
+		} return true;
 		case never:	return false;
 		default: System.err.println("ResponseDecider not catered for: "+Config.responseDecider().name()); return false;
 		}	
