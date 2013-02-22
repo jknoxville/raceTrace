@@ -41,15 +41,20 @@ public class TCPConnection extends DeviceConnection {
 	private InputStream is;
 	private OutputStream os;
 
+	public ByteBuffer receiveEncryptedData(byte[] data) throws IOException {
+		//TODO
+
+		return null;
+	}
 	@Override
 	public ByteBuffer receiveData(byte[] data) throws IOException {
-		
+
 		/*
 		 * Want to:
 		 * Receive quantised message into array.
 		 * Construct bytebuffer for it and set its limit
 		 */
-		
+
 		int length = is.read();
 		System.out.println("Received message of size: "+length);
 		int offset = 0;
@@ -61,6 +66,9 @@ public class TCPConnection extends DeviceConnection {
 		return bb;
 	}
 
+	protected void sendEncrypted(byte[] data, int length) throws IOException {
+		//TODO
+	}
 	@Override
 	protected void send(byte[] data, int length) throws IOException {
 		os.write(length);
@@ -77,12 +85,12 @@ public class TCPConnection extends DeviceConnection {
 				final Socket sock = serv.accept();
 				System.out.println("accepted device: "+device);
 				new Thread(new Runnable() {
-					
+
 					private void connect() throws IOException {
 						InputStream is = sock.getInputStream();
-							OutputStream os = sock.getOutputStream();
-							int device = is.read();
-							connections[device] = new TCPConnection(sock, is, os);
+						OutputStream os = sock.getOutputStream();
+						int device = is.read();
+						connections[device] = new TCPConnection(sock, is, os);
 					}
 
 					public void run() {

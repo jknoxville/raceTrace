@@ -22,6 +22,8 @@ public abstract class DeviceConnection {
 		}
 	}
 	
+	public abstract ByteBuffer receiveEncryptedData(byte[] data) throws IOException;
+	
 	public abstract ByteBuffer receiveData(byte[] data) throws IOException;
 
 	public void sendGeneric(byte[] data, int length) {
@@ -43,6 +45,7 @@ public abstract class DeviceConnection {
 		}
 	}
 	
+	protected abstract void sendEncrypted(byte[] data, int length) throws IOException;
 	protected abstract void send(byte[] data, int length) throws IOException;
 	
 }

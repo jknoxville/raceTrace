@@ -31,19 +31,39 @@ public class UDPConnection extends DeviceConnection {
 	private SocketAddress socketAddress;
 	private static DatagramSocket socket;	//used for all UDPConnection objects
 
+	protected void sendEncrypted(byte[] data, int length) throws IOException {
+
+		//TODO encrypt data
+		
+		
+		DatagramPacket datagram;
+		datagram = new DatagramPacket(data, length, socketAddress);
+		socket.send(datagram);
+
+		//TODO the following should probably not be here
+		if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
+			//TODO if desired, serverConnection.send(data, length);
+		}
+
+	}
 	protected void send(byte[] data, int length) throws IOException {
 
-			DatagramPacket datagram;
-			datagram = new DatagramPacket(data, length, socketAddress);
-			socket.send(datagram);
+		DatagramPacket datagram;
+		datagram = new DatagramPacket(data, length, socketAddress);
+		socket.send(datagram);
 
-			//TODO the following should probably not be here
-			if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
-				//TODO if desired, serverConnection.send(data, length);
-			}
+		//TODO the following should probably not be here
+		if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
+			//TODO if desired, serverConnection.send(data, length);
+		}
 
 	}
 
+	//synchronized because only need one at a time
+	public synchronized ByteBuffer receiveEncryptedData(byte[] data) throws IOException {
+		//TODO
+		return null;
+	}
 	//synchronized because only need one at a time
 	public synchronized ByteBuffer receiveData(byte[] data) throws IOException {
 		DatagramPacket datagram = new DatagramPacket(data, data.length);
