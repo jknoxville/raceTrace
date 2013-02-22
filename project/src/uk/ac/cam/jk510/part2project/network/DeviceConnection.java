@@ -5,6 +5,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+import uk.ac.cam.jk510.part2project.protocol.Logger;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -31,6 +32,8 @@ public abstract class DeviceConnection {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else {
+			Logger.droppingPacket();
 		}
 	}
 	public static void getConnectable(DeviceConnection[] connections) throws UnknownHostException, IOException {

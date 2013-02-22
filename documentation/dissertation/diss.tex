@@ -1,0 +1,202 @@
+%Useful latex commands from demo diss:
+%\noindent followed by a paragraph wont indent the start of it
+%{\tt put text here} will put it in monospace(?) font
+%\begin{samepage} presumably makes an atomic block
+%see demo diss for making latex compile simple block diagrams etc. protocol state machines?
+%also see it for adding diagrams. recommends using postscript
+
+\documentclass[12pt,twoside,notitlepage]{report}
+
+\usepackage{a4}
+\usepackage{verbatim}
+
+\input{epsf}                            % to allow postscript inclusions
+% On thor and CUS read top of file:
+%     /opt/TeX/lib/texmf/tex/dvips/epsf.sty
+% On CL machines read:
+%     /usr/lib/tex/macros/dvips/epsf.tex
+
+
+
+\raggedbottom                           % try to avoid widows and orphans
+\sloppy
+\clubpenalty1000%
+\widowpenalty1000%
+
+\addtolength{\oddsidemargin}{6mm}       % adjust margins
+\addtolength{\evensidemargin}{-8mm}
+
+\renewcommand{\baselinestretch}{1.1}    % adjust line spacing to make
+                                        % more readable
+
+\begin{document}
+
+\bibliographystyle{plain}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Title
+
+
+\pagestyle{empty}
+
+\hfill{\LARGE \bf John Knox}
+
+\vspace*{60mm}
+\begin{center}
+\Huge
+{\bf RaceTrace:\\A real-time group tracking app} \\
+\vspace*{5mm}
+Computer Science Tripos, Part II \\
+\vspace*{5mm}
+Churchill College \\
+\vspace*{5mm}
+\today  % today's date
+\end{center}
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Proforma, table of contents and list of figures
+
+\setcounter{page}{1}
+\pagenumbering{roman}
+\pagestyle{plain}
+
+\chapter*{Proforma}
+
+{\large
+\begin{tabular}{ll}
+Name:               & \bf John Knox                                 \\
+College:            & \bf Churchill College                         \\
+Project Title:      & \bf RaceTrace: A real-time group tracking                   \\
+                    & \bf app                        \\
+Examination:        & \bf Computer Science Tripos, Part II (2013)   \\
+Word Count:         & \bf To do\footnotemark[1]                     \\
+Project Originator: & Dr John Fawcett                               \\
+Supervisor:         & Dr John Fawcett                               \\ 
+\end{tabular}
+}
+\footnotetext[1]{This word count was computed
+by {\tt detex diss.tex | tr -cd '0-9A-Za-z $\tt\backslash$n' | wc -w}
+}
+\stepcounter{footnote}
+
+
+\section*{Original Aims of the Project}
+
+To create an android application that allows multiple participants of some track based activity to continually track each other's progress. The display would be accurate enough to provide useful location information in such a situation. This translates to having accuracy and latency such that at all times the locations displayed must be either less than ~5 seconds late or less than ~10 metres from the true location.
+The communication was to be implemented in more than one way, so that an investigation could, and would be done into the relative effectiveness of at least two different protocols.
+
+
+\section*{Work Completed}
+
+I have created an Android application that achieves this by first letting users connect to each other in one of two different ways, and then displaying a diagram which shows the relative positions and trails of the other players on the screen, along with that of the user. This diagram is continually updated with the latest known locations of the other users. The inter-device communication has been implemented in two distinct ways, the first using a client-server model, and the second being peer-to-peer with various further protocol options for each model.
+The networking technologies used are WiFi and operator provided mobile internet.
+I have also conducted a quantitative evaluation of the protocols implemented, ... to do.
+The work completed fulfils the project requirements.
+
+\section*{Special Difficulties}
+
+To do.
+ 
+\newpage
+\section*{Declaration}
+
+I, John Knox of Churchill College, being a candidate for Part II of the Computer
+Science Tripos [or the Diploma in Computer Science], hereby declare
+that this dissertation and the work described in it are my own work,
+unaided except as may be specified below, and that the dissertation
+does not contain material that has already been used to any substantial
+extent for a comparable purpose.
+
+\bigskip
+\leftline{Signed [signature]}
+
+\medskip
+\leftline{Date [date]}
+
+\cleardoublepage
+
+\tableofcontents
+
+%NOT SURE IF THIS IS NEEDED? To do.
+%\listoffigures
+
+\newpage
+\section*{Acknowledgements}
+
+To do.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% now for the chapters
+
+\cleardoublepage        % just to make sure before the page numbering
+                        % is changed
+
+\setcounter{page}{1}
+\pagenumbering{arabic}
+\pagestyle{headings}
+
+\chapter{Introduction}
+
+\section{Context and Motivation}
+
+With the sudden rise of smart phones in the past decade, new innovations are constantly being discovered. One niche within the applications market is the area of physical sports enhancement. There are now multiple widely used applications on the market offering real-time as well as historic personal tracking and analysis for the duration of some physical activity, be it cycling, running, skiing or something else altogether.
+Typically these applications display the location of the user on screen as they advance around some course, and provide statistics along the way such as velocity, distance travelled and many others. They also allow the user to store records of their session, so that future performance can be compared and further analysis done.
+However, despite the many features on offer, none of these solutions acknowledge the fact that often the activities involved are group events, thus failing to capitalise on an entire dimension of available data. Namely, the performance of all of the other participants with whom the user may be competing with\footnote{The social networking "share" paradigm has been applied to such applications, allowing others to see user statistics after the event has taken place but, to my knowledge, there is no real-time sharing facility allowing others to compete at the same time}.
+
+In the video game industry it has long been standard practice for racing games to display a simple map of the course on the screen (typically in one of the corners) showing the location of each competitor. This allows the user to continually evaluate their relative position, and stay informed throughout the duration of the race. There are arguments for and against such a feature\footnote{While knowing the location of other participants can increase competitiveness and therefore improve performance, it can also result in degraded performance due to winners competency and losers frustration * economics/psychology reference?}, but its unanimous inclusion in gaming is sufficient proof that it is, at the very least, sometimes desirable.
+
+\section{Initial Direction}
+
+Taking a step back for a moment and considering the alternatives to developing a smart phone application, there are a variety of ways such a system could be implemented. One approach to solving this problem would be to develop an application specific device for the job. If this approach was taken then a multitude of options would open up as to what hardware should be used.
+The networking aspect of the device would perhaps be the most interesting with the large variance between available options.
+One reasonable option would be to use a private radio system. This would offer many benefits. In a typical use case of the desired system, the distance between participants would never exceed 10KM. (range of battery powered hand-held radio?). It also has the benefit that all networking infrastructure involved belongs to the users, avoiding the cost of any external network provider charges.
+
+\section{Scope of the Work}
+
+In order to achieve the goals laid out at the start there are various problems that must be overcome. Then go into a high level summary of what's required...
+
+\cleardoublepage
+
+
+
+\chapter{Preparation}
+
+To do.
+
+
+\cleardoublepage
+\chapter{Implementation}
+
+To do.
+
+\cleardoublepage
+\chapter{Evaluation}
+
+To do.
+
+\cleardoublepage
+\chapter{Conclusion}
+
+To do.
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% the bibliography
+
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliography{refs}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% the appendices
+\appendix
+
+\chapter{Project Proposal}
+
+%\input{propbody}
+
+\end{document}

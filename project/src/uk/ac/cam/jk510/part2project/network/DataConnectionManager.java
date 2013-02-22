@@ -107,11 +107,9 @@ public class DataConnectionManager {
 	}
 
 	public static void send(byte[] data, DeviceConnection conn) throws IOException {
-		if(!Config.droppingPackets()) {
-			if(conn == null) System.out.println("Connection is null");
-			if(data == null) System.out.println("Data is null");
-			conn.sendGeneric(data, data.length);
-		}
+		if(conn == null) System.out.println("Connection is null");
+		if(data == null) System.out.println("Data is null");
+		conn.sendGeneric(data, data.length);
 		timeOfLastSend = System.currentTimeMillis();
 		Logger.upload(data.length);
 	}
@@ -146,52 +144,52 @@ public class DataConnectionManager {
 		//checkInit();
 		conn.sendGeneric(data, data.length);
 	}
-//	public static void sendCoordsToAddress(final InetSocketAddress toSocketAddress, List<Coords> coordsList) {
-//
-//		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
-//		int fromDeviceID = Session.getThisDevice().getDeviceID();	//used to identify sender to the recipent.
-//
-//		byte[] data = new byte[(1+1+5*coordsList.size())*4];	//1 int for coords header, 1 int for fromID, plus 5 (int|float)s for each coord
-//		ByteBuffer bb = ByteBuffer.wrap(data);
-//
-//		bb.putInt(MessageType.datapoints.ordinal());	//put message header
-//		bb.putInt(fromDeviceID);	//
-//		//							This are to go at the start of each packet, not each coordinate (if >1 coord per packet)
-//
-//		for(Coords coords: coordsList) {
-//
-//			int aboutDeviceID = coords.getDevice();	//deviceID of the device whose location this point is.
-//			int lClock = coords.getLClock();
-//			float x = coords.getCoord(0);
-//			float y = coords.getCoord(1);
-//			float alt = coords.getCoord(2);
-//
-//			bb.putInt(aboutDeviceID);
-//			bb.putInt(lClock);
-//			bb.putFloat(x);
-//			bb.putFloat(y);
-//			bb.putFloat(alt);
-//			System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
-//
-//		}
-//		try {
-//			//checkInit();
-//			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
-//			DataConnectionManager.send(datagram);
-//
-//			if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
-//				DatagramPacket datagram2 = new DatagramPacket(data, data.length, new InetSocketAddress(Config.getServerIP(), Config.getServerPort()));
-//				DataConnectionManager.send(datagram2);
-//			}
-//
-//		} catch (SocketException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+	//	public static void sendCoordsToAddress(final InetSocketAddress toSocketAddress, List<Coords> coordsList) {
+	//
+	//		System.out.println("sending to "+toSocketAddress.getAddress().getHostAddress()+":"+toSocketAddress.getPort());
+	//		int fromDeviceID = Session.getThisDevice().getDeviceID();	//used to identify sender to the recipent.
+	//
+	//		byte[] data = new byte[(1+1+5*coordsList.size())*4];	//1 int for coords header, 1 int for fromID, plus 5 (int|float)s for each coord
+	//		ByteBuffer bb = ByteBuffer.wrap(data);
+	//
+	//		bb.putInt(MessageType.datapoints.ordinal());	//put message header
+	//		bb.putInt(fromDeviceID);	//
+	//		//							This are to go at the start of each packet, not each coordinate (if >1 coord per packet)
+	//
+	//		for(Coords coords: coordsList) {
+	//
+	//			int aboutDeviceID = coords.getDevice();	//deviceID of the device whose location this point is.
+	//			int lClock = coords.getLClock();
+	//			float x = coords.getCoord(0);
+	//			float y = coords.getCoord(1);
+	//			float alt = coords.getCoord(2);
+	//
+	//			bb.putInt(aboutDeviceID);
+	//			bb.putInt(lClock);
+	//			bb.putFloat(x);
+	//			bb.putFloat(y);
+	//			bb.putFloat(alt);
+	//			System.out.println("sending. device "+aboutDeviceID+" lClock "+lClock+" x "+x+" y "+y+" alt "+alt);
+	//
+	//		}
+	//		try {
+	//			//checkInit();
+	//			DatagramPacket datagram = new DatagramPacket(data, data.length, toSocketAddress);
+	//			DataConnectionManager.send(datagram);
+	//
+	//			if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
+	//				DatagramPacket datagram2 = new DatagramPacket(data, data.length, new InetSocketAddress(Config.getServerIP(), Config.getServerPort()));
+	//				DataConnectionManager.send(datagram2);
+	//			}
+	//
+	//		} catch (SocketException e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		} catch (IOException e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		}
+	//	}
 
 	public static byte[] createRequestMessageWithAddress(final InetSocketAddress socketAddress, LinkedList<Integer>[] requestArray) throws SocketException {
 		System.out.println("Starting to create request data");

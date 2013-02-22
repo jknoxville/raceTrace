@@ -37,9 +37,12 @@ public class Logger {
 	private long[] timeOfLastReceipt;
 	private int devices;
 	private int thisDevice;
+	private int currentIndex;
+	private int packetsDropped = 0;
 
 	protected ArrayList<long[]>[] receiptTimes;	//TODO receipt or display time?
 	protected ArrayList<long[]> genTimes;	//time each point was generated
+	protected ArrayList<long[]> requestSizes;
 
 	protected LinkedList<Long>[] latestPointTimes;	//time of each arrival of the new end of the path for each device
 
@@ -136,6 +139,9 @@ public class Logger {
 
 		genTimes = new ArrayList<long[]>();
 		genTimes.add(new long[blockSize]);
+		
+		requestSizes = new ArrayList<long[]>();
+		requestSizes.add(new long[blockSize]);
 
 		spawnScreenCaptureThread();
 
@@ -151,8 +157,10 @@ public class Logger {
 		instance.networkDataUpload += bytes;
 	}
 	
-	public static void sendingRequest() {
+	public static void sendingRequest(int size) {
 		instance.noRequestsSent++;
+		int index = instance.currentIndex;
+		instance.requestSizes.get(index/blockSize)[index % blockSize] = size;
 	}
 	
 	public static void receivedRequest() {
@@ -180,6 +188,7 @@ public class Logger {
 	}
 	public static void generatedPoint(int index) {
 		long time = System.currentTimeMillis() - startingTime;
+		instance.currentIndex = index>instance.currentIndex?index:instance.currentIndex;
 
 		extendArrays(index);
 
@@ -194,6 +203,9 @@ public class Logger {
 		long time = System.currentTimeMillis() - startingTime;
 
 		instance.latestPointTimes[device].add(time);
+	}
+	public static void droppingPacket() {
+		instance.packetsDropped++;
 	}
 	private void spawnScreenCaptureThread() {
 		new Thread(new Runnable() {public void run() {
@@ -264,6 +276,7 @@ public class Logger {
 	private static void extendArrays(int index) {
 		while(!(index<historyLength())) {
 			instance.genTimes.add(new long[blockSize]);
+			instance.requestSizes.add(new long[blockSize]);
 			for(int i=0; i<instance.receiptTimes.length; i++) {
 				instance.receiptTimes[i].add(new long[blockSize]);
 			}
@@ -336,6 +349,7 @@ public class Logger {
 		String[] reqSent = {"Requests sent", Integer.toString(noRequestsSent)};
 		String[] reqReceived = {"Requests received", Integer.toString(noRequestsRecieved)};
 		String[] reqRespondedTo = {"Requests responded to", Integer.toString(noRequestsRespondedTo)};
+		String[] pacDropped = {"Packets dropped", Integer.toString(packetsDropped)};
 		
 		csvWriter.writeNext(numDevices);
 		csvWriter.writeNext(thisDeviceA);
@@ -344,6 +358,8 @@ public class Logger {
 		csvWriter.writeNext(reqSent);
 		csvWriter.writeNext(reqReceived);
 		csvWriter.writeNext(reqRespondedTo);
+		csvWriter.writeNext(pacDropped);
+		//largeArray is reused to save memory
 		String[] largeArray = new String[historyLength()];
 		for(int index=0; index<historyLength(); index++) {
 			largeArray[index] = Long.toString(genTimes.get(index/blockSize)[index % blockSize]);
@@ -359,6 +375,13 @@ public class Logger {
 			}
 			csvWriter.writeNext(largeArray);
 		}
+		String[] reqSizes = {"Request sizes"};
+		for(int index=0; index<historyLength(); index++) {
+			largeArray[index] = Long.toString(requestSizes.get(index/blockSize)[index % blockSize]);
+		}
+		csvWriter.writeNext(reqSizes);
+		csvWriter.writeNext(largeArray);
+		
 		csvWriter.flush();
 		csvWriter.close();
 	}

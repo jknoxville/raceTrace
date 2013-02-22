@@ -33,7 +33,7 @@ public class Config {
 
 	private static String name = String.valueOf(Math.random());	//TODO temp fix: random name for each device
 	private static final int keepAlivePeriod = 10000;	//TODO actually use this!!!
-	private static final int minCoordsPerPacket = 5;	//target number of points per packet sent.
+	private static final int minCoordsPerPacket = 5;	//target number of points per packet sent. (send less on timeout)
 	private static final long sendTimeout = 5*1000;	//max t=time to wait before sending an incomplete packet.
 
 	//Missing Data / Requests
@@ -51,7 +51,7 @@ public class Config {
 	private static final int charsOfNameToShow = 6;	//number of characters of player's name that is shown next to position.
 
 	//Protocol
-	private static Proto protocol = Proto.p2p;
+	private static Proto protocol = Proto.clientServer;
 	private static SessionEnum sesh = SessionEnum.singleUser;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
@@ -79,11 +79,11 @@ public class Config {
 	private static final long screenShotTimer = 60*1000;	//time between saving screenshots
 
 	//Simulation
-	public static final boolean droppingEnabled = false;
+	public static final boolean droppingEnabled = true;
 	public static final boolean markovPacketDroppingSimulation = true;
 	private static boolean currentlyDropping = false;
-	public static final double loseConnectionRate = 0.1;	//chance you lose connection in a given second
-	public static final double reconnectRate = 0.3;
+	public static final double loseConnectionRate = 0.04;	//chance you lose connection in a given second
+	public static final double reconnectRate = 0.4;
 	public static final double dropRate = 0.2;
 	private static final long fakeGPSPeriod = 1*1000;	//1 second
 

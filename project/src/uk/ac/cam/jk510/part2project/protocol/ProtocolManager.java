@@ -204,11 +204,14 @@ public abstract class ProtocolManager {
 		return false;
 	}
 
-	protected void updateRequestArray() {
+	protected int updateRequestArray() {
 		requestArray = new LinkedList[Session.getSession().numDevices()];
+		int size = 0;
 		for(Device d: Session.getSession().getDevices()) {
 			requestArray[d.getDeviceID()] = d.getAbsentList();
+			size += requestArray[d.getDeviceID()].size();
 		}
+		return size;
 	}
 
 	public void spawnMissingCheckTimerThread() {
@@ -223,11 +226,16 @@ public abstract class ProtocolManager {
 						e.printStackTrace();
 					}
 				}
+				int size = 0;
 				while(alive) {
 					if(timeSinceastMissingCheck + Config.missingCheckTimer() <= System.currentTimeMillis()) {
+						//Only need to recheck if any new points have arrived, because thats the only way
+						//new gaps can occur.
 						if(!checkedMissingSinceLastReceipt) {
-							missingCheck();
+							size = missingCheck();
 						}
+						Logger.sendingRequest(size);
+						size = 0;
 						sendMissingRequest();
 					}
 					try {
@@ -267,9 +275,11 @@ public abstract class ProtocolManager {
 		instance.serviceRequest(fromID, requestArray);
 	}
 	private void serviceRequest(int fromID, LinkedList<Integer>[] requestArray) {
+		Logger.receivedRequest();
 		Response[] responses = PositionStore.fulfillRequest(requestArray);
 		List<Coords> coordsList = Response.getCoordsList(responses);
 		if(willRespondToThisRequest(requestArray, coordsList)) {
+			Logger.respondedToRequest();
 			respondToNetwork(fromID, coordsList);
 		}
 	}
@@ -305,8 +315,8 @@ public abstract class ProtocolManager {
 		}	
 	}
 
-	protected void missingCheck() {
-		updateRequestArray();
+	protected int missingCheck() {
+		return updateRequestArray();
 	}
 	protected abstract void connectToPeers() throws UnknownHostException, IOException;
 	protected abstract void flushToNetwork(int device);
