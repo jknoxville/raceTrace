@@ -44,8 +44,8 @@ public class Config {
 	private static final int nameSize = 1;
 	
 	//Server Specific
-	private static final long serverResendPeriodSecs = 5;
-	private static final int serverNewPointsThreshold = 5;
+	private static final long serverResendPeriodSecs = 0; //if this
+	private static final int serverNewPointsThreshold = 5; //or this is exceeded it will send
 	private static final boolean singleSession = true;
 	
 	//Simulation

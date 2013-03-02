@@ -117,7 +117,7 @@ public class ServerState implements PositionStoreSubscriber {
 			public void run() {
 				while(alive) {
 					try {
-						Thread.sleep(Config.getServerResendPeriodMillis());
+						Thread.sleep(Config.getServerResendPeriodMillis()+100);
 						ServerState.sendIfReady();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block

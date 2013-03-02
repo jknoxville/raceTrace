@@ -16,6 +16,7 @@ import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.ClientMessage;
 import uk.ac.cam.jk510.part2project.network.DeviceConnection;
+import uk.ac.cam.jk510.part2project.network.DroppedPacketException;
 import uk.ac.cam.jk510.part2project.network.TCPConnection;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
@@ -30,6 +31,17 @@ public class ProtocolManagerP2P extends ProtocolManager {
 
 	public void spawnReceivingThread() {
 
+		
+		try {
+			connectToPeers();
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		for(final Device device: Session.getSession().getDevices()) {
 			if(!device.equals(Session.getThisDevice())) {
 
@@ -38,23 +50,28 @@ public class ProtocolManagerP2P extends ProtocolManager {
 
 						byte[] receivingData = new byte[1024];
 						//checkSocketIsOpen();
-						try {
-							connectToPeers();
-						} catch (UnknownHostException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+						
+						//moved to above
+//						try {
+//							connectToPeers();
+//						} catch (UnknownHostException e1) {
+//							// TODO Auto-generated catch block
+//							e1.printStackTrace();
+//						} catch (IOException e1) {
+//							// TODO Auto-generated catch block
+//							e1.printStackTrace();
+//						}
 						while(alive) {
 							try {
+								System.out.println("connection "+device.getDeviceID()+": "+connections[device.getDeviceID()]);//debug
 								ByteBuffer bb = DataConnectionManager.receive(connections[device.getDeviceID()], receivingData);
 								System.out.println("Recieved datagram");
 								ClientMessage.processData(bb);
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
+							} catch (DroppedPacketException e) {
+								Logger.droppingPacket();
 							}
 
 						}
@@ -176,17 +193,20 @@ public class ProtocolManagerP2P extends ProtocolManager {
 	public void connectToPeers() throws UnknownHostException, IOException {
 		connections = new DeviceConnection[Session.getSession().numDevices()];
 		System.out.println("About to open sockets");
+		
 		switch(Config.transportProtocol()) {
-		case UDP:  for(Device d: Session.getSession().getDevices()) {connections[d.getDeviceID()] = DeviceConnection.newConnection(d);} return;
+		case UDP:  for(Device d: Session.getSession().getDevices()) {connections[d.getDeviceID()] = DeviceConnection.newConnection(d);} System.out.println("conn 0"+connections[0]); return;
 		case TCP: {TCPConnection.getConnectable(connections);} break;
 		}
 
-		//TODO make it ProtocolManager.numConnections instead or make it do it or something for server and all.
-		for(Device device: Session.getSession().getDevices()) {
-
-			connections[device.getDeviceID()] = DeviceConnection.newConnection(device);
-
-		}
+		//tcp only?
+//		//TODO make it ProtocolManager.numConnections instead or make it do it or something for server and all.
+//		for(Device device: Session.getSession().getDevices()) {
+//
+//			connections[device.getDeviceID()] = DeviceConnection.newConnection(device);
+//
+//		}
+		System.out.println("conn 0"+connections[0]);	//debug
 	}
 
 	@Override

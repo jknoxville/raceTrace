@@ -12,6 +12,7 @@ import java.util.List;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.ClientMessage;
 import uk.ac.cam.jk510.part2project.network.DeviceConnection;
+import uk.ac.cam.jk510.part2project.network.DroppedPacketException;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -65,6 +66,8 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					} catch (DroppedPacketException e) {
+						Logger.droppingPacket();
 					}
 					//TODO this in a new thread, so that it can receive while processing it.
 					

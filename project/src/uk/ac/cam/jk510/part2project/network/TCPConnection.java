@@ -47,7 +47,7 @@ public class TCPConnection extends DeviceConnection {
 		return null;
 	}
 	@Override
-	public ByteBuffer receiveData(byte[] data) throws IOException {
+	public ByteBuffer abstractReceiveData(byte[] data) throws IOException {
 
 		/*
 		 * Want to:

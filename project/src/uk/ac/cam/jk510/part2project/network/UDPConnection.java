@@ -17,7 +17,7 @@ import uk.ac.cam.jk510.part2project.settings.Config;
 public class UDPConnection extends DeviceConnection {
 
 	UDPConnection(Device device) throws SocketException {
-		System.out.println("Making connection");
+		System.out.println("Making connection "+device.getDeviceID());
 		if(device == null) {
 			socketAddress = new InetSocketAddress(Config.getServerIP(), Config.getServerPort());	//server
 		} else {
@@ -65,7 +65,7 @@ public class UDPConnection extends DeviceConnection {
 		return null;
 	}
 	//synchronized because only need one at a time
-	public synchronized ByteBuffer receiveData(byte[] data) throws IOException {
+	public synchronized ByteBuffer abstractReceiveData(byte[] data) throws IOException {
 		DatagramPacket datagram = new DatagramPacket(data, data.length);
 		socket.receive(datagram);
 		//TODO update port of sender

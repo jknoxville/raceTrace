@@ -33,8 +33,8 @@ public class Config {
 
 	private static String name = String.valueOf(Math.random());	//TODO temp fix: random name for each device
 	private static final int keepAlivePeriod = 10000;	//TODO actually use this!!!
-	private static final int minCoordsPerPacket = 5;	//target number of points per packet sent. (send less on timeout)
-	private static final long sendTimeout = 5*1000;	//max t=time to wait before sending an incomplete packet.
+	private static final int targetCoordsPerPacket = 5;	//target number of points per packet sent. (send less on timeout)
+	private static final long sendTimeout = 1000;	//max t=time to wait before sending an incomplete packet.
 
 	//Missing Data / Requests
 	private static final int missingDataThreshold = 1;	//number of missing points before request is sent to other devices.
@@ -51,8 +51,8 @@ public class Config {
 	private static final int charsOfNameToShow = 6;	//number of characters of player's name that is shown next to position.
 
 	//Protocol
-	private static Proto protocol = Proto.clientServer;
-	private static SessionEnum sesh = SessionEnum.singleUser;
+	private static Proto protocol = Proto.p2p;
+	private static SessionEnum sesh = SessionEnum.singleSession;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
 	private static boolean localOnly = (protocol == Proto.p2p);	//Only operate over local network. (e.g wifi) - so dont use external IP addresses.
@@ -80,9 +80,9 @@ public class Config {
 
 	//Simulation
 	public static final boolean droppingEnabled = true;
-	public static final boolean markovPacketDroppingSimulation = true;
+	public static final boolean markovPacketDroppingSimulation = false;
 	private static boolean currentlyDropping = false;
-	public static final double loseConnectionRate = 0.04;	//chance you lose connection in a given second
+	public static final double loseConnectionRate = 0.08;	//chance you lose connection in a given second
 	public static final double reconnectRate = 0.4;
 	public static final double dropRate = 0.2;
 	private static final long fakeGPSPeriod = 1*1000;	//1 second
@@ -196,7 +196,7 @@ public class Config {
 		return debugModeOn;
 	}
 	public static int getMinCoordsPerPacket() {
-		return minCoordsPerPacket;
+		return targetCoordsPerPacket;
 	}
 	public static Transport transportProtocol() {
 		return transportProtocol;

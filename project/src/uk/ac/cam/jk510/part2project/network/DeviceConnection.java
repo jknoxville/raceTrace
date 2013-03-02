@@ -16,15 +16,24 @@ public abstract class DeviceConnection {
 	//use null device to create server connection
 	public static DeviceConnection newConnection(Device device) throws UnknownHostException, IOException {
 		switch(Config.transportProtocol()) {
-		case UDP: return new UDPConnection(device);
-		case TCP: return new TCPConnection(device);
-		default: return null;
+		case UDP: System.err.println("UDP"); return new UDPConnection(device);
+		case TCP: System.err.println("TCP"); return new TCPConnection(device);
+		default: System.err.println("Unknown transport protocol"); return null;
+		}
+	}
+	
+	public ByteBuffer receiveData(byte[] data) throws IOException, DroppedPacketException {
+		if(!Config.droppingPackets()) {
+			return abstractReceiveData(data);
+		}
+		else {
+			throw new DroppedPacketException();
 		}
 	}
 	
 	public abstract ByteBuffer receiveEncryptedData(byte[] data) throws IOException;
 	
-	public abstract ByteBuffer receiveData(byte[] data) throws IOException;
+	public abstract ByteBuffer abstractReceiveData(byte[] data) throws IOException;
 
 	public void sendGeneric(byte[] data, int length) {
 		if(!Config.droppingPackets()) {

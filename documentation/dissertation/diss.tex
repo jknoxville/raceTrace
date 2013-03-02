@@ -9,6 +9,7 @@
 
 \usepackage{a4}
 \usepackage{verbatim}
+\usepackage{url}
 
 \input{epsf}                            % to allow postscript inclusions
 % On thor and CUS read top of file:
@@ -152,19 +153,67 @@ In the video game industry it has long been standard practice for racing games t
 
 Taking a step back for a moment and considering the alternatives to developing a smart phone application, there are a variety of ways such a system could be implemented. One approach to solving this problem would be to develop an application specific device for the job. If this approach was taken then a multitude of options would open up as to what hardware should be used.
 The networking aspect of the device would perhaps be the most interesting with the large variance between available options.
-One reasonable option would be to use a private radio system. This would offer many benefits. In a typical use case of the desired system, the distance between participants would never exceed 10KM. (range of battery powered hand-held radio?). It also has the benefit that all networking infrastructure involved belongs to the users, avoiding the cost of any external network provider charges.
+One reasonable option would be to use a private radio system. This would offer many benefits. In a typical use case of the desired system, the distance between participants would not exceed the range of that of available portable license-free radio modules. This means the user could support their own network infrastructure without relying on external providers or being subject to external costs.
+While designing a custom device would have some definite advantages, with the widespread adoption of smartphones - most of which have all of the necessary hardware for this task, there is really no need.
+On top of that, current top end mobile phones nowadays have capabilities by far exceeding the requirements of such a project, making the design process easier and allowing for more complicated features to be added to the basic idea.
+For this reason I have opted to design a smartphone application. At the time of the decision, there were three main mobile application environments, namely Apple's IOS, Android, and Windows Phone 7. The resources offered by each platform do not vary much, so it was a somewhat arbitrary decision of which to choose. The Android platform was chosen out of familiarity with the Java platform as well as having multiple devices at my disposal.
 
 \section{Scope of the Work}
 
-In order to achieve the goals laid out at the start there are various problems that must be overcome. Then go into a high level summary of what's required...
+In order to achieve the goals laid out at the start there are three main features that are required. These are outlined below.
+
+\subsection{User Interface}
+
+The app requires a main graphical interface for displaying the position of the other participants in the relation to the user. It was not my intention to produce a production grade user interface but I recognise that this would be a useful addition to the project. The only requirement was that it be effective and reliable, this has been achieved.
+
+\subsection{Session Setup}
+
+In order for inter-device communication, there needs to be a method of synchronisation so that each device knows where to send data to. There are various possible approaches to this problem. I have implemented two alternate methods, each with their own merits.
+
+\subsection{Inter-Device Communication}
+
+The way devices communicate with each other is crucial to the project. I have used the internet API provided by the Android operating system to do all main communication.
 
 \cleardoublepage
 
-
-
 \chapter{Preparation}
 
-To do.
+In this chapter I...
+
+\section{Resources Available}
+
+In this section I shall go through the relevant capabilities of the devices at which I am aiming my application.
+
+\subsection{Networking}
+
+The ability to communicate between devices is vital to this project. Fortunately, there are multiple methods of communication on offer to mobile developers.
+Practically all mobile phones are now connected to the internet, many with high speed access thanks to 3G and 4G technologies, as well as having 802.11 WLAN and bluetooth.
+Communication can be split into ad-hoc and infrastructure methods.
+Bluetooth falls under the Ad-hoc category, where there is no external networking infrastructure, along with WiFi direct, a protocol available to the latest Android devices where WiFi can be used in Ad-hoc mode without the need for an access point.
+WiFi is more commonly used in infrastructure mode, as a portal to the wider internet, as well as the mobile internet services such as 3G.
+The Android OS also allows devices to share an internet connection via WiFi or Bluetooth.
+
+\subsection{Processor}
+
+The processing power of available Android devices varies widely, from top-end models having quad-core processors and dedicated graphics, to budget devices performing several orders of magnitude worse on CPU benchmarks\footnote{\url{http://www.androidbenchmark.net/cpumark_chart.html}}. Even the low end devices have 
+
+\section{Mobile Networks}
+
+All popular mobile providers provide some wireless internet service, usually accessible anywhere that conventional "phone call coverage" is available. This allows for continuous connection while on the go, and allows applications to interact with servers located anywhere in the world.
+
+\subsection{Reliability}
+
+The portability of mobile phones brings some disadvantages along with it. One being that signal strength varies widely across land, depending on proximity of base stations as well as the characteristics of the surrounding landscape.
+
+Typical uses of sports tracking applications include mountain biking and skiing, activities such as these raise concerns due to the nature of their location, often being within dense areas of forest and in remote areas that wouldn't usually be prioritised for by network providers. For these reasons, signal strength in these locations is typically weak, often cutting out entirely and though significant effort has been made to avoid it\footnote{Refer to that paper about link-layer retransmission to target packet loss} packet loss is still a problem.
+
+This means for an application relying on data coverage for communications would need to have some resilience to such disconnection, and should use the available network capabilities efficiently so that important data is prioritised.
+
+\section{Available Network Technology}
+
+\section{Networking Protocols}
+
+\section{GPS}
 
 
 \cleardoublepage

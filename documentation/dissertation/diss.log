@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.2.21)  21 FEB 2013 23:14
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.2.21)  1 MAR 2013 14:36
 entering extended mode
 **diss.tex
 (D:\Dropbox\part2project\documentation\dissertation\diss.tex
@@ -38,7 +38,11 @@ Package: verbatim 2003/08/22 v1.5q LaTeX2e package for verbatim enhancements
 \every@verbatim=\toks14
 \verbatim@line=\toks15
 \verbatim@in@stream=\read1
-) (F:\MiKTeX\tex\generic\epsf\epsf.tex
+) (F:\MiKTeX\tex\latex\ltxmisc\url.sty
+\Urlmuskip=\muskip10
+Package: url 2006/04/12  ver 3.3  Verb mode for urls, etc.
+)
+(F:\MiKTeX\tex\generic\epsf\epsf.tex
 This is `epsf.tex' v2.7.4 <14 February 2011>
 \epsffilein=\read2
 \epsfframemargin=\dimen103
@@ -50,31 +54,31 @@ This is `epsf.tex' v2.7.4 <14 February 2011>
 \epsfysize=\dimen109
 \pspoints=\dimen110
 ) (D:\Dropbox\part2project\documentation\dissertation\diss.aux)
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 33.
+LaTeX Font Info:    ... okay on input line 33.
  [1
 
 {C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}] [2
 
 ]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <14.4> on input line 69.
+(Font)              <14.4> on input line 70.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 69.
+(Font)              <7> on input line 70.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 82.
+(Font)              <5> on input line 83.
 
-Overfull \hbox (18.83441pt too wide) in paragraph at lines 69--84
+Overfull \hbox (18.83441pt too wide) in paragraph at lines 70--85
 []
  []
 
@@ -99,46 +103,46 @@ Chapter 1.
 [1
 
 
-] [2]
-Chapter 2.
-[3
-
-
-] [4
+] [2] [3] [4
 
 ]
-Chapter 3.
+Chapter 2.
 [5
 
-] [6
-
-]
-Chapter 4.
+] [6]
+Chapter 3.
 [7
+
 
 ] [8
 
 ]
-Chapter 5.
+Chapter 4.
 [9
 
 ] [10
 
 ]
+Chapter 5.
+[11
+
+] [12
+
+]
 No file diss.bbl.
 Appendix A.
-[11
+[13
 
 
 ] (D:\Dropbox\part2project\documentation\dissertation\diss.aux) ) 
 Here is how much of TeX's memory you used:
- 387 strings out of 494045
- 4768 string characters out of 3155644
- 53287 words of memory out of 3000000
- 3735 multiletter control sequences out of 15000+200000
+ 461 strings out of 494045
+ 5612 string characters out of 3155644
+ 54448 words of memory out of 3000000
+ 3805 multiletter control sequences out of 15000+200000
  11082 words of font info for 41 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 23i,11n,19p,768b,184s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 23i,11n,19p,768b,233s stack positions out of 5000i,500n,10000p,200000b,50000s
 <F:/MiKTeX/fon
 ts/type1/public/amsfonts/cm/cmbx12.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/c
 m/cmr10.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><F:/MiKTeX/font
@@ -146,9 +150,9 @@ s/type1/public/amsfonts/cm/cmr17.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/
 cmr7.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><F:/MiKTeX/fonts/ty
 pe1/public/amsfonts/cm/cmsl12.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cms
 y10.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on diss.pdf (19 pages, 130013 bytes).
+Output written on diss.pdf (21 pages, 139640 bytes).
 PDF statistics:
- 100 PDF objects out of 1000 (max. 8388607)
+ 106 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

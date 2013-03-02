@@ -79,7 +79,7 @@ public class DataConnectionManager {
 		updateLastSendTime(0);
 	}
 
-	public static ByteBuffer receive(DeviceConnection conn, byte[] data) throws IOException {
+	public static ByteBuffer receive(DeviceConnection conn, byte[] data) throws IOException, DroppedPacketException {
 		ByteBuffer bb = conn.receiveData(data);
 		Logger.download(data.length);	//TODO log header size?
 		return bb;

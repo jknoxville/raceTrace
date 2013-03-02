@@ -191,7 +191,6 @@ public abstract class ProtocolManager {
 		alive = false;
 	}
 	protected boolean readyToSend(int deviceNumber) {
-		//TODO
 		if (coordsToSend[deviceNumber].size() >= Config.getMinCoordsPerPacket()) {
 			return true;
 		} else {
