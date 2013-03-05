@@ -84,7 +84,7 @@ public class Config {
 	private static boolean currentlyDropping = false;
 	public static final double loseConnectionRate = 0.08;	//chance you lose connection in a given second
 	public static final double reconnectRate = 0.4;
-	public static final double dropRate = 0.2;
+	public static final double dropRate = 0.3;
 	private static final long fakeGPSPeriod = 1*1000;	//1 second
 
 	//Datagram Format
