@@ -158,27 +158,34 @@ public class ClientMessage {
 		updatePort(fromDeviceID, datagram);
 	}
 	public static void processRequestDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
+		//only process this if the session is still live
+		try {
+			int fromDeviceID = bb.getInt();
 
-		int fromDeviceID = bb.getInt();
+			LinkedList<Integer>[] requestArray = new LinkedList[Session.getSession().numDevices()];
+			for(int dev = 0; dev<requestArray.length; dev++) {
+				requestArray[dev] = new LinkedList<Integer>();
+			}
 
-		LinkedList<Integer>[] requestArray = new LinkedList[Session.getSession().numDevices()];
-		for(int dev = 0; dev<requestArray.length; dev++) {
-			requestArray[dev] = new LinkedList<Integer>();
-		}
+			int currentDevice = -1;
+			while(bb.hasRemaining()) {
+				int i;
+				if((i = bb.getInt()) == -1) {
+					//device seperator
+					currentDevice = bb.getInt();
+				} else {
+					//request data
+					requestArray[currentDevice].add(i);
+				}
+			}
 
-		int currentDevice = -1;
-		while(bb.hasRemaining()) {
-			int i;
-			if((i = bb.getInt()) == -1) {
-				//device seperator
-				currentDevice = bb.getInt();
-			} else {
-				//request data
-				requestArray[currentDevice].add(i);
+			ProtocolManager.serviceRequestAsClient(fromDeviceID, requestArray);
+		} catch (Exception e) {
+			if(ProtocolManager.isAlive()) {
+				System.err.println("ERROR encountered when session still live");
+				e.printStackTrace();
 			}
 		}
-
-		ProtocolManager.serviceRequestAsClient(fromDeviceID, requestArray);
 	}
 
 	private static void updatePort(int deviceID, DatagramPacket datagram) {

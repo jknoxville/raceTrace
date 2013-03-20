@@ -17,7 +17,6 @@ import uk.ac.cam.jk510.part2project.settings.Config;
 public class UDPConnection extends DeviceConnection {
 
 	UDPConnection(Device device) throws SocketException {
-		System.out.println("Making connection "+device.getDeviceID());
 		if(device == null) {
 			socketAddress = new InetSocketAddress(Config.getServerIP(), Config.getServerPort());	//server
 		} else {
@@ -78,7 +77,9 @@ public class UDPConnection extends DeviceConnection {
 		ByteBuffer.wrap(datagram.getData()).getInt();
 		int deviceID = ByteBuffer.wrap(datagram.getData()).getInt();
 		if(deviceID != -1) {	//if not from server, update that devices port.
-			((DeviceHandleIP) Session.getDevice(deviceID).getHandle()).setPort(datagram.getPort());	//update known port of this device. Same for address useful?
+			int newPort = datagram.getPort();
+			Session.updateDevicePort(deviceID, newPort);
+			//((DeviceHandleIP) Session.getDevice(deviceID).getHandle()).setPort(datagram.getPort());	//update known port of this device. Same for address useful?
 		}
 	}
 

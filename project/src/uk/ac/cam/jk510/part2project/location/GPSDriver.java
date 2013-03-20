@@ -7,12 +7,14 @@ import uk.ac.cam.jk510.part2project.settings.Config;
 import uk.ac.cam.jk510.part2project.store.Coords;
 import uk.ac.cam.jk510.part2project.store.CoordsTXYA;
 import uk.me.jstott.jcoord.LatLng;
+import uk.me.jstott.jcoord.OSRef;
 import uk.me.jstott.jcoord.UTMRef;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.TextView;
 
 public class GPSDriver implements LocationListener {
@@ -30,15 +32,19 @@ public class GPSDriver implements LocationListener {
 		lm = locationManager;
 		thisDevice = Session.getThisDevice();
 
-		//Register for GPS updates
-		//locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, Config.getGPSUpdateDistance(), this);
+		boolean netLocPref = PreferenceManager.getDefaultSharedPreferences(tv.getContext()).getBoolean("net_loc", true);
+
+		//Register for location updates
+		if(netLocPref) {
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, Config.getGPSUpdateDistance(), this);
+		}
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Config.getGPSUpdateTime(), Config.getGPSUpdateDistance(), this);
-		
+
 		instance = this;
 		this.tv = tv;
 		tv.setTextColor(Color.BLACK);
 		this.tv.setText("Waiting for location...");
-		
+
 	}
 
 	static public GPSDriver init(LocationManager lm, TextView tv) {
@@ -96,10 +102,24 @@ public class GPSDriver implements LocationListener {
 		double x = location.getLongitude();
 		double y = location.getLatitude();
 		double alt = location.getAltitude();
-		
+
 		LatLng ll = new LatLng(x, y);
+		OSRef osref = ll.toOSRef();
 		UTMRef utmref = ll.toUTMRef();
-		Coords coords = new CoordsTXYA(Session.getThisDevice().getDeviceID(), useLogicalTime(), (float)utmref.getEasting(), (float)utmref.getNorthing(), (float)alt);
+		Coords coords = null;
+		String gcsPref = PreferenceManager.getDefaultSharedPreferences(tv.getContext()).getString("gcs", "0");
+		GCS gcs = GCS.valueOf(gcsPref);
+		switch(gcs) {
+		case LL: coords = new CoordsTXYA(Session.getThisDevice().getDeviceID(), useLogicalTime(), (float)x, (float)y, (float)alt); break;
+		case OSGB: coords = new CoordsTXYA(Session.getThisDevice().getDeviceID(), useLogicalTime(), (float)osref.getEasting(), (float)osref.getNorthing(), (float)alt); break;
+		case UTM: coords = new CoordsTXYA(Session.getThisDevice().getDeviceID(), useLogicalTime(), (float)utmref.getEasting(), (float)utmref.getNorthing(), (float)alt); break;
+		default: try {
+			throw new Exception();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
 		return coords;
 
 	}
@@ -117,8 +137,8 @@ public class GPSDriver implements LocationListener {
 		 */
 		//ask user to switch it on again, but will continue if they dont want to
 		//probably not because user must have switched it off themself.
-		
-		
+
+
 
 	}
 
@@ -131,7 +151,7 @@ public class GPSDriver implements LocationListener {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	public void destroy() {
 		lm.removeUpdates(this);
 		instance = null;

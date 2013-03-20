@@ -55,7 +55,7 @@ public class PositionStore {
 	}
 
 	//called whenever any device gets some new points.
-	private static void notifyObservers(Device d) {
+	private static synchronized void notifyObservers(Device d) {
 		LinkedList<Integer> newPoints = d.getHistory().getNewPoints();
 		for(PositionStoreSubscriber s : subscribers) {
 			s.notifyOfUpdate(d, newPoints);
@@ -67,6 +67,11 @@ public class PositionStore {
 	public static void subscribeToUpdates(PositionStoreSubscriber s) {
 		if(!subscribers.contains(s)) {
 			subscribers.add(s);
+		}
+	}
+	public static void unsubscribe(PositionStoreSubscriber s) {
+		if(subscribers.contains(s)) {
+			subscribers.remove(s);
 		}
 	}
 

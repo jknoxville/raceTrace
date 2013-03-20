@@ -10,6 +10,7 @@ import java.util.Random;
 
 import org.apache.http.client.CircularRedirectException;
 
+import uk.ac.cam.jk510.part2project.location.GCS;
 import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.Transport;
 import uk.ac.cam.jk510.part2project.protocol.Proto;
@@ -51,7 +52,7 @@ public class Config {
 	private static final int charsOfNameToShow = 6;	//number of characters of player's name that is shown next to position.
 
 	//Protocol
-	private static Proto protocol = Proto.p2p;
+	private static Proto protocol = Proto.clientServer;
 	private static SessionEnum sesh = SessionEnum.singleSession;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
@@ -64,6 +65,9 @@ public class Config {
 	//GPS Updates
 	private static final int gpsUpdateTime = 0;	//minTime between GPS position updates
 	private static final int gpsUpdateDistance = 0;	//min distance between GPS position updates
+	//moved to app settings
+	@Deprecated
+	private static final GCS gcs = GCS.UTM;		//Geographical Coordinate System for translating Lat/Long to cartesian x/y
 
 	//Hard-coded app data
 	private static final String UUIDString = "fa87c0d0-afac-11de-8a39-0800200c9a66"; //Randomly created string for use with this app
@@ -76,15 +80,16 @@ public class Config {
 	private static final int clientTCPPort = 60000;
 
 	//Logging options
-	private static final long screenShotTimer = 60*1000;	//time between saving screenshots
+	private static final boolean takeScreenShots = false;
+	private static final long screenShotTimer = 5*1000;	//time between saving screenshots
 
 	//Simulation
-	public static final boolean droppingEnabled = true;
+	public static final boolean droppingEnabled = false;
 	public static final boolean markovPacketDroppingSimulation = false;
 	private static boolean currentlyDropping = false;
 	public static final double loseConnectionRate = 0.08;	//chance you lose connection in a given second
 	public static final double reconnectRate = 0.4;
-	public static final double dropRate = 0.3;
+	public static final double dropRate = 0.6;
 	private static final long fakeGPSPeriod = 1*1000;	//1 second
 
 	//Datagram Format
@@ -241,6 +246,9 @@ public class Config {
 	//		//Only to be used for session setup. For main server comms should use getServerIP().
 	//		return globalServerIP;
 	//	}
+	public static boolean takeScreenShots() {
+		return takeScreenShots;
+	}
 	public static long getScreenShotTimer() {
 		return screenShotTimer;
 	}
@@ -262,5 +270,10 @@ public class Config {
 	}
 	public static long fakeGPSPeriod() {
 		return fakeGPSPeriod;
+	}
+	//moved to app preferences
+	@Deprecated
+	public static GCS getGCS() {
+		return gcs;
 	}
 }

@@ -102,12 +102,13 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 			initPaint(device);
 		}
 		devicePathList.clear();
+		if(devicePathList.size() != 0) System.out.println("ERROR: devicepathlist not empty");	//debug
 		for(Device d: devices) {
 			DevicePath dp = new DevicePath();
 			d.setDevicePath(dp);
 			devicePathList.add(d.getDeviceID(), dp);
 		}
-		System.out.println(devicePathList.get(0));
+		System.out.println("1st devicePath: "+devicePathList.get(0));
 		PositionStore.subscribeToUpdates(this);
 	}
 
@@ -263,6 +264,14 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 
 		System.err.println("MapDrawer has finished being notified of update");	//debug
 
+	}
+	
+	public static void destroy() {
+		PositionStore.unsubscribe(instance);
+		for(Device d: instance.session.getDevices()) {
+			d.nullifyDevicePath();
+		}
+		instance = null;
 	}
 
 	public static Bitmap getScreenShot() {

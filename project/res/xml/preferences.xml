@@ -3,29 +3,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-   <PreferenceCategory 
-        android:title="Protocol"
-        android:key="pref_key_storage_settings">
-        
-       <ListPreference
-           android:key="topology"
-           android:title="@string/topology_title"
-           android:dialogTitle="@string/topology_dialog"
-           android:defaultValue="@string/topology_default"
-           android:entries="@array/topology_entries"
-           android:entryValues="@array/topology_values"
-           />
-
+    <PreferenceCategory
+        android:key="pref_key_storage_settings"
+        android:title="Protocol" >
+        <ListPreference
+            android:defaultValue="@string/topology_default"
+            android:dialogTitle="@string/topology_dialog"
+            android:entries="@array/topology_entries"
+            android:entryValues="@array/topology_values"
+            android:key="topology"
+            android:title="@string/topology_title" />
+        <ListPreference
+            android:defaultValue="@string/gcs_default"
+            android:dialogTitle="@string/gcs_dialog"
+            android:entries="@array/gcs_entries"
+            android:entryValues="@array/gcs_values"
+            android:key="gcs"
+            android:title="@string/gcs_title" />
+        <SwitchPreference
+            android:key="net_loc"
+            android:title="@string/net_loc_title" />
     </PreferenceCategory>
-       <PreferenceCategory 
-        android:title="Personal">
-        
-       <EditTextPreference
-           android:key="username"
-           android:title="@string/username_title"
-           android:dialogTitle="@string/username_dialog"
-           android:defaultValue="@string/username_default"
-           />
-
+    <PreferenceCategory android:title="Personal" >
+        <EditTextPreference
+            android:defaultValue="@string/username_default"
+            android:dialogTitle="@string/username_dialog"
+            android:key="username"
+            android:title="@string/username_title" />
     </PreferenceCategory>
+
 </PreferenceScreen>

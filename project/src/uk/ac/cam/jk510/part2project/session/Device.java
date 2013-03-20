@@ -14,7 +14,7 @@ public class Device {
 	//private int deviceID;
 	private DeviceHandle handle;
 	private DeviceHistory history;
-	private DevicePath devicePath;	//may be null before it gets set by MapDrawer
+	public DevicePath devicePath;	//may be null before it gets set by MapDrawer
 	
 	public Device(String name, DeviceHandle handle, Protocol protocol) throws IllegalAccessException, InstantiationException {
 		this.name = name;
@@ -49,6 +49,9 @@ public class Device {
 
 	public void setDevicePath(DevicePath dp) {
 		devicePath = dp;
+	}
+	public void nullifyDevicePath() {
+		devicePath = null;
 	}
 	public LinkedList<Integer> getAbsentList() {
 		return devicePath.getAbsentList();

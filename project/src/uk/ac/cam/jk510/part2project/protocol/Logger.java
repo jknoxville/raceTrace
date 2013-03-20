@@ -139,7 +139,7 @@ public class Logger {
 
 		genTimes = new ArrayList<long[]>();
 		genTimes.add(new long[blockSize]);
-		
+
 		requestSizes = new ArrayList<long[]>();
 		requestSizes.add(new long[blockSize]);
 
@@ -156,17 +156,17 @@ public class Logger {
 	public static void upload(int bytes) {
 		instance.networkDataUpload += bytes;
 	}
-	
+
 	public static void sendingRequest(int size) {
 		instance.noRequestsSent++;
 		int index = instance.currentIndex;
 		instance.requestSizes.get(index/blockSize)[index % blockSize] = size;
 	}
-	
+
 	public static void receivedRequest() {
 		instance.noRequestsRecieved++;
 	}
-	
+
 	public static void respondedToRequest() {
 		instance.noRequestsRespondedTo++;
 	}
@@ -208,49 +208,51 @@ public class Logger {
 		instance.packetsDropped++;
 	}
 	private void spawnScreenCaptureThread() {
-		new Thread(new Runnable() {public void run() {
+		if(Config.takeScreenShots()) {
+			new Thread(new Runnable() {public void run() {
 
-			File dir = null;
+				File dir = null;
 
-			while(ProtocolManager.isAlive()) {
+				while(ProtocolManager.isAlive()) {
 
-				if(MapDrawer.initialised()) {
-					Bitmap bmp = MapDrawer.getScreenShot();
-					if(dir == null) {
+					if(MapDrawer.initialised()) {
+						Bitmap bmp = MapDrawer.getScreenShot();
+						if(dir == null) {
 
-						if(externalStorageWriteable()) {
-							//MapDisplayScreen.instance.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+							if(externalStorageWriteable()) {
+								//MapDisplayScreen.instance.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
-							dir = new File(Environment.getExternalStorageDirectory(), "raceTrace");
-							if(!dir.exists()) {
-								dir.mkdir();
+								dir = new File(Environment.getExternalStorageDirectory(), "raceTrace");
+								if(!dir.exists()) {
+									dir.mkdir();
+								}
+
+
+							} else {
+								System.err.println("Can't write to external storage.");
 							}
-
-
-						} else {
-							System.err.println("Can't write to external storage.");
 						}
+						FileOutputStream out;
+						try {
+							File newFile = new File(dir, "raceTrace"+System.currentTimeMillis()+".png");
+							out = new FileOutputStream(newFile);
+							bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
 					}
-					FileOutputStream out;
 					try {
-						File newFile = new File(dir, "raceTrace"+System.currentTimeMillis()+".png");
-						out = new FileOutputStream(newFile);
-						bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-					} catch (FileNotFoundException e) {
+						Thread.sleep(Config.getScreenShotTimer());
+					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
 				}
-				try {
-					Thread.sleep(Config.getScreenShotTimer());
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
 
-		}}).start();
+			}}).start();
+		}
 	}
 
 	private boolean externalStorageWriteable() {
@@ -350,7 +352,7 @@ public class Logger {
 		String[] reqReceived = {"Requests received", Integer.toString(noRequestsRecieved)};
 		String[] reqRespondedTo = {"Requests responded to", Integer.toString(noRequestsRespondedTo)};
 		String[] pacDropped = {"Packets dropped", Integer.toString(packetsDropped)};
-		
+
 		csvWriter.writeNext(numDevices);
 		csvWriter.writeNext(thisDeviceA);
 		csvWriter.writeNext(sent);
@@ -381,7 +383,7 @@ public class Logger {
 		}
 		csvWriter.writeNext(reqSizes);
 		csvWriter.writeNext(largeArray);
-		
+
 		csvWriter.flush();
 		csvWriter.close();
 	}

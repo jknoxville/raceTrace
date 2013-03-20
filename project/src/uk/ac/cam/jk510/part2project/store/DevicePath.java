@@ -16,6 +16,8 @@ public class DevicePath {
 	private float lastXinMadePath;
 	private float lastYinMadePath;
 	private int lastIndex = -1;
+	
+	public long time = System.currentTimeMillis();
 
 	public synchronized void add(int index, float x, float y) {
 		//Check it's not here already, which it shouldn't be, because the filtering is done by PositionStore
@@ -23,6 +25,13 @@ public class DevicePath {
 		if(pathCache.containsKey(index) && pathCache.get(index) instanceof CompleteSegment) {
 			System.err.println("ERROR: duplicate key at DevicePath.add()");
 		}
+		
+		//used to print out pathCache structure for debugging
+//		for(Entry e: pathCache.entrySet()) {
+//			System.out.println(e.getKey());
+//		}
+		System.out.println("dp size: "+pathCache.size()+" this entry: "+pathCache.floorEntry(index)+" this dp: "+this);
+		System.out.println("now: "+System.currentTimeMillis()+" dp time: "+time);
 
 		System.err.println("Now inserting index: "+index+" size: "+pathCache.size()+" firstkey: "+pathCache.firstKey());	//debug
 		Entry<Integer, Segment> gapEntry = pathCache.floorEntry(index);

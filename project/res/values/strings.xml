@@ -48,7 +48,24 @@
         <item>clientServer</item>
         <item>p2p</item>
     </string-array>
+    
+    <string name="gcs_title">Geographic Coordinate System</string>
+    <string name="gcs_dialog">Select GCS</string>
+    <string name="gcs_default">utm</string>
 
+    <string-array name="gcs_entries">
+        <item>Lat / Long</item>
+        <item>OSGB</item>
+        <item>UTM</item>
+    </string-array>
+    <string-array name="gcs_values">
+        <item>LL</item>
+        <item>OSGB</item>
+        <item>UTM</item>
+    </string-array>
+    
+    
+	<string name="net_loc_title">Use Network Location</string>
     <string name="username_title">Name</string>
     <string name="username_dialog">Please enter your name</string>
     <string name="username_default">DefaultName</string>

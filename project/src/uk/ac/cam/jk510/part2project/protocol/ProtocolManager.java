@@ -59,8 +59,8 @@ public abstract class ProtocolManager {
 				}
 			}
 			if(networking) {
-			instance.spawnReceivingThread();
-			instance.spawnMissingCheckTimerThread();
+				instance.spawnReceivingThread();
+				instance.spawnMissingCheckTimerThread();
 			}
 		}
 		return instance;
@@ -89,7 +89,7 @@ public abstract class ProtocolManager {
 			}
 		}).start();
 	}
-	
+
 	public static void testInputData() {
 		//		for (int dev=0; dev<Session.getSession().numDevices(); dev++) {
 		//			testInputData(dev);
@@ -217,33 +217,35 @@ public abstract class ProtocolManager {
 		//TODO should ideally be called after MapDrawer is constructed
 		new Thread(new Runnable() {
 			public void run() {
-				while(!MapDrawer.initialised()) {	//missingCheck relies on objects constructed when MapDrawer is inflated.
-					try {
-						Thread.sleep(Config.missingCheckTimer());
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				int size = 0;
 				while(alive) {
-					if(timeSinceastMissingCheck + Config.missingCheckTimer() <= System.currentTimeMillis()) {
-						//Only need to recheck if any new points have arrived, because thats the only way
-						//new gaps can occur.
-						if(!checkedMissingSinceLastReceipt) {
-							size = missingCheck();
+					if(!MapDrawer.initialised()) {	//missingCheck relies on objects constructed when MapDrawer is inflated.
+						try {
+							Thread.sleep(Config.missingCheckTimer());
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
-						Logger.sendingRequest(size);
-						size = 0;
-						sendMissingRequest();
-					}
-					try {
-						Thread.sleep(Config.missingCheckTimer());
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					} else {
+						int size = 0;
 
+						if(timeSinceastMissingCheck + Config.missingCheckTimer() <= System.currentTimeMillis()) {
+							//Only need to recheck if any new points have arrived, because thats the only way
+							//new gaps can occur.
+							if(!checkedMissingSinceLastReceipt) {
+								size = missingCheck();
+							}
+							Logger.sendingRequest(size);
+							size = 0;
+							sendMissingRequest();
+						}
+						try {
+							Thread.sleep(Config.missingCheckTimer());
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
 				}
 			}
 		}).start();

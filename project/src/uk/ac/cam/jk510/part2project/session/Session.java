@@ -18,6 +18,7 @@ public class Session {
 
 	protected Session(ArrayList<Device> devices, Keys keys) {
 		super();
+		synchronized(this) {
 		this.devices = devices;
 		this.keys = keys;
 		for(Device d: devices) {
@@ -37,18 +38,19 @@ public class Session {
 		session = this;
 		new Logger(this);
 		System.err.println("just saved Session.session: "+session+" Has "+session.numDevices()+" devices.");	//debug
+		}
 	}
 
-	public static Session getSession() {
+	public static synchronized Session getSession() {
 		assert(session != null);
 		return session;
 	}
 
-	public static Device getThisDevice() {
+	public static synchronized Device getThisDevice() {
 		return session.getDevice(session.meNumber);
 	}
 	
-	public static Device getDevice(int n) {
+	public static synchronized Device getDevice(int n) {
 		return session.devices.get(n);
 	}
 
@@ -60,17 +62,17 @@ public class Session {
 		return names;
 	}
 
-	public ArrayList<Device> getDevices() {
+	public synchronized ArrayList<Device> getDevices() {
 		return devices;
 	}
 	public Keys getKeys() {
 		return keys;
 	}
-	public int numDevices() {
+	public synchronized int numDevices() {
 		return devices.size();
 	}
 
-	public static Session reconstructSession(SessionPackage pack) {
+	public static synchronized Session reconstructSession(SessionPackage pack) {
 		System.out.println("Reconstructing session");	//debug
 		int numDevices = pack.deviceNames.length;
 		ArrayList<Device> devices = new ArrayList<Device>();
@@ -89,17 +91,30 @@ public class Session {
 			}
 		}
 		Session session = new Session(devices, pack.keys);
+		for(Device d: session.getDevices()) {
+			if(d.devicePath != null) {
+				System.out.println("devicePath not null");	//debug
+			} else {
+				System.out.println("devicePath is null");	//debug
+			}
+		}
 		return session;
 	}
 	
-	public static void destroy() {
+	public static synchronized void destroy() {
 		session = null;
 		Device.reset();
 	}
 
-	public static int getIndex(Device device) {
+	public static synchronized int getIndex(Device device) {
 		
 		return session.devices.indexOf(device);
+	}
+	
+	public static synchronized void updateDevicePort(int device, int newPort) {
+		if(session != null) {
+			((DeviceHandleIP) session.devices.get(device).getHandle()).setPort(newPort);
+		}
 	}
 
 }

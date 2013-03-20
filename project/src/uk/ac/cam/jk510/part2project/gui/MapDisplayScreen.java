@@ -28,7 +28,7 @@ public class MapDisplayScreen extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_map_display_screen);	
+		setContentView(R.layout.activity_map_display_screen);
 
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		mapDrawer = (MapDrawer) findViewById(R.id.mapDrawer);
@@ -63,6 +63,8 @@ public class MapDisplayScreen extends Activity {
 			gpsDriver.destroy();
 		}
 		Logger.spawnLogFlush();
+		MapDrawer.destroy();
+		mapDrawer = null;
 		instance.finish();
 	}
 
@@ -75,10 +77,11 @@ public class MapDisplayScreen extends Activity {
 	public void addTestData(View view) {
 		if(testDataUsed) {
 			//do nothing
+			ProtocolManager.testInputData();
 		} else {
 			testDataUsed = true;
-			//was ProtocolManager.testInputData();
-			ProtocolManager.spawnRandomGPSThread();
+			ProtocolManager.testInputData();
+			//ProtocolManager.spawnRandomGPSThread();
 			//testDataUsed = true;
 		}
 
