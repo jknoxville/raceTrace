@@ -11,6 +11,12 @@
 \usepackage{verbatim}
 \usepackage{url}
 \usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{algorithm2e}
+\usepackage{mathtools}
+
+\usetikzlibrary{shapes,arrows}
 
 \input{epsf}                            % to allow postscript inclusions
 % On thor and CUS read top of file:
@@ -294,10 +300,176 @@ When drawing the raw longitude and latitude as x and y coordinates, there was cl
 
 With these results, I chose to use the UTM coordinate system as it displayed a much more intuitive representation of the path in the location where it was tested\footnote{Churchill College Grounds, Cambridge} than the other transforms.
 
+\section{Concurrency}
+
+Maybe in implementation?
+
 \cleardoublepage
 \chapter{Implementation}
 
-To do.
+\section{Software Structure}
+
+A Configuration class was used to store all of the numeric values and enumerations within the system - at all points in the project where a numeric value or Enum was required, this class is referenced. This makes the software entirely tune-able, with a single point at which changes need to be made.
+
+\section{Software Engineering approach}
+An iterative development process was used for the main construction of the app, leaving strictly defined gaps that would be implemented by additional modules.
+Iterative processes were used for the development of the networking modules as well.
+For the main structure of the app, the first task was so build a simple UI, with place holders that would eventually allow the various components of the complete system to be used.
+With the structure in place, the next step was to iteratively add functions to the system until it was fully functional, and then continue iterating, adding further improvements.
+
+\section{User Interface}
+
+Although this project was not concerned with the usability of the user interface, it was clear that some graphical interface was necessary, and to best represent the capabilies of the system, a reasonable attempt should be made. With this in mind a cognitive walkthrough was done to identify the main goals of the users when using the app, and in turn the "menu screens" were wireframed by hand to quickly prototype the design and try to produce an easy to use and intuitive design.
+
+In the android ecosystem, the screens of the user interface are represented by Activities. Activity is a subclass of the Java Object class, allowing arbitrary computational functionality as well as additional functions specific to the Android framework.
+
+An instance of an activity may start another activity with the use of an Intent object, this instantiation can be given an arbitrary parameter so that the original Activity can distinguish it from any other Activities it may have created. When the default behaviour is not modified, stopping the newer activity will result in it's creator being resumed. This naturally produces a "go back" effect and simplifies the process of creating a tree-like menu screen structure. When this happens a return value, along with the arbitrary distinguishing parameter is used in a callback method to the original Activity.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.4]{activity_lifecycle}
+\caption{Flowchart showing the entire Android Activity lifecycle. May be relevent.}
+\label{fig:activity_lifecycle}
+\end{figure}
+
+The menu structure of the application is illustrated in figure \ref{fig:menu_structure}. Each of the three screens accessible from the main menu is represented by a subclass of a SessionSetupActivity object and used to initialise the current session. When a session finishes and players exit the Map Display Screen, on return to one of the session setup activities, the onBackPressed() procedure is called resulting in immediately returning to the main menu.
+
+\tikzstyle{activity} = [rectangle, text width=4.5em, text centered, rounded corners, draw]
+\tikzstyle{line} = [draw, -latex']
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[node distance = 3cm, auto]
+	\node [activity] (main) {Main Menu};
+	\node [activity, below of=main] (btM) {Bluetooth Device Selection};
+	\node [activity, left of=btM] (quickstart) {Quickstart};
+	\node [activity, right of=btM] (btC) {Bluetooth Client Screen};
+	\node [activity, below of=btM] (map) {Map Display Screen};
+	\path [line] (main) -- (quickstart);
+	\path [line] (main) -- (btM);
+	\path [line] (main) -- (btC);
+	\path [line] (quickstart) -- (map);
+	\path [line] (btM) -- (map);
+	\path [line] (btC) -- (map);
+\end{tikzpicture}
+\caption{Flowchart showing the possible paths through the activities of the application}
+\label{fig:menu_structure}
+\end{figure}
+
+The Android Software Development Kit (SDK) offers assistance in creating graphical user interfaces, including a "What you see is what you get" (WYSIWYG) graphical editor. However, for the purposes of this project (simple menu and selection screens) this tool was undesired and in order for the screen arrangements to appear as desired on all screen sizes, it was decided that all GUI work would be done by text entry using relative positioning so no features would be accidentally introduced by the automated tool. Despite this the tool provided value by visualising the changes made to the layout files without having to install it on a device.
+
+\section{Implementing the Session Setup function}
+
+TODO: Whats in a session?
+
+The application structure first implemented left a gap for a session setup module. The reason for this is that there are numerous ways to setup the session and it is conceivable that there may not be an absolute best method.
+As further justification, consider the case of using the client server model for main inter-device communications. With this network in place, the server can act as an intermediary when setting up the initial session, since its address is always known by all participants. However, if peer to peer methods alone are used for communication, then there is no oracle that can introduce devices to each other, and some form of ad-hoc discovery method would be required.
+
+For the initial iterations of the app, a trivial single-user module was used to initialise the session, allowing testing of the data storage and visualisation components before further setup modules were implemented. More than just a temporary placeholder, this module allows for users of the complete system to use the system alone if they wish.
+
+The first multi-participant session setup module was designed to be universal, since at the time developing further modules was an optional project extension so this may have been the only one.
+This meant that ad-hoc discovery methods would be used since they don't rely on an external provider and can work with both server based and peer to peer systems.
+
+There are several options for such ad-hoc device discovery.
+
+All devices running Android version 2.2 and above that have WiFi are able to host personal WiFi hotspots. One solution to the setup problem would be to have one device set up a hotspot, identify and add all connecting devices to the session, and then distribute the session information back to them over WiFi. For security, Android uses a primitive form of User Account Control (UAC) to ensure that some operations can only be done with explicit user permission, connecting to a new wireless access point is one of these. It is usually desirable for technical implementation detail to be hidden from the user, but this method would violate that guideline and complicate the process unless all users had previously connected to this hosts hotspot.
+A similar suggestion is to use Bluetooth as the medium. This would operate in a similar manner, though unlike WiFi connections would be serialised, requiring most devices to connect to the host twice - once to contribute their information, and once to receive the complete session information after it has all been gathered. Androids UAC polilcy only requires user consent for pairing with new bluetooth devices and not for connecting to paired devices. So provided the devices are paired beforehand, the entire process can be automated.
+Near Field Communication (NFC) has recently been adopted by handset manufacturers, and allows communication by simply making contact between two NFC enabled devices. QR codes allow communication via a visual channel and could be used by displaying a QR code on one screen while another devices directs their camera towards it. These two methods are similar in that they provide one-to-one communication and require each device to be physically oriented in respect to the other. This means coordinating a large group of devices using these mediums could become a complicated process for the user, even with on screen instruction.
+
+Bluetooth was chosen over WiFi because the connection process is simpler for the user.
+
+Pre-arranged / permanent session - can do with anything anyway
+
+\subsection{Bluetooth Session Setup}
+\label{bt setup}
+In order to initialise and distribute the session using bluetooth, the following steps are taken:
+
+\begin{itemize}
+\item{Master selects bluetooth devices to join from list on screen.}
+\item{Meanwhile slave devices select connect and start listening for bluetooth connection.}
+\item{Master connects to each selected device in turn, retrieving their address information, as well as any necessary cryptographic information such as private keys.}
+\item{Master marshals session object from all of the collected information, including it's own.}
+\item{Master connects again to each device in turn and distributes the session object.}
+\end{itemize}
+
+\subsection{Remote Server based Session Setup}
+
+While the Bluetooth based method worked well in testing, having to connect to several devices sequentially causes a severe bottleneck in the process.
+
+For this reason, another session setup procedure was built, using a remote server.
+
+To connect, the user of each device presses the same "Quickstart" button. This is the only user activity necessary and is hence more convenient to use.
+
+When the function is activated the location of the device, obtained using a combination of GPS and Network provided data\footnote{See later}, is sent to the server along with the session information of the device.
+
+At the server, these requests are received and grouped by time and location into session groups. From these groups, session objects are marshalled and sent back to the devices involved.
+
+The location information used for grouping is in the form of 2D cartesian coordinates.
+
+\begin{algorithm}
+\For{device a: requests}{
+ \ForAll{device b: requests} {
+  \If{\begin{math}distance(a,b) \leq x \end{math}}{
+   a.add(b);
+  }
+ }
+}
+\caption{Naive grouping algorithm}
+\end{algorithm}
+
+If a naive grouping algorithm was used the run time complexity would be O(n\textsuperscript{2}) where n is the number of devices.
+This is avoided by noting that there is an upper limit on the distance between any two devices in the same session. This allows one to segment the 2D location space into a grid of disjoint areas, where comparisons need to be made only between points in adjacent segments. While still technically remaining O(n\textsuperscript{2}) in the worst case (where all devices are close together), in practice there is an upper limit on the number of users that can be in the same place at the same time resulting in an effective O(1) runtime complexity.
+
+In practice when this method is available it is much quicker than the bluetooth based alternative for two reasons. One is the bottle connection bottleneck mentioned in \ref{bt setup} and the other is that it is no longer necessary to select the participants from a list of devices. This comes at the cost of expressiveness since instead all nearby devices are added. An option could be added to allow selection participants without much work.
+
+Clearly the bluetooth method has the advantage of not relying on external providers.
+
+\section{Map Display and Data Structures}
+
+There are several ways the location data could be visualised on screen. The approach taken here is to draw a line to the screen for each user in the session, showing their entire path since the event began. The lines could be super-imposed onto existing map visualisation data such as that provided by Google\footnote{https://developers.google.com/maps/documentation/android/} but with the desire to keep the interface simple and quickly interpretable this wasn't attempted.
+
+\subsection{Storing Location History Data}
+
+For each device, the entire known location history, for the current session, should be stored at every other device so that each device can potentially perform arbitrary computation and aggregation on it.
+
+To do this, a data structure was required that would store a list of (time, location) data points.
+
+The structure chosen was a linked list of array lists. The data-points would be stored in fixed size arrays, where more arrays can be allocated when needed. This means append, lookup and insert have runtime costs of $ O(\lceil N/L \rceil ) $ where $ N = $ number of points and $ L =$ array size.
+
+For each device, this structure is indexed by an integer logical clock governed by the device the data originates from. This allows devices to alter the granularity of history depending on the speed of travel, simply by incrementing its logical clock every time it travels some fixed size distance. It also provides a simple way to check for missing data, since if there exists any empty index i such that i<j where j is the latest known index, then the data for index i is absent and should be seeked out. This is explained further in \ref{requests}.
+The alternative would be to index the lists by time, this would suffer from variable path resolution depending on speed, and several undesirable effects such as duplicate locations being stored whenever a device remains stationary.
+
+Since the aim is to fully populate the list with data points up to some logical time l, allocating arrays is not wasteful because any intermediate gaps in the data should be filled in future. The trade off here comes with setting the length of the arrays, too large and more memory will be unused at the end of the array, too small and lookup times will increase because of the increased size of the linked list.
+
+\subsection{Drawing to the Screen}
+
+To present a visualisation to the user, the data points need to be mapped onto a 2D space the size of the devices screen, and lines need to be drawn between them.
+
+The android canvas API provides suitable methods for plotting points, lines and paths to the screen. In this context, a Path object represents an append-only ordered list of points that can be pre-computed and drawn to the screen efficiently at different times.
+Being append-only, the Path objects don't provide an immediate solution for drawing entire device paths to the screen for each frame. The reason for this is that at any point in time, there may be absent data points which should be drawn along the path between two present data points. Since these absent points may later be obtained, the data structure should allow for insertion and not just append.
+
+To solve this, a data structure named a PathCache was designed. This is comprised of a Tree Set of Segment objects, where a Segment may be either a Complete Segment or a Gap Segment. Complete segments are parts of the data point list that have no missing data. Gap segments are segments of the list that contain only missing points.
+
+Each Complete segment contains a Path object that can be drawn to the screen.
+
+This structure provides efficient insertion of data points into the lists as well as conserving the efficient append operation when using a single Path object. To append points, they are just appended to the last CompleteSegment (the last segment will never be a GapSegment because gaps are defined as missing data points with index less than that of the largest index received.). To insert points there are two possible cases. Either the new point is at the start of a GapSegment, in which case it is appended to the preceeding CompleteSegment, and the GapSegment is shortened by one. If the new point is not at the start of a GapSegment (meaning it is somewhere else in some GapSegment) then the GapSegment is shortened, a single point CompleteSegment added, and if the point wasn't at the end of the GapSegment, then an extra GapSegment is added to fill in the rest of the old GapSegment. The TreeSet provides mapping from indices to Segments (as well as preceding Segments) in O(log(N)) time.
+
+To draw the paths to the screen each frame, every segment is iterated through and drawn, with individual lines being drawn between them to replace the gap segments.
+
++player labels and naming?
+
+When scanning through the Path objects, the boundaries are calculated, these are the maximum and minimum coordinates on each axis. These are used to calculate the scale factor required to map the life-size model to the scale of the screen. A matrix is constructed from this factor and applied to transform each of the paths, and they are shifted to be aligned at (0,0).
+
+\section{Data Sharing}
+
+As mentioned earlier the networking parts of the system were sufficiently loosely coupled to enable modular swapping of different protocols. This was achieved using standard OOP conventions and the use of an abstract class ProtocolManager which was subclassed by the various different networking implementations.
+
+The approach taken was initially a simple bucket and send protocol. This means that as new points arrive from the location aware part of the system, they are put into a bucket and sending is delayed until either the bucket is full or the first item in the bucket has been there more than some fixed amount of time.
+
+This prevents excessive sending delay while not abusing the network by sending many smaller than necessary packets, as was seen to be a problem in \ref{3g queue delay}.
+
+
+
+
 
 \cleardoublepage
 \chapter{Evaluation}
