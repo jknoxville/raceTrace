@@ -14,13 +14,13 @@ public class Session {
 	private ArrayList<Device> devices;
 	private Keys keys;
 	private int meNumber = -1;
-	private int deviceCount = 0;
 
 	protected Session(ArrayList<Device> devices, Keys keys) {
 		super();
 		synchronized(this) {
 		this.devices = devices;
 		this.keys = keys;
+		int deviceCount = 0;
 		for(Device d: devices) {
 			System.out.println(d.getName()+" and "+Config.getName());
 			//TODO use bluetooth MAC address instead of name.

@@ -1,6 +1,8 @@
 package uk.ac.cam.jk510.part2project.store;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import uk.ac.cam.jk510.part2project.protocol.Logger;
@@ -17,6 +19,8 @@ public abstract class DeviceHistory {
 	protected CoordsType coordsType;
 	protected int device;
 	protected int indexOfLatestPoint;
+	
+	private HashSet<Integer> absentSet = new HashSet<Integer>();
 
 	protected abstract Coords getCoord(int index);
 
@@ -47,9 +51,9 @@ public abstract class DeviceHistory {
 		if(dataPointPresentList.get(arrayNumber)[offset]) {
 			System.err.println("Datapoint already present");	//debug
 			throw new DataPointPresentException();
-		} else {
-			System.err.println("Datapoint not present");	//debug
 		}
+		
+		
 
 		// Let i = the coordinate dimension. Store each coordinate in corresponding array.
 		for(int i = 0; i<coords.getSize(); i++) {
@@ -59,12 +63,21 @@ public abstract class DeviceHistory {
 		//Set dataPointPresent value to true
 		dataPointPresentList.get(arrayNumber)[offset] = true;
 		
-		if(index > indexOfLatestPoint) {
-			indexOfLatestPoint = index;
-			Logger.newLatestPoint(coords.aboutDevice);
+		
+		if(absentSet.contains(index)) {
+			absentSet.remove(index);
 		}
 		
 		
+		
+		
+		if(index > indexOfLatestPoint) {
+			for(int i=indexOfLatestPoint+1; i<=index; i++) {
+				absentSet.add(i);
+			}
+			indexOfLatestPoint = index;
+			Logger.newLatestPoint(coords.aboutDevice);
+		}
 
 		//Add point to device's newPoints list
 		newPoints.add(index);
@@ -111,6 +124,10 @@ public abstract class DeviceHistory {
 		}
 		return history;
 	}
+	
+	public Collection<Integer> getAbsentList() {
+		return absentSet;
+	}
 
 	public Response fulfillRequest(LinkedList<Integer> list) {
 		Response response = new Response();
@@ -121,7 +138,7 @@ public abstract class DeviceHistory {
 
 			//if have this point then get it and add it to the return list
 			if(dataPointPresentList.get(arrayNumber)[offset]) {
-				response.matches.add(getCoord(index));
+				response.hits.add(getCoord(index));
 			} else {
 				response.remainingPoints.add(index);
 			}

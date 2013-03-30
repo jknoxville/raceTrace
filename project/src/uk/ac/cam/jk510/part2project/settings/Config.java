@@ -72,9 +72,9 @@ public class Config {
 	//Hard-coded app data
 	private static final String UUIDString = "fa87c0d0-afac-11de-8a39-0800200c9a66"; //Randomly created string for use with this app
 
-	private static final String localServerIP = "192.168.137.1";
+	//private static final String localServerIP = "192.168.137.1";	???
+	private static final String localServerIP = "192.168.1.20";
 	private static final String globalServerIP = "jknoxville.no-ip.org";
-	private static final String unixServerIP = "127.0.0.1";
 	private static final int serverPort = 60000;
 	private static final int defaultClientPort = 60001;
 	private static final int clientTCPPort = 60000;

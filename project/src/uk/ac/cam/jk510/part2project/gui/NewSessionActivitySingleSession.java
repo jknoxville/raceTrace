@@ -5,7 +5,7 @@ import java.util.Currency;
 import uk.ac.cam.jk510.part2project.R;
 import uk.ac.cam.jk510.part2project.R.layout;
 import uk.ac.cam.jk510.part2project.R.menu;
-import uk.ac.cam.jk510.part2project.session.SessionManagerSingleSession;
+import uk.ac.cam.jk510.part2project.session.SessionManagerQuickstart;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -19,7 +19,7 @@ public class NewSessionActivitySingleSession extends NewSessionActivity {
 		setContentView(R.layout.activity_new_session_activity_single_session);
 
 
-		SessionManagerSingleSession.spawnSetupThread(findViewById(R.id.stringy), this);
+		SessionManagerQuickstart.spawnSetupThread(findViewById(R.id.stringy), this);
 
 	}
 

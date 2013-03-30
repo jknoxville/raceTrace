@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.2.21)  25 MAR 2013 13:41
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.2.21)  30 MAR 2013 20:58
 entering extended mode
 **diss.tex
 (D:\Dropbox\part2project\documentation\dissertation\diss.tex
@@ -451,6 +451,27 @@ LaTeX Info: Thecontrolsequence`\]'isalreadyrobust on input line 129.
 \l_MT_above_shortintertext_sep=\dimen170
 \l_MT_below_shortintertext_sep=\dimen171
 )
+(F:\MiKTeX\tex\latex\caption\subcaption.sty
+Package: subcaption 2013/02/03 v1.1-62 Sub-captions (AR)
+
+(F:\MiKTeX\tex\latex\caption\caption.sty
+Package: caption 2013/02/03 v3.3-65 Customizing captions (AR)
+
+(F:\MiKTeX\tex\latex\caption\caption3.sty
+Package: caption3 2013/02/03 v1.5-62 caption3 kernel (AR)
+\captionmargin=\dimen172
+\captionmargin@=\dimen173
+\captionwidth=\dimen174
+\caption@tempdima=\dimen175
+\caption@indent=\dimen176
+\caption@parindent=\dimen177
+\caption@hangindent=\dimen178
+)
+\c@ContinuedFloat=\count128
+)
+\c@subfigure=\count129
+\c@subtable=\count130
+)
 (F:\MiKTeX\tex\generic\pgf\frontendlayer\tikz\libraries\tikzlibraryshapes.code.
 tex
 File: tikzlibraryshapes.code.tex 2008/01/09 v2.10 (rcs-revision 1.1)
@@ -519,52 +540,55 @@ tex
 File: tikzlibraryarrows.code.tex 2008/01/09 v2.10 (rcs-revision 1.1)
  (F:\MiKTeX\tex\generic\pgf\libraries\pgflibraryarrows.code.tex
 File: pgflibraryarrows.code.tex 2008/10/27 v2.10 (rcs-revision 1.9)
-\arrowsize=\dimen172
+\arrowsize=\dimen179
 ))
 (F:\MiKTeX\tex\generic\epsf\epsf.tex
 This is `epsf.tex' v2.7.4 <14 February 2011>
 \epsffilein=\read3
-\epsfframemargin=\dimen173
-\epsfframethickness=\dimen174
-\epsfrsize=\dimen175
-\epsftmp=\dimen176
-\epsftsize=\dimen177
-\epsfxsize=\dimen178
-\epsfysize=\dimen179
-\pspoints=\dimen180
+\epsfframemargin=\dimen180
+\epsfframethickness=\dimen181
+\epsfrsize=\dimen182
+\epsftmp=\dimen183
+\epsftsize=\dimen184
+\epsfxsize=\dimen185
+\epsfysize=\dimen186
+\pspoints=\dimen187
 ) (D:\Dropbox\part2project\documentation\dissertation\diss.aux)
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
 
 (F:\MiKTeX\tex\context\base\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count128
-\scratchdimen=\dimen181
+\scratchcounter=\count131
+\scratchdimen=\dimen188
 \scratchbox=\box65
-\nofMPsegments=\count129
-\nofMParguments=\count130
+\nofMPsegments=\count132
+\nofMParguments=\count133
 \everyMPshowfont=\toks31
-\MPscratchCnt=\count131
-\MPscratchDim=\dimen182
-\MPnumerator=\count132
-\makeMPintoPDFobject=\count133
+\MPscratchCnt=\count134
+\MPscratchDim=\dimen189
+\MPnumerator=\count135
+\makeMPintoPDFobject=\count136
 \everyMPtoPDFconversion=\toks32
-) ABD: EveryShipout initializing macros [1
+) ABD: EveryShipout initializing macros
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+ [1
 
 {C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}] [2
 
 ]
-Overfull \hbox (18.83441pt too wide) in paragraph at lines 77--92
+Overfull \hbox (18.83441pt too wide) in paragraph at lines 78--93
 []
  []
 
@@ -590,15 +614,15 @@ Chapter 2.
 [5
 
 ]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 211.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 212.
 
  (F:\MiKTeX\tex\latex\base\omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 211.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 212.
  [6] [7] [8] [9]
-Underfull \hbox (badness 10000) in paragraph at lines 293--293
+Underfull \hbox (badness 10000) in paragraph at lines 294--294
 [][]$\OT1/cmtt/m/n/10 http : / / en . wikipedia . org / wiki / Universal _ Tran
 sverse _ Mercator _ coordinate _$
  []
@@ -609,63 +633,102 @@ sverse _ Mercator _ coordinate _$
 Chapter 3.
 [13
 
-] <activity_lifecycle.png, id=88, 514.92375pt x 665.48625pt>
-File: activity_lifecycle.png Graphic file (type png)
-
-<use activity_lifecycle.png>
-Package pdftex.def Info: activity_lifecycle.png used on input line 330.
-(pdftex.def)             Requested size: 205.96585pt x 266.18977pt.
- [14 <D:/Dropbox/part2project/documentation/dissertation/activity_lifecycle.png
->]
-Overfull \hbox (1.37082pt too wide) in paragraph at lines 344--344
+] [14] [15]
+Overfull \hbox (1.37082pt too wide) in paragraph at lines 391--391
  [][][][]\OT1/cmr/m/n/12 Quickstart 
  []
 
-[15] [16] [17] [18]
+[16]
 
-LaTeX Warning: Reference `requests' on page 19 undefined on input line 438.
+LaTeX Warning: Reference `mapDrawer' on page 17 undefined on input line 420.
+
+[17]
+
+LaTeX Warning: Citation `btUAC' on page 18 undefined on input line 440.
+
+[18]
+
+LaTeX Warning: Reference `gpsDriver' on page 19 undefined on input line 470.
 
 [19] [20]
 
-LaTeX Warning: Reference `3g queue delay' on page 21 undefined on input line 46
-8.
+LaTeX Warning: Reference `requests' on page 21 undefined on input line 507.
 
-[21] [22
+[21]
+Overfull \hbox (5.65443pt too wide) in paragraph at lines 546--547
+[][] 
+ []
 
-]
+
+Overfull \hbox (5.15443pt too wide) in paragraph at lines 566--567
+[][] 
+ []
+
+
+Overfull \hbox (4.65443pt too wide) in paragraph at lines 585--586
+[][] 
+ []
+
+[22]
+
+LaTeX Warning: Reference `3g queue delay' on page 23 undefined on input line 60
+3.
+
+[23]
+Underfull \hbox (badness 1028) in paragraph at lines 611--612
+\OT1/cmr/m/n/12 sub-scribe to up-dates from the Po-si-tion-Store. When-ever new
+ points are
+ []
+
+[24]
+
+LaTeX Warning: Reference `messageFormats' on page 25 undefined on input line 62
+9.
+
+[25] [26]
 Chapter 4.
-[23
+[27
 
-] [24
+
+] [28
 
 ]
 Chapter 5.
-[25
+[29
 
-] [26
+] [30
 
 ]
 No file diss.bbl.
 Appendix A.
-[27
+[31
 
 
-] (D:\Dropbox\part2project\documentation\dissertation\diss.aux)
+]
+Appendix B.
+<UMLClassDiagram.png, id=147, 3208.22118pt x 1544.59412pt>
+File: UMLClassDiagram.png Graphic file (type png)
+
+<use UMLClassDiagram.png>
+Package pdftex.def Info: UMLClassDiagram.png used on input line 688.
+(pdftex.def)             Requested size: 3208.21338pt x 1544.59036pt.
+ [32
+
+] [33 <D:/Dropbox/part2project/documentation/dissertation/UMLClassDiagram.png>]
+
+(D:\Dropbox\part2project\documentation\dissertation\diss.aux)
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
  ) 
 Here is how much of TeX's memory you used:
- 14190 strings out of 494045
- 273504 string characters out of 3155644
- 377380 words of memory out of 3000000
- 17217 multiletter control sequences out of 15000+200000
- 12781 words of font info for 48 fonts, out of 3000000 for 9000
+ 15412 strings out of 494045
+ 295502 string characters out of 3155644
+ 397547 words of memory out of 3000000
+ 18430 multiletter control sequences out of 15000+200000
+ 13081 words of font info for 49 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 56i,15n,56p,1298b,632s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 56i,15n,56p,1298b,828s stack positions out of 5000i,500n,10000p,200000b,50000s
 <F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><F:/MiKTeX/fonts/type1/p
 ublic/amsfonts/cm/cmmi12.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pf
 b><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><F:/MiKTeX/fonts/type1/pu
@@ -673,10 +736,11 @@ blic/amsfonts/cm/cmr12.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb>
 <F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><F:/MiKTeX/fonts/type1/publi
 c/amsfonts/cm/cmr8.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmsl12.pfb><F:
 /MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><F:/MiKTeX/fonts/type1/public
-/amsfonts/cm/cmti12.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on diss.pdf (37 pages, 266905 bytes).
+/amsfonts/cm/cmti12.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><F
+:/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
+Output written on diss.pdf (43 pages, 408973 bytes).
 PDF statistics:
- 177 PDF objects out of 1000 (max. 8388607)
+ 198 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  18 words of extra memory for PDF output out of 10000 (max. 10000000)
 

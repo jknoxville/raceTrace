@@ -53,8 +53,8 @@ public class Device {
 	public void nullifyDevicePath() {
 		devicePath = null;
 	}
-	public LinkedList<Integer> getAbsentList() {
-		return devicePath.getAbsentList();
+	public LinkedList<Integer> getAbsentList(boolean snoop) {
+		return devicePath.getAbsentList(snoop);
 	}
 
 }

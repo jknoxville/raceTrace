@@ -12,7 +12,7 @@ import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionEnum;
 import uk.ac.cam.jk510.part2project.session.SessionManagerPredefined;
-import uk.ac.cam.jk510.part2project.session.SessionManagerSingleSession;
+import uk.ac.cam.jk510.part2project.session.SessionManagerQuickstart;
 import uk.ac.cam.jk510.part2project.session.SessionManagerSingleUser;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;

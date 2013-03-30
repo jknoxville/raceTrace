@@ -7,6 +7,7 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -144,7 +145,6 @@ public abstract class ProtocolManager {
 	 */
 	public static void insertOriginalDataPoint(final Device device, final Coords coords) {
 		//if(decision logic) {	what decision logic?
-		//TODO alert network module, maybe subscriber model so it sends it out.
 		//should sending decision be made here or there, probably here because its ProtocolManager.
 		//}
 		new Thread(new Runnable() {
@@ -207,8 +207,12 @@ public abstract class ProtocolManager {
 		requestArray = new LinkedList[Session.getSession().numDevices()];
 		int size = 0;
 		for(Device d: Session.getSession().getDevices()) {
-			requestArray[d.getDeviceID()] = d.getAbsentList();
-			size += requestArray[d.getDeviceID()].size();
+			//requestArray[d.getDeviceID()] = d.getAbsentList(false);
+			requestArray[d.getDeviceID()] = new LinkedList<Integer>();
+			requestArray[d.getDeviceID()].addAll(d.getHistory().getAbsentList()); //changed from above to use snooping
+			
+			
+ 			size += requestArray[d.getDeviceID()].size();
 		}
 		return size;
 	}

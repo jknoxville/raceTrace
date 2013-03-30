@@ -1,5 +1,7 @@
 package uk.ac.cam.jk510.part2project.store;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -17,6 +19,8 @@ public class DevicePath {
 	private float lastYinMadePath;
 	private int lastIndex = -1;
 	
+	private HashSet<Integer> absentSet = new HashSet<Integer>();
+
 	public long time = System.currentTimeMillis();
 
 	public synchronized void add(int index, float x, float y) {
@@ -25,11 +29,16 @@ public class DevicePath {
 		if(pathCache.containsKey(index) && pathCache.get(index) instanceof CompleteSegment) {
 			System.err.println("ERROR: duplicate key at DevicePath.add()");
 		}
-		
+
+
+		if(absentSet.contains(index)) {
+			absentSet.remove(index);
+		}
+
 		//used to print out pathCache structure for debugging
-//		for(Entry e: pathCache.entrySet()) {
-//			System.out.println(e.getKey());
-//		}
+		//		for(Entry e: pathCache.entrySet()) {
+		//			System.out.println(e.getKey());
+		//		}
 		System.out.println("dp size: "+pathCache.size()+" this entry: "+pathCache.floorEntry(index)+" this dp: "+this);
 		System.out.println("now: "+System.currentTimeMillis()+" dp time: "+time);
 
@@ -91,6 +100,13 @@ public class DevicePath {
 				}
 			}
 		}
+		if(index>lastIndex) {
+			for(int i=lastIndex+1; i<=index; i++) {
+				absentSet.add(i);
+			}
+		}
+		absentSet.remove(index);
+		
 		if(index>lastIndex) {
 			lastIndex = index;
 			endX = x;
@@ -167,8 +183,11 @@ public class DevicePath {
 		return pathCache;
 	}
 
-	public LinkedList<Integer> getAbsentList() {
-		/*
+	public LinkedList<Integer> getAbsentList(boolean snoop) {
+		
+		//updating old code conservatively
+		if(!snoop) {
+					/*
 		 * For each GapSegment in pathCache, add the range of indices of it to the absent list, unless its the last Segment.
 		 */
 		LinkedList<Integer> list = new LinkedList<Integer>();
@@ -183,5 +202,14 @@ public class DevicePath {
 			}
 		}
 		return list;
+		} else {
+			LinkedList<Integer> list = new LinkedList<Integer>();
+			for(Integer i: absentSet) {
+				list.add(i);
+			}
+			return list;
+		}
+		
+
 	}
 }
