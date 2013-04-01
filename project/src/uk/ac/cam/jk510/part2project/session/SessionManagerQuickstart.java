@@ -27,6 +27,9 @@ public class SessionManagerQuickstart extends SessionManager {
 				new Runnable() {
 					public void run() {
 						try {
+							
+							long startTime = System.currentTimeMillis();
+							
 							//Open TCP socket to server.
 							Socket sock = new Socket(Config.getServerIP(), 60000);	//TODO hardcoded port
 
@@ -42,6 +45,8 @@ public class SessionManagerQuickstart extends SessionManager {
 							for (Device d: sesh.getDevices()) {
 								System.out.println(((DeviceHandleIP) d.getHandle()).getPort());	//debug
 							}
+							
+							System.out.println("Time taken for (quickstart) setup: "+(System.currentTimeMillis()-startTime));
 
 							//TODO post new intent thing to ui thread to go to mapdispalyscreen.
 							view.post(new Runnable() {

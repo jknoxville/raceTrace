@@ -125,6 +125,7 @@ public class SessionManagerBluetooth extends SessionManager {
 
 				try {
 
+					long startTime = System.currentTimeMillis();
 					System.out.println(selectedList.size());
 					checkIfAlive();
 					ArrayList<Device> devices = new ArrayList<Device>();
@@ -264,6 +265,8 @@ public class SessionManagerBluetooth extends SessionManager {
 							e1.printStackTrace();
 						}
 					}
+					
+					System.out.println("Time taken for (bluetooth) setup: "+(System.currentTimeMillis()-startTime));
 
 					try {
 						ProtocolManager.initialiseProtocolManager(session);

@@ -672,6 +672,7 @@ One of these cases was the MapDrawer object, this was developed prior to the loc
 
 Another situation where a temporary feature was created was for testing the display with multiple users, even when the server implementation was incomplete. To do this a "duplicate" option was added to the server (which at the time could only connect to a single device) that caused it to duplicate every recieved point, change the device ID and translate the location by 10m, this extra point when inserted, simulated the interaction of a second device and would be sent back to the original and percieved as another device.
 
+\label{logging}
 A Logger class was built which subscribes to the PositionStore update facility and keeps a record of all events, this record is written to disk on user exit, and was used to do a quantitative evaluation of the system in chapter~\ref{eval}.
 
 \section{Concurrency}
@@ -681,7 +682,7 @@ In Android, each application runs as its own process, but freedom is given to us
 
 Whenever concurrency was present, use of data structures and state was carefully tracked and the {\tt synchronized} keyword was used to enforce mutual exclusion between conflicting methods.
 
-In addition to this, {\tt destroy()} methods were defined for all classes with static state and these were called in a cascading fashion whenever de-allocation was due, such as the user exiting an ongoing session back to the main menu. Also a synchronized boolean variable {\tt alive} was defined in {\tt ProtocolManager} which is checked for in all situations where execution could otherwise continue after the user has exit. When the user does exit, this is set to false and then all orphan threads quietly terminate.
+In addition to this, {\tt destroy()} methods were defined for all classes with static state and these were called in a cascading fashion whenever de-allocation was due, such as the user exiting an ongoing session back to the main menu. Also a synchronized boolean variable {\tt alive} was defined in {\tt ProtocolManager} which is checked for in all situations where execution could otherwise continue after the user has exit (including at the wake up of any sleeping threads). When the user does exit, this is set to false and then all orphan threads quietly terminate.
 
 \cleardoublepage
 \chapter{Evaluation}
@@ -697,14 +698,21 @@ Concern: does this count as a user study? needing all the ethics approval? - if 
 
 \section{Comparison of Session Setup procedures}
 
-To make a quantitative comparison of the two setup procedures implemented would be difficult. This is because the 
+To make a quantitative comparison of the two setup procedures implemented would be difficult because the user experience is hard to quantify. However limited technical measurements were made to give an idea of the difference in time taken between them.
 
-\section{
+In the experiments carried out, to setup a two-device session, the bluetooth procedure took on average 4.8 seconds\footnote{This increased to 16.0 seconds when WiFi was enabled on the devices tested, this is explained by the fact that Bluetooth and WiFi share part of the same spectrum and intrfere somewhat.\cite{btwifi}} and the quickstart method took on average a very similar 4.7 seconds. However the timing of the Bluetooth setup only counts the automated parts, so the user selection will take additional time.
 
-Include:
-\begin{itemize}
-\item{Differing characteristics of UK phone networks (Vodafone and Three)}
-\end{itemize}
+What is significant is that the quickstart method is highly parallelized since the bottleneck for each device is the network latency to the server, and these bottlenecks are independent, resulting in constant time setup\footnote{Counting the server grouping operations as negligible in with respect to the network latency.}. For the bluetooth method however, the long operation is the connection initiation between devices which must be serialised so the time taken increases linearly with the number of devices.
+
+This makes the quickstart method faster in all cases\footnote{Provided network latency is similar to the experimental conditions}, but especially so for larger groups.
+
+\section{Comparison of network architectures}
+
+To compare the performance of the different protocols, a considerable amount of time was spent working out what information to log, and implementing this logging functionality so that the results could be compared against each other and interpreted easily.
+As described in section~\ref{logging} the logger outputs a .csv file to disk at the end of each session. Files containing Comma Seperated Values (CSV) were chosen as the format because they can be easily imported into spreadsheet software to find manual trends, as well as almost all other plotting software. Microsoft Excel was used for manual examination of the graphs produced.
+A truncated version of one such output file is given in Appendix~\ref{csv}.
+
+In excel, a spreadsheet was set up that aggregated the data of all log files from the same session to provide more insightful data such as the transit time of packets to different devices.
 
 \cleardoublepage
 \chapter{Conclusion}
@@ -722,7 +730,11 @@ To do.
 \bibitem{ipv6}
  \emph{RFC 2460 Internet Protocol Version 6 (IPv6)},
  Internet Engineering Task Force,
- http://tools.ietf.org/html/rfc2460
+ \url{http://tools.ietf.org/html/rfc2460}
+\bibitem{btwifi}
+ \emph{WiFi and Bluetooth - Interference issues},
+ Hewlett Packard, 2002,
+ \url{http://www.hp.com/rnd/library/pdf/WiFi_Bluetooth_coexistance.pdf}
 \end{thebibliography}
 
 
@@ -744,6 +756,14 @@ To do.
 \includegraphics[angle = 90, scale=0.17]{UMLClassDiagram}
 \caption{UML Class Diagram showing the main classes that make up the system.}
 \label{fig:uml}
+\end{figure}
+
+\chapter{Example log file}
+
+\begin{figure}
+{\tt To do.}
+\caption{A truncated .csv file output by the logger function at the end of a session}
+\label{csv}
 \end{figure}
 
 \end{document}

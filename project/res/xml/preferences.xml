@@ -20,7 +20,7 @@
             android:entryValues="@array/gcs_values"
             android:key="gcs"
             android:title="@string/gcs_title" />
-        <SwitchPreference
+        <CheckBoxPreference
             android:key="net_loc"
             android:title="@string/net_loc_title" />
     </PreferenceCategory>

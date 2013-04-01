@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.2.21)  31 MAR 2013 21:12
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.2.21)  1 APR 2013 10:42
 entering extended mode
-**diss.tex
-(D:\Dropbox\part2project\documentation\dissertation\diss.tex
+**diss2.tex
+(D:\Dropbox\part2project\documentation\dissertation\diss2.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -553,7 +553,7 @@ This is `epsf.tex' v2.7.4 <14 February 2011>
 \epsfxsize=\dimen185
 \epsfysize=\dimen186
 \pspoints=\dimen187
-) (D:\Dropbox\part2project\documentation\dissertation\diss.aux)
+) (D:\Dropbox\part2project\documentation\dissertation\diss2.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 41.
 LaTeX Font Info:    ... okay on input line 41.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 41.
@@ -596,15 +596,16 @@ Overfull \hbox (18.83441pt too wide) in paragraph at lines 78--93
 
 ] [2] [3] [4
 
-] (D:\Dropbox\part2project\documentation\dissertation\diss.toc)
-\tf@toc=\write4
-
+] (D:\Dropbox\part2project\documentation\dissertation\diss2.toc
 [5
 
-] [6]
+])
+\tf@toc=\write4
+ [6] [7] [8
+
+]
 Chapter 1.
 [1
-
 
 ] [2] [3] [4
 
@@ -620,11 +621,7 @@ File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 212.
- [6] [7] [8]
-
-LaTeX Warning: Citation `ipv6' on page 9 undefined on input line 286.
-
-[9] [10]
+ [6] [7] [8] [9] [10]
 Underfull \hbox (badness 10000) in paragraph at lines 303--303
 [][]$\OT1/cmtt/m/n/10 http : / / en . wikipedia . org / wiki / Universal _ Tran
 sverse _ Mercator _ coordinate _$
@@ -687,39 +684,67 @@ Underfull \hbox (badness 1028) in paragraph at lines 620--621
 LaTeX Warning: Reference `messageFormats' on page 25 undefined on input line 64
 4.
 
-[25] [26]
-
-LaTeX Warning: Reference `eval' on page 27 undefined on input line 675.
-
-[27] [28
+[25] [26] [27] [28
 
 ]
 Chapter 4.
-)
-Runaway argument?
-{ \par Include: \begin {itemize} \item {Differing characteristics of \ETC.
-! File ended while scanning use of \@xdblarg.
-<inserted text> 
-                \par 
-<*> diss.tex
-            
-I suspect you have forgotten a `}', causing me
-to read past where you wanted me to stop.
-I'll try to recover; but if the error is serious,
-you'd better type `E' or `X' now and fix your file.
+[29
 
-! Emergency stop.
-<*> diss.tex
-            
-*** (job aborted, no legal \end found)
+] [30]
+Chapter 5.
+[31
 
- 
+
+] [32
+
+] [33
+
+] [34
+
+]
+Appendix A.
+[35
+
+]
+Appendix B.
+<UMLClassDiagram.png, id=160, 3208.22118pt x 1544.59412pt>
+File: UMLClassDiagram.png Graphic file (type png)
+
+<use UMLClassDiagram.png>
+Package pdftex.def Info: UMLClassDiagram.png used on input line 756.
+(pdftex.def)             Requested size: 3208.21338pt x 1544.59036pt.
+ [36
+
+] [37 <D:/Dropbox/part2project/documentation/dissertation/UMLClassDiagram.png>]
+
+Appendix C.
+[38
+
+] (D:\Dropbox\part2project\documentation\dissertation\diss2.aux)
+
+LaTeX Warning: There were undefined references.
+
+ ) 
 Here is how much of TeX's memory you used:
- 15402 strings out of 494045
- 295252 string characters out of 3155644
- 396548 words of memory out of 3000000
- 18425 multiletter control sequences out of 15000+200000
+ 15417 strings out of 494045
+ 295549 string characters out of 3155644
+ 396596 words of memory out of 3000000
+ 18436 multiletter control sequences out of 15000+200000
  13081 words of font info for 49 fonts, out of 3000000 for 9000
  715 hyphenation exceptions out of 8191
- 56i,15n,56p,1469b,828s stack positions out of 5000i,500n,10000p,200000b,50000s
-!  ==> Fatal error occurred, no output PDF file produced!
+ 56i,15n,56p,1470b,828s stack positions out of 5000i,500n,10000p,200000b,50000s
+<F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><F:/MiKTeX/fonts/type1/p
+ublic/amsfonts/cm/cmmi12.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pf
+b><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><F:/MiKTeX/fonts/type1/pu
+blic/amsfonts/cm/cmr12.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb>
+<F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><F:/MiKTeX/fonts/type1/publi
+c/amsfonts/cm/cmr8.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmsl12.pfb><F:
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><F:/MiKTeX/fonts/type1/public
+/amsfonts/cm/cmti12.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><F
+:/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
+Output written on diss2.pdf (48 pages, 427960 bytes).
+PDF statistics:
+ 213 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 18 words of extra memory for PDF output out of 10000 (max. 10000000)
+
