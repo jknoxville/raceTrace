@@ -51,15 +51,20 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 
 	@Override
 	public void spawnReceivingThread() {
+		
+		System.out.println("Spawning receiver thread");	//debug
 
 		new Thread(new Runnable() {
 			public void run() {
+				System.out.println("Receiver thread spawned alive="+alive);	//debug
 				checkInit();
 				byte[] receivingData = new byte[1024];
 				//DatagramPacket datagram = new DatagramPacket(receivingData, receivingData.length);
-				while(alive) {
+				while(isAlive()) {
+					System.out.println("in receiver loop");	//debug
 					try {
 						//socket.receive(datagram);
+						System.out.println("Waiting for next packet");	//debug
 						ByteBuffer bb = DataConnectionManager.receive(connections[0], receivingData);	//this is a destructive method on the datagram object
 						System.out.println("Recieved datagram");
 						ClientMessage.processData(bb);

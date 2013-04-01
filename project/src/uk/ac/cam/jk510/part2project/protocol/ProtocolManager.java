@@ -46,6 +46,7 @@ public abstract class ProtocolManager {
 	public synchronized static ProtocolManager initialiseProtocolManager(Session session) throws Exception {
 		if(instance == null) {
 			alive = true;
+			System.out.println("I AM ALIVE 1: "+alive);	//debug
 			networking = (session.getDevice(0).getHandle() instanceof DeviceHandleIP);
 			System.out.println("Networking enabled: "+networking);
 			instance = newProtocolManager();
@@ -60,6 +61,7 @@ public abstract class ProtocolManager {
 				}
 			}
 			if(networking) {
+				System.out.println("I AM ALIVE 2: "+alive);	//debug
 				instance.spawnReceivingThread();
 				instance.spawnMissingCheckTimerThread();
 			}
@@ -180,7 +182,7 @@ public abstract class ProtocolManager {
 
 	protected abstract void giveToNetwork(Coords coords);
 
-	public static void destroy() {
+	public static synchronized void destroy() {
 		ProtocolManager.stopReceivingThread();
 		if(instance != null) {
 			instance.protocolSpecificDestroy();
@@ -334,7 +336,7 @@ public abstract class ProtocolManager {
 	public abstract void distributeSession(Session session) throws UnknownHostException, IOException;
 	public abstract void sendKeepAliveMessage(int index);
 
-	public static boolean isAlive() {
+	public synchronized static boolean isAlive() {
 		return alive;
 	}
 
