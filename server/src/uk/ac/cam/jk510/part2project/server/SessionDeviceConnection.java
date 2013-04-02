@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import uk.ac.cam.jk510.part2project.session.Device;
+import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
 import uk.ac.cam.jk510.part2project.session.ServerSessionCreator;
 import uk.ac.cam.jk510.part2project.session.SessionPackage;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -28,7 +30,7 @@ public class SessionDeviceConnection {
 		devices = numDevices;
 	}
 
-	public void connectAndReceive() {
+	public void connectAndReceive(final ServerSessionCreator creator) {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -41,7 +43,8 @@ public class SessionDeviceConnection {
 					String ip = sock.getInetAddress().getHostAddress();
 					int port = Config.getDefaultClientPort();
 
-					ServerSessionCreator.addDevice(device, devices, name, ip, port);
+					
+					creator.addDevice(device, devices, name, ip, port);
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block

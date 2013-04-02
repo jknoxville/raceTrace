@@ -30,21 +30,34 @@ public class GPSDriver implements LocationListener {
 
 		//TODO: might want to add extra providers and use the logic on android guide site to select between them.
 		lm = locationManager;
-		thisDevice = Session.getThisDevice();
-
-		boolean netLocPref = PreferenceManager.getDefaultSharedPreferences(tv.getContext()).getBoolean("net_loc", true);
+		if(Session.getSession() != null) {
+			thisDevice = Session.getThisDevice();
+			boolean netLocPref = PreferenceManager.getDefaultSharedPreferences(tv.getContext()).getBoolean("net_loc", true);
+			if(netLocPref) {
+				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, Config.getGPSUpdateDistance(), this);
+			}
+			}
 
 		//Register for location updates
-		if(netLocPref) {
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, Config.getGPSUpdateDistance(), this);
-		}
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, Config.getGPSUpdateDistance(), this);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Config.getGPSUpdateTime(), Config.getGPSUpdateDistance(), this);
 
 		instance = this;
 		this.tv = tv;
 		tv.setTextColor(Color.BLACK);
-		this.tv.setText("Waiting for location...");
+		setText("Waiting for location...");
+	}
 
+	private Location getLastLocation() {
+		return lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+	}
+
+	public double getLastXCoord() {
+		return toCartesian(getLastLocation()).getCoord(0);
+	}
+
+	public double getLastYCoord() {
+		return toCartesian(getLastLocation()).getCoord(1);
 	}
 
 	static public GPSDriver init(LocationManager lm, TextView tv) {
@@ -52,6 +65,12 @@ public class GPSDriver implements LocationListener {
 			new GPSDriver(lm, tv);
 		}
 		return instance;
+	}
+
+	void setText(String text) {
+		if(tv != null) {
+			tv.setText(text);
+		}
 	}
 
 	public void onLocationChanged(Location l) {
@@ -81,7 +100,7 @@ public class GPSDriver implements LocationListener {
 
 			Coords coords = toCartesian(l);
 
-			tv.setText("Lat: "+coords.getCoord(0)+" Long: "+coords.getCoord(1)+" Accuracy: "+l.getAccuracy()+" Speed: "+l.getSpeed()+"m/s");
+			setText("Lat: "+coords.getCoord(0)+" Long: "+coords.getCoord(1)+" Accuracy: "+l.getAccuracy()+" Speed: "+l.getSpeed()+"m/s");
 
 			ProtocolManager.insertOriginalDataPoint(thisDevice, coords);
 			currentLocation = l;
@@ -107,8 +126,9 @@ public class GPSDriver implements LocationListener {
 		OSRef osref = ll.toOSRef();
 		UTMRef utmref = ll.toUTMRef();
 		Coords coords = null;
-		String gcsPref = PreferenceManager.getDefaultSharedPreferences(tv.getContext()).getString("gcs", "0");
-		GCS gcs = GCS.valueOf(gcsPref);
+		//String gcsPref = PreferenceManager.getDefaultSharedPreferences(tv.getContext()).getString("gcs", "0");
+		GCS gcs = Config.getGCS();
+		//GCS gcs = GCS.valueOf(gcsPref);
 		switch(gcs) {
 		case LL: coords = new CoordsTXYA(Session.getThisDevice().getDeviceID(), useLogicalTime(), (float)x, (float)y, (float)alt); break;
 		case OSGB: coords = new CoordsTXYA(Session.getThisDevice().getDeviceID(), useLogicalTime(), (float)osref.getEasting(), (float)osref.getNorthing(), (float)alt); break;

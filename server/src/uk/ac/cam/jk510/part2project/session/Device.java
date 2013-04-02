@@ -27,10 +27,6 @@ public class Device {
 	public String getName() {
 		return name;
 	}
-	public int getDeviceID() {
-		//return deviceID;
-		return Session.getIndex(this);
-	}
 	public DeviceHistory getHistory() {
 		return history;
 	}

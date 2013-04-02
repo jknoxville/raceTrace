@@ -8,10 +8,8 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 
-import uk.ac.cam.jk510.part2project.protocol.Proto;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
-import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 public class UDPConnection extends DeviceConnection {
@@ -23,6 +21,7 @@ public class UDPConnection extends DeviceConnection {
 		} else {
 			socketAddress = ((DeviceHandleIP) device.getHandle()).getSocketAddress();
 		}
+		this.device = device;
 		if(socket == null) {
 			socket = new DatagramSocket(Config.getServerPort());
 		}
@@ -30,6 +29,7 @@ public class UDPConnection extends DeviceConnection {
 
 	private SocketAddress socketAddress;
 	private static DatagramSocket socket;	//used for all UDPConnection objects
+	private Device device;
 
 	protected void send(byte[] data, int length) {
 		try {
@@ -58,11 +58,11 @@ public class UDPConnection extends DeviceConnection {
 		bb.limit(datagram.getLength());
 		return bb;
 	}
-	private static void updatePort(DatagramPacket datagram) {
+	private void updatePort(DatagramPacket datagram) {
 		ByteBuffer.wrap(datagram.getData()).getInt();
 		int deviceID = ByteBuffer.wrap(datagram.getData()).getInt();
 		if(deviceID != -1) {	//if not from server, update that devices port.
-			((DeviceHandleIP) Session.getDevice(deviceID).getHandle()).setPort(datagram.getPort());	//update known port of this device. Same for address useful?
+			((DeviceHandleIP) device.getHandle()).setPort(datagram.getPort());	//update known port of this device. Same for address useful?
 		}
 	}
 

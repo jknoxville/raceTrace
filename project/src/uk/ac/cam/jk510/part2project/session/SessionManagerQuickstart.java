@@ -8,9 +8,12 @@ import java.net.UnknownHostException;
 
 import uk.ac.cam.jk510.part2project.gui.NewSessionActivity;
 import uk.ac.cam.jk510.part2project.gui.NewSessionActivitySingleSession;
+import uk.ac.cam.jk510.part2project.location.GPSDriver;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.view.View;
 
 public class SessionManagerQuickstart extends SessionManager {
@@ -27,7 +30,7 @@ public class SessionManagerQuickstart extends SessionManager {
 				new Runnable() {
 					public void run() {
 						try {
-							
+							GPSDriver gps = GPSDriver.init((LocationManager) activity.getSystemService(Context.LOCATION_SERVICE), null);
 							long startTime = System.currentTimeMillis();
 							
 							//Open TCP socket to server.
@@ -36,6 +39,10 @@ public class SessionManagerQuickstart extends SessionManager {
 							//Send name	/TODO possibly the port you have open as well (NAT stuff)
 							ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
 							oos.writeObject(Config.getName());
+							double x = gps.getLastXCoord();
+							double y = gps.getLastYCoord();
+							oos.writeObject(x);
+							oos.writeObject(y);
 
 							//recieve session object back
 							ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());

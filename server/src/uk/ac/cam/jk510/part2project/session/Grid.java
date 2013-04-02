@@ -1,9 +1,11 @@
+package uk.ac.cam.jk510.part2project.session;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Grid<T> {
+public class Grid<T> implements Iterable {
 
 	int width = 10;
 	int height = 10;
@@ -13,10 +15,10 @@ public class Grid<T> {
 	int xProgress = 0;
 	int yProgress = 0;
 
-	LinkedList<LinkedList<Block>> blocks;
+	HashMap<Integer, HashMap<Integer, Block>> blocks;
 
 	public Grid() {
-		blocks = new LinkedList<LinkedList<Block>>();
+		blocks = new HashMap<Integer, HashMap<Integer, Block>>();
 	}
 	
 	public void insert(double x, double y, T value) {
@@ -26,12 +28,12 @@ public class Grid<T> {
 	Block getBlock(double xd, double yd) {
 		int x = (int) (xd/radius);
 		int y = (int) (yd/radius);
-		LinkedList<Block> column;
+		HashMap<Integer, Block> column;
 		if(blocks.get(x) != null) {
 			column = blocks.get(x);
 		} else {
-			column = new LinkedList<Block>();
-			blocks.add(x, column);
+			column = new HashMap<Integer, Block>();
+			blocks.put(x, column);
 		}
 
 
@@ -40,18 +42,22 @@ public class Grid<T> {
 			block = column.get(y);
 		} else {
 			block = new Block(x,y);
-			column.add(y, block);
+			column.put(y, block);
 		}
 
 		return block;
 	}
 
-	void insert(final Point p) {
+	synchronized void insert(final Point p) {
 		Block block = getBlock(p.x, p.y);
 		block.add(p);
 	}
+	
+	public GridIterator<T> iterator() {
+		return new GridIterator<T>(this);
+	}
 
-	List<Point> nextGroup() {
+	synchronized List<Point<T>> nextGroupFromCurrentBlock() {
 		List points = pointsIn4Block(xProgress, yProgress);
 
 		//System.out.println("points in 4block: "+points.size());
@@ -69,10 +75,10 @@ public class Grid<T> {
 			}
 		}
 		return null;
-
 	}
 
-	//returns true if there are more blocks to traverse.
+	//returns true if there are more blocks to traverse
+	//and moves the cursors to the next block if so.
 	boolean advance() {
 		if(yProgress < height) {
 			yProgress++;
@@ -86,6 +92,22 @@ public class Grid<T> {
 		}
 		return true;
 	}
+	
+	boolean hasNext() {
+		List<Point<T>> next = nextGroupFromCurrentBlock();
+		while(next == null && advance() == true) {
+			next = nextGroupFromCurrentBlock();
+		}
+		return (next != null);
+	}
+	
+	List<Point<T>> nextGroup() {
+		if(hasNext()) {
+			return nextGroupFromCurrentBlock();
+		} else {
+			return null;
+		}
+	}
 
 	ArrayList<Point> pointsIn4Block(int x, int y) {
 		ArrayList<Point> list = new ArrayList<Point>();
@@ -93,7 +115,7 @@ public class Grid<T> {
 		for(int i=x; i<x+2; i++) {
 			for(int j=y; j<y+2; j++) {
 				if(i<width&&j<height) {
-					if(blocks.get(i) == null || blocks.get(i).get(j) == null) {
+					if(!blocks.containsKey(i) || !blocks.get(i).containsKey(j)) {
 						continue;
 					} else {
 						size += blocks.get(i).get(j).points.size();
@@ -128,5 +150,10 @@ public class Grid<T> {
 				otherPoint.getBlock().remove(otherPoint);
 			}
 		}
+	}
+
+	public void resetProgress() {
+		xProgress = 0;
+		yProgress = 0;
 	}
 }

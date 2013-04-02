@@ -1,7 +1,9 @@
 package uk.ac.cam.jk510.part2project.store;
 
 import java.util.LinkedList;
+import java.util.List;
 
+import uk.ac.cam.jk510.part2project.server.ServerSession;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -9,31 +11,31 @@ import uk.ac.cam.jk510.part2project.settings.Config;
 
 public class PositionStore {
 
-	private static LinkedList<PositionStoreSubscriber> subscribers = new LinkedList<PositionStoreSubscriber>();
-
-	private PositionStore() {
-		//Singleton Pattern, private constructor
+	private LinkedList<PositionStoreSubscriber> subscribers = new LinkedList<PositionStoreSubscriber>();
+	private ServerSession servSesh;
+	
+	public PositionStore(ServerSession sesh) {
+		this.servSesh = sesh;
 	}
 
-	public static Coords getCoord(Device d, int index) {
+	public Coords getCoord(Device d, int index) {
 		return d.getHistory().getCoord(index);
 	}
 	
-	public static Response[] fulfillRequest(LinkedList<Integer>[] requestArray) {
-		Response[] responses = new Response[Session.getSession().numDevices()];
+	public Response[] fulfillRequest(LinkedList<Integer>[] requestArray) {
+		Response[] responses = new Response[servSesh.numDevices()];
 		//add all matching points to coordsList from each device
-		for(Device d: Session.getSession().getDevices()) {
-			int id = d.getDeviceID();
-			responses[d.getDeviceID()] = d.getHistory().fulfillRequest(requestArray[id]);
+		for(int id=0; id<servSesh.numDevices(); id++) {
+			responses[id] = servSesh.getDevice(id).getHistory().fulfillRequest(requestArray[id]);
 		}
 		return responses;
 	}
 
-	public static void insert(int fromDevice, Coords coords) {
+	public void insert(int fromDevice, Coords coords) {
 		//note fromDevice not used. might want it for logger though.
 
 		try {
-			Device aboutDevice = Session.getDevice(coords.getDevice());
+			Device aboutDevice = servSesh.getDevice(coords.getDevice());
 			//insert into the deviceHistory object, this method also adds it to it's newPoints.
 			(aboutDevice.getHistory()).insert(coords);
 			
@@ -51,7 +53,7 @@ public class PositionStore {
 	}
 
 	//called whenever any device gets some new points.
-	private static void notifyObservers(Device d) {
+	private void notifyObservers(Device d) {
 		LinkedList<Integer> newPoints = d.getHistory().getNewPoints();
 		for(PositionStoreSubscriber s : subscribers) {
 			s.notifyOfUpdate(d, newPoints);
@@ -60,14 +62,14 @@ public class PositionStore {
 	}
 
 	//externally called by other objects wanting to subscribe
-	public static void subscribeToUpdates(PositionStoreSubscriber s) {
+	public void subscribeToUpdates(PositionStoreSubscriber s) {
 		if(!subscribers.contains(s)) {
 			subscribers.add(s);
 		}
 	}
 
 	//Boolean query that returns true when there is significant number of new points to justify plotting.
-	private static boolean updateReady(Device d) {
+	private boolean updateReady(Device d) {
 		//notify subscribers whenever a device has any new points.
 		boolean result = (d.getHistory().getNewPoints().size()>=Config.getMinUpdateRedrawSize());
 		return result;

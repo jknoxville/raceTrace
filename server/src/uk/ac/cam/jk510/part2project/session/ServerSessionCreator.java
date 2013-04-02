@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
-import uk.ac.cam.jk510.part2project.server.ServerState;
+import uk.ac.cam.jk510.part2project.server.ServerSession;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 public class ServerSessionCreator {
 	
-	static Device[] devices;
+	Device[] devices;
 	
-	public synchronized static void addDevice(int index, int numDevices, String name, String ip, int port) {
+	public synchronized void addDevice(int index, int numDevices, String name, String ip, int port) {
 		if(devices == null) {
 			devices = new Device[numDevices];
 		}
@@ -32,8 +32,9 @@ public class ServerSessionCreator {
 			}
 			if(listComplete) {
 				Session session = new Session(new ArrayList<Device>(Arrays.asList(devices)), null);
-				ServerState.sendSessionToAllDevices(session);
-				ServerState.startMainProcessing(session);
+				ServerSession servSesh = new ServerSession(new ArrayList<Device>(Arrays.asList(devices)), null);
+				servSesh.sendSessionToAllDevices(session);
+				servSesh.startMainProcessing(session);
 			}
 			
 		} catch (UnknownHostException e) {

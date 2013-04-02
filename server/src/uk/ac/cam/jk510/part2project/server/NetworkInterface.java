@@ -5,21 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 
-import uk.ac.cam.jk510.part2project.session.Device;
-import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
-import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionPackage;
 import uk.ac.cam.jk510.part2project.settings.Config;
-import uk.ac.cam.jk510.part2project.store.Coords;
 
 public class NetworkInterface {
 

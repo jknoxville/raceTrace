@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
+import uk.ac.cam.jk510.part2project.server.ServerSession;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionPackage;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -170,12 +171,12 @@ public class DataConnectionManager {
 //		}
 //	}
 
-	public static byte[] createRequestMessageWithAddress(final InetSocketAddress socketAddress, LinkedList<Integer>[] requestArray) throws SocketException {
+	public static byte[] createRequestMessageWithAddress(ServerSession servSesh, final InetSocketAddress socketAddress, LinkedList<Integer>[] requestArray) throws SocketException {
 		//TODO move this to a more sensible place
 
 		int size = 0;	//total number of absent points
 		int numMissingDevices = 0;
-		for(int i=0; i<Session.getSession().numDevices(); i++) {
+		for(int i=0; i<servSesh.numDevices(); i++) {
 			size += requestArray[i].size();
 			if(size>0) {
 				numMissingDevices += 1;
@@ -194,7 +195,7 @@ public class DataConnectionManager {
 		bb.putInt(MessageType.request.ordinal());	//first 4 bytes: request header
 		bb.putInt(-1);	//put fromID
 
-		for(int device = 0; device<Session.getSession().numDevices(); device++) {
+		for(int device = 0; device<servSesh.numDevices(); device++) {
 			System.out.println("requesting for device "+device);	//debug
 			if(requestArray[device].size() > 0) {
 				bb.putInt(-1);
