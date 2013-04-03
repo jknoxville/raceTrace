@@ -41,8 +41,14 @@
 \contentsline {chapter}{\numberline {4}Evaluation}{29}
 \contentsline {section}{\numberline {4.1}Field Tests}{29}
 \contentsline {section}{\numberline {4.2}Comparison of Session Setup procedures}{29}
+\contentsline {subsection}{\numberline {4.2.1}Timing}{29}
+\contentsline {subsection}{\numberline {4.2.2}Security and Privacy Issues}{30}
 \contentsline {section}{\numberline {4.3}Comparison of network architectures}{30}
+\contentsline {subsection}{\numberline {4.3.1}Affect of packet drop rate on End-to-End transit times}{30}
 \contentsline {chapter}{\numberline {5}Conclusion}{31}
+\contentsline {section}{\numberline {5.1}Meeting the original goals}{31}
+\contentsline {section}{\numberline {5.2}What I would have done differently in hindsight}{31}
+\contentsline {section}{\numberline {5.3}Future Work}{31}
 \contentsline {chapter}{Bibliography}{33}
 \contentsline {chapter}{\numberline {A}Project Proposal}{35}
 \contentsline {chapter}{\numberline {B}UML Class Diagram}{36}

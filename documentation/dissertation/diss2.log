@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.2.21)  1 APR 2013 10:42
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.2.21)  3 APR 2013 10:34
 entering extended mode
 **diss2.tex
 (D:\Dropbox\part2project\documentation\dissertation\diss2.tex
@@ -711,7 +711,7 @@ Appendix B.
 File: UMLClassDiagram.png Graphic file (type png)
 
 <use UMLClassDiagram.png>
-Package pdftex.def Info: UMLClassDiagram.png used on input line 756.
+Package pdftex.def Info: UMLClassDiagram.png used on input line 766.
 (pdftex.def)             Requested size: 3208.21338pt x 1544.59036pt.
  [36
 
@@ -742,7 +742,7 @@ c/amsfonts/cm/cmr8.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmsl12.pfb><F:
 /MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><F:/MiKTeX/fonts/type1/public
 /amsfonts/cm/cmti12.pfb><F:/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><F
 :/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on diss2.pdf (48 pages, 427960 bytes).
+Output written on diss2.pdf (48 pages, 428734 bytes).
 PDF statistics:
  213 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

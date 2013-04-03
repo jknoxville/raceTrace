@@ -698,6 +698,7 @@ Concern: does this count as a user study? needing all the ethics approval? - if 
 
 \section{Comparison of Session Setup procedures}
 
+\subsection{Timing}
 To make a quantitative comparison of the two setup procedures implemented would be difficult because the user experience is hard to quantify. However limited technical measurements were made to give an idea of the difference in time taken between them.
 
 In the experiments carried out, to setup a two-device session, the bluetooth procedure took on average 4.8 seconds\footnote{This increased to 16.0 seconds when WiFi was enabled on the devices tested, this is explained by the fact that Bluetooth and WiFi share part of the same spectrum and intrfere somewhat.\cite{btwifi}} and the quickstart method took on average a very similar 4.7 seconds. However the timing of the Bluetooth setup only counts the automated parts, so the user selection will take additional time.
@@ -705,6 +706,8 @@ In the experiments carried out, to setup a two-device session, the bluetooth pro
 What is significant is that the quickstart method is highly parallelized since the bottleneck for each device is the network latency to the server, and these bottlenecks are independent, resulting in constant time setup\footnote{Counting the server grouping operations as negligible in with respect to the network latency.}. For the bluetooth method however, the long operation is the connection initiation between devices which must be serialised so the time taken increases linearly with the number of devices.
 
 This makes the quickstart method faster in all cases\footnote{Provided network latency is similar to the experimental conditions}, but especially so for larger groups.
+
+\subsection{Security and Privacy Issues}
 
 \section{Comparison of network architectures}
 
@@ -714,10 +717,17 @@ A truncated version of one such output file is given in Appendix~\ref{csv}.
 
 In excel, a spreadsheet was set up that aggregated the data of all log files from the same session to provide more insightful data such as the transit time of packets to different devices.
 
+\subsection{Affect of packet drop rate on End-to-End transit times}
+
+insert graphs here
+
+
+
 \cleardoublepage
 \chapter{Conclusion}
-
-To do.
+\section{Meeting the original goals}
+\section{What I would have done differently in hindsight}
+\section{Future Work}
 
 \cleardoublepage
 
