@@ -56,6 +56,8 @@ public class GPSDriver implements LocationListener {
 
 	public void onLocationChanged(Location l) {
 		boolean useThisLocation = false;
+		
+		System.out.println("new loc: "+l.getLatitude()+", "+l.getLongitude());
 
 		// logic for deciding whether to use new point
 		if(currentLocation == null) {

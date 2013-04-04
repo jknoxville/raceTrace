@@ -20,35 +20,35 @@ public class ServerMessage {
 	private static int sizeOfDataPoint = 4*4;	//4 times size of int, as in CoordsTXYA. TODO change it to use char or something.
 
 	//Commented out 23rd Jan
-//	public static void processDatagram(final DatagramPacket datagram) {
-//		//System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength()); not needed as offset = 0
-//		//byte[] data = datagram.getData();	//this is larger than necessary. data.length >= datagram.getLength()
-//		System.out.println("offset = "+datagram.getOffset());
-//		try {
-//			//TODO any extra (sync?) data other than coords?
-//
-//			System.out.println("Length of received packet: "+datagram.getLength()+" offset: "+datagram.getOffset());	//debug
-//			//			int numDataPoints = (datagram.getLength()-4*(1+1))/(5*4);	//type header, fromID
-//			//			System.out.println("Number of datapoints in this packet: "+numDataPoints);	//debug
-//
-//			ByteBuffer bb = ByteBuffer.wrap(datagram.getData());
-//			bb.limit(datagram.getLength());	//set bb limit
-//
-//			//read metadata first
-//			int typeHeader = bb.getInt();
-//			MessageType type = MessageType.values()[typeHeader];
-//
-//			switch(type) {
-//			case datapoints: processDatapointDatagram(bb, datagram); break;
-//			case request: processRequestDatagram(bb, datagram); break;
-//			default: System.out.println("ERROR: not datapoints or request"); break;
-//			}
-//
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+	//	public static void processDatagram(final DatagramPacket datagram) {
+	//		//System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength()); not needed as offset = 0
+	//		//byte[] data = datagram.getData();	//this is larger than necessary. data.length >= datagram.getLength()
+	//		System.out.println("offset = "+datagram.getOffset());
+	//		try {
+	//			//TODO any extra (sync?) data other than coords?
+	//
+	//			System.out.println("Length of received packet: "+datagram.getLength()+" offset: "+datagram.getOffset());	//debug
+	//			//			int numDataPoints = (datagram.getLength()-4*(1+1))/(5*4);	//type header, fromID
+	//			//			System.out.println("Number of datapoints in this packet: "+numDataPoints);	//debug
+	//
+	//			ByteBuffer bb = ByteBuffer.wrap(datagram.getData());
+	//			bb.limit(datagram.getLength());	//set bb limit
+	//
+	//			//read metadata first
+	//			int typeHeader = bb.getInt();
+	//			MessageType type = MessageType.values()[typeHeader];
+	//
+	//			switch(type) {
+	//			case datapoints: processDatapointDatagram(bb, datagram); break;
+	//			case request: processRequestDatagram(bb, datagram); break;
+	//			default: System.out.println("ERROR: not datapoints or request"); break;
+	//			}
+	//
+	//		} catch (Exception e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		}
+	//	}
 	public static void processData(ByteBuffer bb) {
 		//System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength()); not needed as offset = 0
 		//byte[] data = datagram.getData();	//this is larger than necessary. data.length >= datagram.getLength()
@@ -72,7 +72,7 @@ public class ServerMessage {
 	}
 
 	public static void processDatapointDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
-		
+
 		int fromDeviceID = bb.getInt();
 
 		int numDataPoints = (bb.limit()-8)/(5*4);	//type header, fromID
@@ -87,19 +87,25 @@ public class ServerMessage {
 			CoordsTXYA coords = new CoordsTXYA(aboutDeviceID, lTime, x, y, alt);
 			PositionStore.insert(aboutDeviceID, coords);
 			if(Config.serverDuplicationTest() && aboutDeviceID == 0) {
-				System.out.println("Adding dupe");
-				CoordsTXYA coords2 = new CoordsTXYA(fromDeviceID, lTime, x+10, y, alt);
-				PositionStore.insert(aboutDeviceID+1, coords2);
+				System.out.println("Adding dupes");
+				insertDupes(fromDeviceID, aboutDeviceID, lTime, x, y, alt);
 			}
 		}
 		ServerState.sendIfReady();	//This is in server variant.
 	}
-	
+
+	private static void insertDupes(int fromDeviceID, int aboutDeviceID, int lTime, float x, float y, float alt) {
+		for(int i=1; i<Config.getDuplicationFactor()-1; i++) {
+			CoordsTXYA coords2 = new CoordsTXYA(aboutDeviceID+i, lTime, x+10*i, y+60*(i/20), alt);
+			PositionStore.insert(fromDeviceID, coords2);
+		}
+	}
+
 
 	public static void processRequestDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
-		
+
 		int fromDeviceID = bb.getInt();
-		
+
 		LinkedList<Integer>[] requestArray = new LinkedList[Session.getSession().numDevices()];
 		for(int dev = 0; dev<requestArray.length; dev++) {
 			requestArray[dev] = new LinkedList<Integer>();
@@ -116,9 +122,9 @@ public class ServerMessage {
 				requestArray[currentDevice].add(i);
 			}
 		}
-		
+
 		ServerState.serviceRequest(fromDeviceID, requestArray);
-		
+
 	}
 
 	private static void updatePort(int fromDeviceID, DatagramPacket datagram) {
@@ -129,7 +135,7 @@ public class ServerMessage {
 			System.out.println("Device port changed from "+oldPort+" to "+newPort);
 		}
 	}
-	
+
 	public static DatagramPacket createRequestMessageWithAddress(final InetSocketAddress socketAddress, LinkedList<Integer>[] requestArray) throws SocketException {
 
 		int size = 0;	//total number of absent points

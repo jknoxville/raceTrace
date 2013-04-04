@@ -221,8 +221,12 @@ public class ServerState implements PositionStoreSubscriber {
 		if(ready()) {
 			//TODO send points in batches, with configurable batch size
 			//sendNewPoints();
+			System.out.println("size of globalNewPoints = "+globalNewPoints.size());
+			int i = 0;
 			for(LinkedList<Integer> list: globalNewPoints) {
-				int deviceNumber = globalNewPoints.indexOf(list);
+				//int deviceNumber = globalNewPoints.indexOf(list);
+				int deviceNumber = i;
+				System.out.println("now doin points about device "+deviceNumber);
 				Device fromDevice = Session.getSession().getDevice(deviceNumber);
 
 				for(int index: list) {
@@ -233,6 +237,7 @@ public class ServerState implements PositionStoreSubscriber {
 							//don't send
 						} else {
 							//do send
+							System.out.println("adding "+index);
 							coordsToSend[toDevice.getDeviceID()].add(coords);
 						}
 
@@ -243,6 +248,7 @@ public class ServerState implements PositionStoreSubscriber {
 						//net.sendCoordsToDevice(toDevice, fromDevice, coords);
 					}
 				}
+				i++;
 			}
 			for(LinkedList<Integer> list: globalNewPoints) {	//clear newPointsLists
 				list.clear();
@@ -271,6 +277,7 @@ public class ServerState implements PositionStoreSubscriber {
 		LinkedList<Integer> newPointsList = globalNewPoints.get(d.getDeviceID());
 		newPointsList.addAll(givenNewPoints);
 		numNewPoints += givenNewPoints.size();
+		System.out.println("new points: "+newPointsList.size());
 		sendIfReady();
 	}
 
@@ -291,7 +298,14 @@ public class ServerState implements PositionStoreSubscriber {
 	public static void sendSessionToAllDevices(Session session) {
 		SessionPackage pack = new SessionPackage(session);
 		for(SessionDeviceConnection conn: sessionSetupConnections) {
+			try {
 			conn.sendSessionPackage(pack);
+			} catch (NullPointerException e) {
+				if(!Config.serverDuplicationTest()) {
+					e.printStackTrace();
+				}
+			}
+			
 		}
 
 	}

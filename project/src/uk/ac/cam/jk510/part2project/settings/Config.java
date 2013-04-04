@@ -45,7 +45,7 @@ public class Config {
 																		to all requestable peers and not just the requester. */
 	//Colors
 	private static int bgColor = Color.WHITE;
-	private static int[] colors = {Color.BLUE, Color.GREEN, Color.RED};	//TODO add more colours
+	private static int[] colors = {Color.BLUE, Color.GREEN, Color.RED, Color.CYAN, Color.BLACK, Color.DKGRAY, Color.MAGENTA, Color.LTGRAY, Color.YELLOW};	//TODO add more colours
 	private static float posIndicatorSize = 10;	//Radius of circle
 
 	//Map Displaying
@@ -91,6 +91,7 @@ public class Config {
 	public static final double reconnectRate = 0.4;
 	public static final double dropRate = 0.6;
 	private static final long fakeGPSPeriod = 1*1000;	//1 second
+	private static final int testDataSize = 60;
 
 	//Datagram Format
 	private static final int nameSize = 4;
@@ -148,7 +149,7 @@ public class Config {
 		return UUIDString;
 	}
 	public static int getColor(int p) {
-		return colors[p];
+		return colors[p%colors.length];
 	}
 	public static float getPosIndicatorSize() {
 		return posIndicatorSize;
@@ -275,5 +276,8 @@ public class Config {
 	@Deprecated
 	public static GCS getGCS() {
 		return gcs;
+	}
+	public static int testDataSize() {
+		return testDataSize;
 	}
 }

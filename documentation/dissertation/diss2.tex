@@ -701,13 +701,41 @@ Concern: does this count as a user study? needing all the ethics approval? - if 
 \subsection{Timing}
 To make a quantitative comparison of the two setup procedures implemented would be difficult because the user experience is hard to quantify. However limited technical measurements were made to give an idea of the difference in time taken between them.
 
-In the experiments carried out, to setup a two-device session, the bluetooth procedure took on average 4.8 seconds\footnote{This increased to 16.0 seconds when WiFi was enabled on the devices tested, this is explained by the fact that Bluetooth and WiFi share part of the same spectrum and intrfere somewhat.\cite{btwifi}} and the quickstart method took on average a very similar 4.7 seconds. However the timing of the Bluetooth setup only counts the automated parts, so the user selection will take additional time.
+In the experiments carried out, to setup a two-device session, the bluetooth procedure took on average 4.8 seconds\footnote{This increased to 16.0 seconds when WiFi was enabled on the devices tested, this is explained by the fact that Bluetooth and WiFi share part of the same spectrum and intrfere somewhat.\cite{btwifi}} and the quickstart method took on average a very similar 4.7 seconds. However the timing of the Bluetooth setup only includes the automated parts, so the user selection will take additional time.
 
 What is significant is that the quickstart method is highly parallelized since the bottleneck for each device is the network latency to the server, and these bottlenecks are independent, resulting in constant time setup\footnote{Counting the server grouping operations as negligible in with respect to the network latency.}. For the bluetooth method however, the long operation is the connection initiation between devices which must be serialised so the time taken increases linearly with the number of devices.
 
 This makes the quickstart method faster in all cases\footnote{Provided network latency is similar to the experimental conditions}, but especially so for larger groups.
 
 \subsection{Security and Privacy Issues}
+
+Since the application involves the transmission of location data along with the names of users, there is the potential for breaches of privacy by leaking information to those outside the session, or by false locations being provided to those within.
+
+For the purposes of this evaluation, I will define the term \emph{secure} as ensuring authenticity of the sender of all received messages, and integrity and confidentiality of the content of those messages.
+
+Both session setup procedures provide the ability to distribute cryptographic keys for use in the main communication phase. This presents a multitude of end-to-end encryption options for this phase, one of which would be to use a public key system with the following setup:
+
+Each client has their own public/private key pair, and those public keys are distributed with the session at the start. Confidentiality is achieved by encrypting messages with the public key of the recipient, requiring the private key to decrypt them. Authenticity and Integrity are ensured by digitally signing each message with the private key.
+
+An alternate option if authentication between members of the session is not required, would be to use a shared key scheme, where on session creation a single public/private key pair is generated and shared between all clients.
+
+The above schemes do not require the use of any Public Key Infrastructure (PKI), instead the keys are distributed along with the session object at the start. Therefore the security of the entire scheme relies on the security of the session setup protocol.
+
+\subsubsection{Security of Bluetooth setup procedure}
+When security is concerned, the physical proximity requirement of bluetooth transmission aids its security beacuase an attacker needs to be physically present. All transmissions using bluetooth are encrypted using the information established at the time of pairing, and Fast Frequency-Hopping Spread Spectrum is used for the radio frequency making eavesdropping practically impossible without the key.\cite{BTsec} However it has been proven that with the ability to eavesdrop the pairing process, the key can be deduced by brute-force, providing access to the later established communication channel.\cite{BTcrack} For these reasons the bluetooth method is only \emph{secure} provided an attacker is not present at the time of pairing. However since the pairing of bluetooth devices is an abstraction provided by the operating system, and not restricted to, nor within the control of this application, it is reasonable to assume all existent pairings are trustworthy. The application itself, is \emph{secure}\footnote{As always in the field of security, the security of the entire system should be taken into account - it is not sufficient to blindly rely on the application itself.}.
+
+\subsubsection{Security of the QuickStart method}
+\label{sec}
+Simply put the QuickStart procedure is not \emph{secure}. Since the peer grouping relies solely on location data provided by the client and this data is not validated, an attacker can submit an arbitrary location and be grouped with participants at that location, gaining access to their location for the duration of the session without even costing their own privacy since they can spoof their location in the main phase too. Thus confidentiality is not provided. In the same way an attacker can spoof their location and identifier, posing as any arbitrary participant. Thus authenticity is also lost. Integrity remains.
+
+This describes the procedure as implemented, but it is possible to make it \emph{secure} with some, quite significant alterations.
+One partial fix is to add a user selection screen after the initial grouping as mentioned in \ref{setup}. This would provide confidentiality, since data would only be sent to (and readable by) those selected, but not authenticity as identities are still ambiguous.
+
+A PKI could be used to provide the desired security features as follows. Each device, on installation of the application (in collaboration with the server) generates a lifelong public/private key pair and unique identity, such as a username. When requesting to the server to join a session, the server responds with a challenge that the client must respond to and sign it with its private key. This authenticates the client to the server, the server then groups the requests as usual and replies with the session object encrypted to each recipient using their public key. If server authenticity is also required then all server bound messages will be encrypted using its known public key, and it will sign all of its outgoing messages.
+
+Now when the user selection occurs, all identities will be unique so selection is no longer ambiguous and authenticity is provided for the duration of the session, as long as all further messages are signed and encrypted using the same keys.
+
+The addition of a PKI would be a significant addition to the project but would enable the desired security features for the QuickStart method.
 
 \section{Comparison of network architectures}
 
@@ -721,11 +749,22 @@ In excel, a spreadsheet was set up that aggregated the data of all log files fro
 
 insert graphs here
 
+\section{Meeting the original goals}
+The initial success criteria outlined in the proposal were:
+\begin{itemize}
+\item{App displays an on-screen visualisation of data from the local GPS}
+\item{App plots positions of up to at least four participants (including itself) in
+near real-time on the map}
+\item{At least one server based method and one peer to peer method of communication has been implemented, with comparisons of their performance made}
+\end{itemize}
+
+All above criteria have been satisfied. Another informal goal in the proposal was to evaluate the security and privacy issues of the system. This was done in Section \ref{sec}.
+
 
 
 \cleardoublepage
 \chapter{Conclusion}
-\section{Meeting the original goals}
+
 \section{What I would have done differently in hindsight}
 \section{Future Work}
 
@@ -738,13 +777,23 @@ insert graphs here
 
 \begin{thebibliography}{9}
 \bibitem{ipv6}
- \emph{RFC 2460 Internet Protocol Version 6 (IPv6)},
- Internet Engineering Task Force,
+ \emph{RFC 2460 Internet Protocol Version 6 (IPv6)},\\*
+ Internet Engineering Task Force,\\*
  \url{http://tools.ietf.org/html/rfc2460}
 \bibitem{btwifi}
- \emph{WiFi and Bluetooth - Interference issues},
- Hewlett Packard, 2002,
+ \emph{WiFi and Bluetooth - Interference issues},\\*
+ Hewlett Packard, 2002,\\*
  \url{http://www.hp.com/rnd/library/pdf/WiFi_Bluetooth_coexistance.pdf}
+\bibitem{BTcrack}
+ \emph{Sniffing the Bluetooth Pairing}\\*
+ \url{http://www.seguridadmobile.com/bluetooth/bluetooth-security/sniffing-the-Bluetooth-pairing.html}\\*
+ BTCrack source code:\\* \url{http://blog.zoller.lu/2012/07/btcrack-101-updated-release.html}
+ \bibitem{BTsec}
+  \emph{Security of Bluetooth: An overview of Bluetooth Security}\\*
+  Marjaana Träskbäck,\\*
+  Department of Electrical and Communications Engineering,\\*
+  \url{http://www.cs.hut.fi/Opinnot/Tik-86.174/Bluetooth_Security.pdf}
+
 \end{thebibliography}
 
 

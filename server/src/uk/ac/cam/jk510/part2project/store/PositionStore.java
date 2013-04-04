@@ -36,8 +36,8 @@ public class PositionStore {
 			Device aboutDevice = Session.getDevice(coords.getDevice());
 			//insert into the deviceHistory object, this method also adds it to it's newPoints.
 			(aboutDevice.getHistory()).insert(coords);
+			System.out.println("inserting into device "+aboutDevice.getDeviceID());	//debug
 			
-			//TODO log this
 
 			//check for subscriber notification condition
 			if(updateReady(aboutDevice)) {

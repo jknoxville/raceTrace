@@ -25,9 +25,14 @@ public class ServerSessionCreator {
 			System.out.println(ip+" Device "+index+" @ "+handle.getIP().getHostName()+":"+handle.getPort());
 			
 			boolean listComplete = true;
-			for(Device d:devices) {
-				if (d == null) {
-					listComplete = false;
+			for(int d=0; d<devices.length; d++) {
+				if (devices[d] == null) {
+					if(!Config.serverDuplicationTest()) {
+						listComplete = false;
+					} else {
+						devices[d] = new Device(Integer.toString(d), new DeviceHandleIP(((DeviceHandleIP) devices[0].getHandle()).getSocketAddress().getAddress(), 60001), new ProtocolXYA());
+					}
+					
 				}
 			}
 			if(listComplete) {
