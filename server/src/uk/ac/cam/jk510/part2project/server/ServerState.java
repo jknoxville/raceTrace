@@ -265,7 +265,9 @@ public class ServerState implements PositionStoreSubscriber {
 
 	private static synchronized void sendCoordsInQueue() {
 		for(Device toDevice: Session.getSession().getDevices()) {
-			if(toDevice.getDeviceID()!=0) {continue;}
+			//dont send to imaginary devices
+			if(Config.serverDuplicationTest() && toDevice.getDeviceID()!=0) {continue;}
+			
 			if(!coordsToSend[toDevice.getDeviceID()].isEmpty()) {
 				System.out.println("Sending to device "+toDevice.getDeviceID());	//debug
 				InetSocketAddress sockadd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
