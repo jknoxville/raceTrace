@@ -82,6 +82,7 @@ public class Config {
 	//Logging options
 	private static final boolean takeScreenShots = false;
 	private static final long screenShotTimer = 5*1000;	//time between saving screenshots
+	private static final boolean loggingEnabled = true;
 
 	//Simulation
 	public static final boolean droppingEnabled = false;
@@ -102,7 +103,7 @@ public class Config {
 	private static final int sampleYDerby = 9828785;
 	private static final int sampleXCam = 11195;
 	private static final int sampleYCam = 634959;
-	private static final boolean testingInCam = true;
+	private static final boolean testingInCam = true; 	//if currently testing the app in cambridge, uk
 	private static final boolean sendOnTimeout = true;	//allows sending of not full packets if timer expires
 
 	//Config own variables
@@ -279,5 +280,8 @@ public class Config {
 	}
 	public static int testDataSize() {
 		return testDataSize;
+	}
+	public static boolean loggingEnabled() {
+		return loggingEnabled;
 	}
 }

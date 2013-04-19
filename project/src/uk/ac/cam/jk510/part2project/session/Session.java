@@ -18,26 +18,28 @@ public class Session {
 	protected Session(ArrayList<Device> devices, Keys keys) {
 		super();
 		synchronized(this) {
-		this.devices = devices;
-		this.keys = keys;
-		int deviceCount = 0;
-		for(Device d: devices) {
-			System.out.println(d.getName()+" and "+Config.getName());
-			//TODO use bluetooth MAC address instead of name.
-			if(d.getName().equals(Config.getName())) {
-				meNumber = deviceCount;
-				System.out.println("I am device "+meNumber+" / "+devices.size());
-				break;
-			}
-			
-			deviceCount++;
-		}
-		//TODO make Config.name read name from some preferences (see android tutorials)
-		//TODO have check when setting up session to see if names clash.
+			this.devices = devices;
+			this.keys = keys;
+			int deviceCount = 0;
+			for(Device d: devices) {
+				System.out.println(d.getName()+" and "+Config.getName());
+				//TODO use bluetooth MAC address instead of name.
+				if(d.getName().equals(Config.getName())) {
+					meNumber = deviceCount;
+					System.out.println("I am device "+meNumber+" / "+devices.size());
+					break;
+				}
 
-		session = this;
-		new Logger(this);
-		System.err.println("just saved Session.session: "+session+" Has "+session.numDevices()+" devices.");	//debug
+				deviceCount++;
+			}
+			//TODO make Config.name read name from some preferences (see android tutorials)
+			//TODO have check when setting up session to see if names clash.
+
+			session = this;
+			if(Config.loggingEnabled()) {
+				new Logger(this);
+			}
+			System.err.println("just saved Session.session: "+session+" Has "+session.numDevices()+" devices.");	//debug
 		}
 	}
 
@@ -49,7 +51,7 @@ public class Session {
 	public static synchronized Device getThisDevice() {
 		return session.getDevice(session.meNumber);
 	}
-	
+
 	public static synchronized Device getDevice(int n) {
 		return session.devices.get(n);
 	}
@@ -100,17 +102,17 @@ public class Session {
 		}
 		return session;
 	}
-	
+
 	public static synchronized void destroy() {
 		session = null;
 		Device.reset();
 	}
 
 	public static synchronized int getIndex(Device device) {
-		
+
 		return session.devices.indexOf(device);
 	}
-	
+
 	public static synchronized void updateDevicePort(int device, int newPort) {
 		if(session != null) {
 			((DeviceHandleIP) session.devices.get(device).getHandle()).setPort(newPort);

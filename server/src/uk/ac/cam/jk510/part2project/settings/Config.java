@@ -45,7 +45,7 @@ public class Config {
 	
 	//Server Specific
 	private static final long serverResendPeriodSecs = 1; //if this
-	private static final int serverNewPointsThreshold = 50; //or this is exceeded it will send
+	private static final int serverNewPointsThreshold = 100; //or this is exceeded it will send
 	private static final boolean singleSession = true;
 	
 	//Simulation
@@ -57,8 +57,8 @@ public class Config {
 	private static final double dropRate = 0.2;
 	
 	//Testing
-	private static final boolean serverDuplicationTest = true;
-	private static final int duplicationFactor = 10;
+	private static final boolean serverDuplicationTest = false;
+	private static final int duplicationFactor = 125;
 	
 	//debug
 	private static final boolean listenOnly = false;

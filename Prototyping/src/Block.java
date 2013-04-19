@@ -21,6 +21,10 @@ public class Block {
 		points.remove(p);
 	}
 	
+	void removeAll(Point p) {
+		points.removeAll(p.pointSet);
+	}
+	
 	Point getOldest() {
 		return points.peek();
 	}

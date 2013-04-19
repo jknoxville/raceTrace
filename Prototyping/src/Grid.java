@@ -9,8 +9,8 @@ public class Grid {
 	
 	static double radius = 4;
 
-	static int xProgress = 0;
-	static int yProgress = 0;
+	int xProgress = 0;
+	int yProgress = 0;
 
 	//static ArrayList<ArrayList<Block>> blocks;
 	static Block[][] blocks;
@@ -52,17 +52,16 @@ public class Grid {
 	List<Point> nextGroup() {
 		List points = pointsIn4Block(xProgress, yProgress);
 
-		//System.out.println("points in 4block: "+points.size());
 		//if this 4block contains any points, process the block, otherwise skip it
 		if(points.size()>0) {
 			distanceFilter(points);
 			Point oldest = getOldest(points);
 			Block blockOfOldestPoint = oldest.getBlock();
 
-			//If oldest point is in the top left corner of the 4block, stop the group expanding and return it.
+			//If oldest point is in the top left corner of the 4block, stop the group from expanding and return it.
 			if((blockOfOldestPoint.x == xProgress && blockOfOldestPoint.y == yProgress)) {
-				blockOfOldestPoint.remove(oldest);
 				oldest.pointSet.add(oldest);
+				blockOfOldestPoint.removeAll(oldest);
 				return oldest.pointSet;
 			}
 		}
@@ -140,5 +139,10 @@ public class Grid {
 				otherPoint.getBlock().remove(otherPoint);
 			}
 		}
+	}
+	
+	void resetPosition() {
+		xProgress = 0;
+		yProgress = 0;
 	}
 }
