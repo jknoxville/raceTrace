@@ -373,7 +373,7 @@ The client software is composed of the 8 packages briefly described below:
 	\path [line, dashed] (cloud) -- (gps);
 	\path [line, dashed] (cloud) -- (net);
 \end{tikzpicture}
-\caption{Diagram showing the flow of data in core system parts}
+\caption{Diagram showing the flow of data between core system modules}
 \label{fig:dataflow}
 \end{figure}
 
@@ -444,7 +444,7 @@ As well as those in the diagram, there is a Preferences activity, which allows t
 \begin{subfigure}[b]{0.3\textwidth}
 \includegraphics[scale=0.15]{userSelection}
 \end{subfigure}
-\caption{Screen shots of the main menu and Bluetooth user selection screen}
+\caption{Screen shots of the Main Menu and Bluetooth User Selection screens}
 \label{userSelection}
 \end{figure}
 
@@ -559,10 +559,10 @@ Clearly the Bluetooth method has the important advantage of not relying on an ex
 
 There are several ways the location data could be visualised on screen. The approach taken here is to draw a line to the screen for each user in the session, showing their entire path since the event began. The lines could be super-imposed onto existing map visualisation data such as that provided by Google\footnote{Map data available at https://developers.google.com/maps/documentation/android/} but with the desire to keep the interface simple and quickly interpretable this wasn't attempted. An example from the applications display is given in Figure~\ref{fig:mapScreen}.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
-\includegraphics[scale=0.15]{mapScreen}
-\caption{Screen shot of the Map Display Screen showing the visualisation of history data}
+\includegraphics[scale=0.15]{realUsage}
+\caption{Screen shot of the Map Display Screen showing the visualisation of data during a field test}
 \label{fig:mapScreen}
 \end{figure}
 
@@ -748,7 +748,14 @@ When the client-server implementation is in use, devices only ever communicate d
 
 During the project there were certain stages where testing of currently implemented features was difficult before completion of the next piece of work.
 
-One of these cases was the MapDrawer object, which was developed prior to the location-aware part of the application meaning there was no available information feed into the module for testing purposes. In this case, a random data generator was added in place of the location provider. This allowed for testing the display before the location code was built, but also made testing more convenient when using Android virtual devices running on a PC which doesn't have GPS.
+One of these cases was the MapDrawer object, which was developed prior to the location-aware part of the application meaning there was no available information feed into the module for testing purposes. In this case, random data was generated and used in place of real location information. A screen shot of the application using such a method is shown in Figure~\ref{generatedPoints}. This allowed for testing the display before the location code was built, but also made testing more convenient when using Android virtual devices running on a PC which doesn't have GPS.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.15]{generatedPoints}
+\caption{Map Display Screen showing a session running with randomly generated location data}
+\label{generatedPoints}
+\end{figure}
 
 At the start of the project, only one physical device was at hand for testing. To test the message processing code at this stage, a ``duplicate" option was added to the server that caused it to duplicate every recieved point, change the device ID and translate the location by 10m. This extra point when inserted, simulated the interaction of a second device and would would show up on screen as having a position right next to that of the real device.
 
@@ -851,6 +858,13 @@ Figure~\ref{packetlossline} shows that for drop rates of $<40\%$, the average la
 \section{How the application scales}
 \label{scaling}
 As described in the proposal, the server application was modified to simulate an arbitrary number of devices, interacting with a real device running the client application. This allowed scale tests to be conducted with relative ease. Figure~\ref{fig:scale} shows how the average latency and sustained success rate varies for different session sizes.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.15]{scale}
+\caption{Map Display Screen during a simulated 9-device scale test on random location data}
+\label{fig:scale}
+\end{figure}
 
 In maximum load tests the performance benefits of the client-server model were observed. With the server doing all of the coordination and routing, the client applications are spared much computation. This leads to tangible differences in the scalability of the system.
 

@@ -37,7 +37,7 @@
 \contentsline {subsection}{\numberline {3.6.3}Peer-to-peer version}{27}
 \contentsline {subsection}{\numberline {3.6.4}Requests}{27}
 \contentsline {section}{\numberline {3.7}Extra functionality for development only}{28}
-\contentsline {section}{\numberline {3.8}Concurrency}{29}
+\contentsline {section}{\numberline {3.8}Concurrency}{30}
 \contentsline {chapter}{\numberline {4}Evaluation}{31}
 \contentsline {section}{\numberline {4.1}Field Tests}{31}
 \contentsline {section}{\numberline {4.2}Comparison of Session Setup procedures}{31}
@@ -47,7 +47,7 @@
 \contentsline {subsection}{\numberline {4.3.2}Security of the QuickStart method}{33}
 \contentsline {section}{\numberline {4.4}Packet loss and Comparison of Network Architectures}{34}
 \contentsline {section}{\numberline {4.5}How the application scales}{36}
-\contentsline {section}{\numberline {4.6}Priority of sending}{37}
+\contentsline {section}{\numberline {4.6}Priority of sending}{38}
 \contentsline {section}{\numberline {4.7}Meeting the original goals}{38}
 \contentsline {chapter}{\numberline {5}Conclusion}{39}
 \contentsline {section}{\numberline {5.1}What I would have done differently in hindsight}{39}
