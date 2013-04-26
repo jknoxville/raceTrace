@@ -2,11 +2,13 @@ package uk.ac.cam.jk510.part2project.gui;
 
 
 import uk.ac.cam.jk510.part2project.R;
+import uk.ac.cam.jk510.part2project.location.GPSDriver;
 import uk.ac.cam.jk510.part2project.session.SessionEnum;
 import uk.ac.cam.jk510.part2project.settings.Config;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -19,6 +21,8 @@ public class NewOldSession extends Activity {
         super.onCreate(savedInstanceState);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         setContentView(R.layout.activity_new_old_session);
+        View view = findViewById(R.id.logo);
+        GPSDriver.init((LocationManager) this.getSystemService(Context.LOCATION_SERVICE), view);
     }
 
     @Override

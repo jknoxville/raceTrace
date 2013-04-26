@@ -80,8 +80,11 @@ public class ServerDriver {
 							InputStream is = sock.getInputStream();
 							ObjectInputStream ois = new ObjectInputStream(is);
 							String name = (String) ois.readObject();
+							System.out.println("Name: "+name);
 							Double x = (Double) ois.readObject();
+							System.out.println("x: "+x);
 							Double y = (Double) ois.readObject();
+							System.out.println("y: "+y);
 							System.out.println("Got device "+name+" at "+x+", "+y);
 							//						String ip = (String) ois.readObject();
 							//						int port = (Integer) ois.readObject();

@@ -30,7 +30,7 @@ public class SessionManagerQuickstart extends SessionManager {
 				new Runnable() {
 					public void run() {
 						try {
-							GPSDriver gps = GPSDriver.init((LocationManager) activity.getSystemService(Context.LOCATION_SERVICE), null);
+							GPSDriver gps = GPSDriver.getGPSDriver();
 							long startTime = System.currentTimeMillis();
 							
 							//Open TCP socket to server.
@@ -38,9 +38,9 @@ public class SessionManagerQuickstart extends SessionManager {
 
 							//Send name	/TODO possibly the port you have open as well (NAT stuff)
 							ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
-							oos.writeObject(Config.getName());
 							double x = gps.getLastXCoord();
 							double y = gps.getLastYCoord();
+							oos.writeObject(Config.getName());
 							oos.writeObject(x);
 							oos.writeObject(y);
 

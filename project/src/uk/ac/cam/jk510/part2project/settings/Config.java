@@ -53,7 +53,7 @@ public class Config {
 
 	//Protocol
 	private static Proto protocol = Proto.clientServer;
-	private static SessionEnum sesh = SessionEnum.singleSession;
+	private static SessionEnum sesh = SessionEnum.quickstart;
 	private static CoordsType coordsType = CoordsType.TXYA;
 	private static HistoryType historyType = HistoryType.XYA;
 	private static boolean localOnly = (protocol == Proto.p2p);	//Only operate over local network. (e.g wifi) - so dont use external IP addresses.
