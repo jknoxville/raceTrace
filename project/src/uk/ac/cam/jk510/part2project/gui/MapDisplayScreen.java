@@ -36,6 +36,7 @@ public class MapDisplayScreen extends Activity {
 		debugInfo = (TextView) findViewById(R.id.debugInfo);
 		ProtocolManager.debugInfo = debugInfo;
 		gpsDriver = GPSDriver.init(locationManager, info);	//TODO do in seperate thread?
+		gpsDriver.sessionStarted();
 		instance = this;
 
 	}

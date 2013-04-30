@@ -1,5 +1,8 @@
 package uk.ac.cam.jk510.part2project.server;
 
+import grouping.Block;
+import grouping.Request;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -36,9 +39,7 @@ public class ServerDriver {
 		 * 	when it groups, it spawns a new thread: some method in serverSession that processes it.
 		 */
 		ServerSocket serverSock = null;
-		final Grid<RequestToJoin> grid = new Grid<RequestToJoin>();
 		try{
-			LinkedList<Socket> connections = new LinkedList<Socket>();
 			serverSock = new ServerSocket(60000);
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -47,27 +48,12 @@ public class ServerDriver {
 		//spawn grid grouping thread
 		new Thread(new Runnable() {
 			public void run() {
-				GridIterator<RequestToJoin> it = grid.iterator();
-				while(true) {
-					while(it.hasNext()) {
-						List<Point<RequestToJoin>> group = it.next();
-						ServerSessionCreator creator = new ServerSessionCreator();
-						System.out.println("Made group");
-
-						for(Point<RequestToJoin> point: group) {
-							RequestToJoin req = point.getObject();
-							Device d = req.device;
-							Socket s = req.socket;
-							SessionDeviceConnection conn = new SessionDeviceConnection(group.indexOf(point), s, group.size());
-							conn.connectAndReceive(creator);
-						}
-						
-					}
-					it.reset();
-				}
+				
+				Block.processRequests();
 			}
 		}).start();
-
+		
+		//forever loop accepting connections and putting them in the grid structure
 		while(true) {
 			final Socket sock;
 			try {
@@ -96,8 +82,7 @@ public class ServerDriver {
 							Device dev = new Device(name, handle, new ProtocolXYA());
 
 							RequestToJoin req = new RequestToJoin(sock, dev);
-							grid.insert(x, y, req);
-
+							new Request<RequestToJoin>(x, y, req);
 
 						} catch (IOException e) {
 							// TODO Auto-generated catch block

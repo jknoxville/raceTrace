@@ -120,7 +120,7 @@ public class ClientMessage {
 				float x = bb.getFloat();
 				float y = bb.getFloat();
 				float alt = bb.getFloat();
-				System.out.println("receiving. from device "+deviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
+				System.out.println("receiving. from device "+deviceID+"about "+aboutID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
 				CoordsTXYA coords = new CoordsTXYA(aboutID, lTime, x, y, alt);
 				ProtocolManager.insertNetworkDataPoint(deviceID, coords);
 			}

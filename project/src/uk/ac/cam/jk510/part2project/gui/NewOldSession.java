@@ -160,4 +160,11 @@ public class NewOldSession extends Activity {
     	finish();	//TODO check this is right. May be the case that calling finish here exits too early sometimes.
     }
     
+    
+    public void onResume() {
+    	super.onResume();
+    	View view = findViewById(R.id.logo);
+    	GPSDriver.init((LocationManager) this.getSystemService(Context.LOCATION_SERVICE), view);
+    }
+    
 }

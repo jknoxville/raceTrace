@@ -34,8 +34,11 @@ public class SessionDeviceConnection {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
+					System.out.println("about to get inputstream");
 					InputStream is = sock.getInputStream();
+					System.out.println("about to get objinputstream");
 					ObjectInputStream ois = new ObjectInputStream(is);
+					System.out.println("about to read name");
 					String name = (String) ois.readObject();
 					System.out.println("Got device "+name);
 //					String ip = (String) ois.readObject();
@@ -43,8 +46,9 @@ public class SessionDeviceConnection {
 					String ip = sock.getInetAddress().getHostAddress();
 					int port = Config.getDefaultClientPort();
 
+					System.out.println("about to addDevice to creator");
 					
-					creator.addDevice(device, devices, name, ip, port);
+					//creator.addDevice(device, devices, name, ip, port);
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block

@@ -47,6 +47,15 @@ public class GPSDriver implements LocationListener {
 		//tv.setTextColor(Color.BLACK);
 		//setText("Waiting for location...");
 	}
+	
+	//to be called whenever the session has been created
+	public void sessionStarted() {
+		thisDevice = Session.getThisDevice();
+		boolean netLocPref = PreferenceManager.getDefaultSharedPreferences(tv.getContext()).getBoolean("net_loc", true);
+		if(netLocPref) {
+			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, Config.getGPSUpdateDistance(), this);
+		}
+	}
 
 	private Location getLastLocation() {
 		return lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);

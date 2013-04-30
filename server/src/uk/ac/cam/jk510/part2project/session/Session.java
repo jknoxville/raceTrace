@@ -16,6 +16,7 @@ public class Session {
 		super();
 		this.devices = devices;
 		this.keys = keys;
+		System.out.println("Starting "+devices.size()+" device session");
 		for(Device d: devices) {
 			System.out.println(d.getName()+" and "+Config.getName());
 			//TODO use bluetooth MAC address instead of name.
@@ -29,7 +30,6 @@ public class Session {
 		}
 		//TODO make Config.name read name from some preferences (see android tutorials)
 		//TODO have check when setting up session to see if names clash.
-		
 	}
 	
 	public Device getDevice(int n) {

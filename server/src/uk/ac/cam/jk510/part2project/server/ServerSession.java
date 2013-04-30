@@ -169,7 +169,7 @@ public class ServerSession implements PositionStoreSubscriber {
 		return datagram;
 	}
 	
-	public ServerSession(ArrayList<Device> devices, Keys keys) {
+	public ServerSession(ArrayList<Device> devices, Keys keys, SessionDeviceConnection[] connections) {
 		super();
 		this.devices = devices;
 		this.keys = keys;
@@ -191,7 +191,11 @@ public class ServerSession implements PositionStoreSubscriber {
 		posStore.subscribeToUpdates(this);
 		//TODO make Config.name read name from some preferences (see android tutorials)
 		//TODO have check when setting up session to see if names clash.
-		
+		sessionSetupConnections = connections;
+		coordsToSend = new LinkedList[devices.size()];
+		for(int i=0; i<coordsToSend.length; i++) {
+			coordsToSend[i] = new LinkedList<Coords>();
+		}
 	}
 	
 	public Device getDevice(int n) {
@@ -281,6 +285,13 @@ public class ServerSession implements PositionStoreSubscriber {
 	private boolean ready() {
 		//Note ready is always false when there is just one device in session.
 		return (timeOfLastSend + Config.getServerResendPeriodMillis() <= System.currentTimeMillis()) || (numNewPoints>=Config.getServerNewPointsThreshold()) && numDevices()>1;
+	}
+	
+	public void addNewSessionDeviceConnection(SessionDeviceConnection conn, int thisConnection, int numDevices) {
+		if(sessionSetupConnections == null) {
+			sessionSetupConnections = new SessionDeviceConnection[numDevices];
+		}
+		sessionSetupConnections[thisConnection] = conn;
 	}
 
 	public void sendSessionToAllDevices(Session session) {

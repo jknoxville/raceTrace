@@ -32,17 +32,10 @@ public class UDPConnection extends DeviceConnection {
 
 	protected void sendEncrypted(byte[] data, int length) throws IOException {
 
-		//TODO encrypt data
-		
-		
+		//Do encryption on data here
 		DatagramPacket datagram;
 		datagram = new DatagramPacket(data, length, socketAddress);
 		socket.send(datagram);
-
-		//TODO the following should probably not be here
-		if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
-			//TODO if desired, serverConnection.send(data, length);
-		}
 
 	}
 	protected void send(byte[] data, int length) throws IOException {
@@ -51,35 +44,32 @@ public class UDPConnection extends DeviceConnection {
 		datagram = new DatagramPacket(data, length, socketAddress);
 		socket.send(datagram);
 
-		//TODO the following should probably not be here
-		if(Config.getProtocol() == Proto.p2p && Config.debugMode()) {
-			//TODO if desired, serverConnection.send(data, length);
-		}
-
 	}
 
 	//synchronized because only need one at a time
 	public synchronized ByteBuffer receiveEncryptedData(byte[] data) throws IOException {
-		//TODO
+		//encryption placeholder
 		return null;
 	}
+	
 	//synchronized because only need one at a time
 	public synchronized ByteBuffer abstractReceiveData(byte[] data) throws IOException {
 		DatagramPacket datagram = new DatagramPacket(data, data.length);
 		socket.receive(datagram);
-		//TODO update port of sender
-		updatePort(datagram);
+		//update port of sender
+		//30/04 was getting ID=1 from server for some reason, so skipped port update
+		//updatePort(datagram);
 		ByteBuffer bb = ByteBuffer.wrap(data);
 		bb.limit(datagram.getLength());
 		return bb;
 	}
 	private static void updatePort(DatagramPacket datagram) {
-		ByteBuffer.wrap(datagram.getData()).getInt();
+		ByteBuffer.wrap(datagram.getData()).getInt();	//read past the message type and ignore it
 		int deviceID = ByteBuffer.wrap(datagram.getData()).getInt();
+		System.out.println("deviceID receiving from: "+deviceID);
 		if(deviceID != -1) {	//if not from server, update that devices port.
 			int newPort = datagram.getPort();
 			Session.updateDevicePort(deviceID, newPort);
-			//((DeviceHandleIP) Session.getDevice(deviceID).getHandle()).setPort(datagram.getPort());	//update known port of this device. Same for address useful?
 		}
 	}
 
