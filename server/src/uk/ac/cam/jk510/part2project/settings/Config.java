@@ -44,8 +44,8 @@ public class Config {
 	private static final int nameSize = 1;
 	
 	//Server Specific
-	private static final long serverResendPeriodSecs = 0; //if this
-	private static final int serverNewPointsThreshold = 5; //or this is exceeded it will send
+	private static final long serverResendPeriodSecs = 1; //if this
+	private static final int serverNewPointsThreshold = 100; //or this is exceeded it will send
 	private static final boolean singleSession = true;
 	
 	//Simulation
@@ -58,6 +58,7 @@ public class Config {
 	
 	//Testing
 	private static final boolean serverDuplicationTest = false;
+	private static final int duplicationFactor = 125;
 	
 	//debug
 	private static final boolean listenOnly = false;
@@ -132,6 +133,9 @@ public class Config {
 	}
 	public static boolean serverDuplicationTest() {
 		return serverDuplicationTest;
+	}
+	public static int getDuplicationFactor() {
+		return duplicationFactor;
 	}
 	public static boolean singleSession() {
 		return singleSession;

@@ -234,7 +234,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 
 	private void drawPositionIndicator(Canvas canvas, DevicePath dp, float pLeft, float pTop, float scale, int device) {
 		canvas.drawCircle((dp.getPositionX()-oldpLeft)*oldScale, (dp.getPositionY()-oldpTop)*oldScale, Config.getPosIndicatorSize(), labels[device]);
-		canvas.drawText(names[device], 0, Config.charsOfNameToShow(), (dp.getPositionX()-pLeft)*scale+(Config.getPosIndicatorSize()*2), (dp.getPositionY()-pTop)*scale, labels[device]);
+		//canvas.drawText(names[device], 0, Config.charsOfNameToShow(), (dp.getPositionX()-pLeft)*scale+(Config.getPosIndicatorSize()*2), (dp.getPositionY()-pTop)*scale, labels[device]);
 	}
 
 	//Called by PositionStore when new points are ready

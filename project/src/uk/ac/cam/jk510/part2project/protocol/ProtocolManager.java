@@ -76,7 +76,7 @@ public abstract class ProtocolManager {
 			long timeOfLastGenerate = 0;
 			int index = 0;
 			public void run() {
-				while(alive) {
+				while(alive && index<Config.testDataSize()) {
 					if(timeOfLastGenerate + Config.fakeGPSPeriod() <= System.currentTimeMillis()) {
 						testInputData(Session.getThisDevice(), index);
 						index++;
@@ -94,15 +94,14 @@ public abstract class ProtocolManager {
 	}
 
 	public static void testInputData() {
-		//		for (int dev=0; dev<Session.getSession().numDevices(); dev++) {
-		//			testInputData(dev);
-		//		}
-		new Thread(new Runnable() {
-			public void run() {
-				int thisDeviceNumber = Session.getThisDevice().getDeviceID();
-				testInputData(thisDeviceNumber);	//changed from above as needed
-			}
-		}).start();
+
+//		new Thread(new Runnable() {
+//			public void run() {
+//				int thisDeviceNumber = Session.getThisDevice().getDeviceID();
+//				testInputData(thisDeviceNumber);	//changed from above as needed
+//			}
+//		}).start();
+		spawnRandomGPSThread();
 
 	}
 

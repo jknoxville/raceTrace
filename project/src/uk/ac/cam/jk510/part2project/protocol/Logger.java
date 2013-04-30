@@ -150,108 +150,127 @@ public class Logger {
 	}
 
 	public static void download(int bytes) {
-		instance.networkDataDownload += bytes;
+		if(Config.loggingEnabled()) {
+			instance.networkDataDownload += bytes;
+		}
 	}
 
 	public static void upload(int bytes) {
-		instance.networkDataUpload += bytes;
+		if(Config.loggingEnabled()) {
+			instance.networkDataUpload += bytes;
+		}
 	}
 
 	public static void sendingRequest(int size) {
-		instance.noRequestsSent++;
-		int index = instance.currentIndex;
-		instance.requestSizes.get(index/blockSize)[index % blockSize] = size;
+		if(Config.loggingEnabled()) {
+			instance.noRequestsSent++;
+			int index = instance.currentIndex;
+			instance.requestSizes.get(index/blockSize)[index % blockSize] = size;
+		}
 	}
 
 	public static void receivedRequest() {
-		instance.noRequestsRecieved++;
+		if(Config.loggingEnabled()) {
+			instance.noRequestsRecieved++;
+		}
 	}
 
 	public static void respondedToRequest() {
-		instance.noRequestsRespondedTo++;
+		if(Config.loggingEnabled()) {
+			instance.noRequestsRespondedTo++;
+		}
 	}
 
 	public static void receivedPoint(int aboutDevice, int index) {
-		long time = System.currentTimeMillis() - startingTime;
-		instance.timeOfLastReceipt[aboutDevice] = time;
+		if(Config.loggingEnabled()) {
+			long time = System.currentTimeMillis() - startingTime;
+			instance.timeOfLastReceipt[aboutDevice] = time;
 
-		extendArrays(index);
+			extendArrays(index);
 
-		//Calculate which array and the offset within it.
-		int arrayNumber = index / blockSize;
-		int offset = index % blockSize;
+			//Calculate which array and the offset within it.
+			int arrayNumber = index / blockSize;
+			int offset = index % blockSize;
 
-		ArrayList<long[]> arra = instance.receiptTimes[Session.getDevice(aboutDevice).getDeviceID()];
-		long[] array = arra.get(arrayNumber);
-		array[offset] = time;
+			ArrayList<long[]> arra = instance.receiptTimes[Session.getDevice(aboutDevice).getDeviceID()];
+			long[] array = arra.get(arrayNumber);
+			array[offset] = time;
+		}
 
 	}
 	public static void generatedPoint(int index) {
-		long time = System.currentTimeMillis() - startingTime;
-		instance.currentIndex = index>instance.currentIndex?index:instance.currentIndex;
+		if(Config.loggingEnabled()) {
+			long time = System.currentTimeMillis() - startingTime;
+			instance.currentIndex = index>instance.currentIndex?index:instance.currentIndex;
 
-		extendArrays(index);
+			extendArrays(index);
 
-		//Calculate which array and the offset within it.
-		int arrayNumber = index / blockSize;
-		int offset = index % blockSize;
+			//Calculate which array and the offset within it.
+			int arrayNumber = index / blockSize;
+			int offset = index % blockSize;
 
-		instance.genTimes.get(arrayNumber)[offset] = time;
-
+			instance.genTimes.get(arrayNumber)[offset] = time;
+		}
 	}
 	public static void newLatestPoint(int device) {
-		long time = System.currentTimeMillis() - startingTime;
+		if(Config.loggingEnabled()) {
+			long time = System.currentTimeMillis() - startingTime;
 
-		instance.latestPointTimes[device].add(time);
+			instance.latestPointTimes[device].add(time);
+		}
 	}
 	public static void droppingPacket() {
-		instance.packetsDropped++;
+		if(Config.loggingEnabled()) {
+			instance.packetsDropped++;
+		}
 	}
 	private void spawnScreenCaptureThread() {
-		if(Config.takeScreenShots()) {
-			new Thread(new Runnable() {public void run() {
+		if(Config.loggingEnabled()) {
+			if(Config.takeScreenShots()) {
+				new Thread(new Runnable() {public void run() {
 
-				File dir = null;
+					File dir = null;
 
-				while(ProtocolManager.isAlive()) {
+					while(ProtocolManager.isAlive()) {
 
-					if(MapDrawer.initialised()) {
-						Bitmap bmp = MapDrawer.getScreenShot();
-						if(dir == null) {
+						if(MapDrawer.initialised()) {
+							Bitmap bmp = MapDrawer.getScreenShot();
+							if(dir == null) {
 
-							if(externalStorageWriteable()) {
-								//MapDisplayScreen.instance.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+								if(externalStorageWriteable()) {
+									//MapDisplayScreen.instance.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
-								dir = new File(Environment.getExternalStorageDirectory(), "raceTrace");
-								if(!dir.exists()) {
-									dir.mkdir();
+									dir = new File(Environment.getExternalStorageDirectory(), "raceTrace");
+									if(!dir.exists()) {
+										dir.mkdir();
+									}
+
+
+								} else {
+									System.err.println("Can't write to external storage.");
 								}
-
-
-							} else {
-								System.err.println("Can't write to external storage.");
 							}
+							FileOutputStream out;
+							try {
+								File newFile = new File(dir, "raceTrace"+System.currentTimeMillis()+".png");
+								out = new FileOutputStream(newFile);
+								bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+							} catch (FileNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
 						}
-						FileOutputStream out;
 						try {
-							File newFile = new File(dir, "raceTrace"+System.currentTimeMillis()+".png");
-							out = new FileOutputStream(newFile);
-							bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-						} catch (FileNotFoundException e) {
+							Thread.sleep(Config.getScreenShotTimer());
+						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-
 					}
-					try {
-						Thread.sleep(Config.getScreenShotTimer());
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
 
-			}}).start();
+				}}).start();
+			}
 		}
 	}
 
@@ -289,11 +308,13 @@ public class Logger {
 		return instance.genTimes.size()*blockSize;
 	}
 	public static void spawnLogFlush() {
-		new Thread(new Runnable() {public void run() {
+		if(Config.loggingEnabled()) {
+			new Thread(new Runnable() {public void run() {
 
-			instance.writeLogToDisk();
+				instance.writeLogToDisk();
 
-		}}).start();
+			}}).start();
+		}
 	}
 	private void writeLogToDisk() {
 		File dir = null;

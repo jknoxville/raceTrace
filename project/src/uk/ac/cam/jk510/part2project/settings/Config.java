@@ -45,7 +45,7 @@ public class Config {
 																		to all requestable peers and not just the requester. */
 	//Colors
 	private static int bgColor = Color.WHITE;
-	private static int[] colors = {Color.BLUE, Color.GREEN, Color.RED};	//TODO add more colours
+	private static int[] colors = {Color.BLUE, Color.GREEN, Color.RED, Color.CYAN, Color.BLACK, Color.DKGRAY, Color.MAGENTA, Color.LTGRAY, Color.YELLOW};	//TODO add more colours
 	private static float posIndicatorSize = 10;	//Radius of circle
 
 	//Map Displaying
@@ -82,6 +82,7 @@ public class Config {
 	//Logging options
 	private static final boolean takeScreenShots = false;
 	private static final long screenShotTimer = 5*1000;	//time between saving screenshots
+	private static final boolean loggingEnabled = true;
 
 	//Simulation
 	public static final boolean droppingEnabled = false;
@@ -91,6 +92,7 @@ public class Config {
 	public static final double reconnectRate = 0.4;
 	public static final double dropRate = 0.6;
 	private static final long fakeGPSPeriod = 1*1000;	//1 second
+	private static final int testDataSize = 60;
 
 	//Datagram Format
 	private static final int nameSize = 4;
@@ -101,7 +103,7 @@ public class Config {
 	private static final int sampleYDerby = 9828785;
 	private static final int sampleXCam = 11195;
 	private static final int sampleYCam = 634959;
-	private static final boolean testingInCam = true;
+	private static final boolean testingInCam = true; 	//if currently testing the app in cambridge, uk
 	private static final boolean sendOnTimeout = true;	//allows sending of not full packets if timer expires
 
 	//Config own variables
@@ -148,7 +150,7 @@ public class Config {
 		return UUIDString;
 	}
 	public static int getColor(int p) {
-		return colors[p];
+		return colors[p%colors.length];
 	}
 	public static float getPosIndicatorSize() {
 		return posIndicatorSize;
@@ -275,5 +277,11 @@ public class Config {
 	@Deprecated
 	public static GCS getGCS() {
 		return gcs;
+	}
+	public static int testDataSize() {
+		return testDataSize;
+	}
+	public static boolean loggingEnabled() {
+		return loggingEnabled;
 	}
 }
