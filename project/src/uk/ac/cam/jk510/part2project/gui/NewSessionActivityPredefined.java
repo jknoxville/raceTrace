@@ -5,7 +5,6 @@ import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionManager;
 import uk.ac.cam.jk510.part2project.session.SessionManagerPredefined;
-import uk.ac.cam.jk510.part2project.session.StopThreadException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -19,7 +18,7 @@ public class NewSessionActivityPredefined extends NewSessionActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_session_activity_predefined);
         
-		setUpSessionThread(); //this starts a new thread which will set up the session
+		setUpSessionThread();
     }
 
     @Override

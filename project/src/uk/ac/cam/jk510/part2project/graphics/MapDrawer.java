@@ -23,46 +23,23 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class MapDrawer extends View implements PositionStoreSubscriber {
-	//Paint line = new Paint();
+	private static MapDrawer instance;
+	
 	Paint[] lines;
 	Paint[] labels;
-	Paint vertices = new Paint();
 	ArrayList<DevicePath> devicePathList;
 	Path[] pathsToDraw;
-	Session session = Session.getSession();
-	private static MapDrawer instance;
-	//ArrayList<Device> devices;
 	boolean[] pathIsNew;
-	boolean atLeastOnePointIsOnScreen = false;
-	boolean needToRedraw = true;
 	float oldScale;
 	float oldpTop;
 	float oldpLeft;
 	String[] names;
-
+	Session session = Session.getSession();
+	Paint vertices = new Paint();
+	boolean atLeastOnePointIsOnScreen = false;
+	boolean needToRedraw = true;
 	RectF bounds = new RectF();
 	Matrix mat = new Matrix();
-
-	//	@Deprecated
-	//	public MapDrawer(Context context, Session session) throws IllegalAccessException, InstantiationException {
-	//		super(context);
-	//		line.setStrokeWidth(Config.getMapLineThickness());
-	//		line.setStyle(Paint.Style.STROKE);
-	//		line.setColor(Color.BLACK);
-	//		vertices.setStyle(Paint.Style.FILL);
-	//		vertices.setColor(Color.BLACK);
-	//		
-	//		this.session = session;
-	//		devices = session.getDevices();
-	//		pathsToDraw = new Path[devices.size()];
-	//		pathIsNew = new boolean[devices.size()];
-	//		devicePathList = new ArrayList<DevicePath>();
-	//		for(Device d: devices) {
-	//			devicePathList.add(d.getDeviceID(), new DevicePath());
-	//		}
-	//		
-	//		PositionStore.subscribeToUpdates(this);
-	//	}
 
 	public MapDrawer(Context context, AttributeSet att) throws IllegalAccessException, InstantiationException {
 		super(context);
@@ -73,7 +50,6 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		devicePathList = new ArrayList<DevicePath>();
 		reset();
 		System.out.println("DEVICEPATH SIZE: "+devicePathList.get(0).getPathCache().size());
-
 	}
 
 	private void initPaint(int p) {
@@ -120,25 +96,11 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		System.out.println("updatingDeviceTrail, path.top = "+bounds.top);	//debug
 		pathIsNew[device.getDeviceID()] = true;
 		atLeastOnePointIsOnScreen = true;
-
 		needToRedraw = true;
-		//		this.post(new Runnable() {	//do invalidate() in UI thread
-		//			public void run() {
-		//				invalidate();
-		//			}
-		//		});
-		//above is moved to notify()
-		//invalidate();	//A View method that tells it the view is invalidated so should be drawn again.
-		//moved to UI thread.
-
 	}
 
 	@Override
 	public synchronized void onDraw(Canvas canvas) {
-
-		System.out.println("Starting onDraw");
-		//		int cHeight = canvas.getHeight();
-		//		int cWidth = canvas.getWidth();
 
 		float pTop = Float.POSITIVE_INFINITY;
 		float pBottom = 0;
@@ -161,14 +123,12 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 			 * pTop : top of path, pLeft : left side of path etc.
 			 * Since no points are deleted pTop should only ever decrease (get higher). and similar for pLeft, pRight...
 			 */
-
 			path.computeBounds(bounds, true);
 			float t = bounds.top;
 			float b = bounds.bottom;
 			float l = bounds.left;
 			float r = bounds.right;
 			//pTop should be the smallest non zero value of t. If pTop is 0, then have just started, so initialise it.
-			//pTop = (pTop==0 || (t!=0 && t<pTop)) ? t : pTop;	 was this before change from init 0 to init inf
 			pTop = (t<pTop) ? t : pTop;
 			pBottom = b>pBottom ? b : pBottom;
 			pLeft = (l<pLeft) ? l : pLeft;
@@ -176,32 +136,25 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 			System.out.println("PathsToDraw["+pathNumber+"] t: "+t+"b: "+b);	//debug
 			pathNumber++;
 		}
-		System.out.println("pTop: "+pTop+" pBottom: "+pBottom+" pLeft: "+pLeft+" pRight: "+pRight);	//debug
+
 		//calculate the overall bounds of all the paths
 		float pHeight = pBottom - pTop;
 		float pWidth = pRight - pLeft;
-		System.err.println("pHeight: "+pHeight+" pWidth: "+pWidth);	//debug
-		System.err.println("cHeight: "+cHeight+" cWidth: "+cWidth+"but canvasHeight: "+canvas.getHeight());	//debug
 
 		float yScale = cHeight/pHeight;
 		float xScale = cWidth/pWidth;
 		float scale = yScale<xScale ? yScale : xScale;	//scale = min(xScale, yScale)
-		System.err.println("xScale: "+xScale+" yScale: "+yScale);	//debug
-		mat.setScale(scale, scale);	//changed from scale*0.9
+		mat.setScale(scale, scale);
 		int device = 0;
 		for(Path path : pathsToDraw) {
-
 
 			if(path == null) {	//some paths will be null at first before they have any points added.
 				continue;
 			}
 
-			//if this path is new, scale it - NO. rescale all paths everytime, because if any path scale changes, they all do.
-			//if(pathIsNew[device]) {
+			//rescale all paths everytime, because if any path scale changes, they all do.
 			path.offset(-pLeft, -pTop);	//changed from bounds.left and bounds.top
 			path.transform(mat);
-			//}
-
 
 			//draw all paths regardless of new or not
 			canvas.drawPath(path, lines[device]);
@@ -216,9 +169,8 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 				needToRedraw = false;
 			} else {
 				drawPositionIndicator(canvas, dp, pLeft, pTop, scale, device);
-				/*
-				 * Why is this (^^^) needed?
-				 * For some reason, onDraw sometimes gets called when it doesnt need to be.
+				/*^^^^^^^^^^^
+				 * onDraw sometimes gets called when it doesnt need to be.
 				 * This means the paths are already scaled and right for the screen to be drawn,
 				 * so onDraw calculates scale to be ~1
 				 * It then plots the lines perfectly, but for the circle, since it uses data from devicePath
@@ -226,10 +178,8 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 				 */
 			}
 			device++;
-
 		}
 		mat.reset();
-
 	}
 
 	private void drawPositionIndicator(Canvas canvas, DevicePath dp, float pLeft, float pTop, float scale, int device) {
@@ -248,22 +198,18 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 			dp.add(index, coords.getCoord(0), coords.getCoord(1));
 		}
 		//take care of PathIsNew and pathsToDraw
-		//updateDeviceTrail(d); // changed to the code below instead:
 
 		//quick fix: always remake all path objects before scaling so they are all scaled correctly.
 		//TODO make this better. its not efficient to redo all paths on every new update
-		for(Device dev: Session.getSession().getDevices()) {	//TODO remove all uses of devices variable.
+		for(Device dev: Session.getSession().getDevices()) {
 			System.out.println(dev.getDeviceID());
 			updateDeviceTrail(dev);
 		}
 		this.post(new Runnable() {	//do invalidate() in UI thread
 			public void run() {
-				invalidate();	//TODO temp deleted to see if anything drawn
+				invalidate();
 			}
 		});
-
-		System.err.println("MapDrawer has finished being notified of update");	//debug
-
 	}
 	
 	public static void destroy() {

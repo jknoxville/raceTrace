@@ -18,6 +18,7 @@ public class NewSessionActivityBluetoothSlave extends NewSessionActivity {
 		
 		SessionManagerBluetooth.switchOnBluetooth(this);
 
+		@SuppressWarnings("unused")
 		TextView progress = (TextView) findViewById(R.id.slave_setup_progress);
 		View thisView = findViewById(android.R.id.content);
 
@@ -26,7 +27,6 @@ public class NewSessionActivityBluetoothSlave extends NewSessionActivity {
 			SessionManagerBluetooth.spawnSlaveBluetoothSetupThread(thisView, this);
 			//at end of spawnSlave.. it posts this.onSetupComplete()
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -39,8 +39,6 @@ public class NewSessionActivityBluetoothSlave extends NewSessionActivity {
 
 	@Override
 	protected void setUpSession() throws Exception {
-		// TODO Auto-generated method stub
-
 	}
 	
 	protected void onActivityResult(int pRequestCode, int resultCode, Intent data) {

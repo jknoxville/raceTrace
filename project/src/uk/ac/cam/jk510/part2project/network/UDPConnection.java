@@ -8,7 +8,6 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 
-import uk.ac.cam.jk510.part2project.protocol.Proto;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
 import uk.ac.cam.jk510.part2project.session.Session;
@@ -63,6 +62,8 @@ public class UDPConnection extends DeviceConnection {
 		bb.limit(datagram.getLength());
 		return bb;
 	}
+	
+	@SuppressWarnings("unused")
 	private static void updatePort(DatagramPacket datagram) {
 		ByteBuffer.wrap(datagram.getData()).getInt();	//read past the message type and ignore it
 		int deviceID = ByteBuffer.wrap(datagram.getData()).getInt();

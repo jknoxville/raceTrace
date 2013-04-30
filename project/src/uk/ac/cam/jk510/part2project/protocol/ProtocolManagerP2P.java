@@ -43,7 +43,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 		}
 		
 		for(final Device device: Session.getSession().getDevices()) {
-			if(!device.equals(Session.getThisDevice())) {
+			if(!device.equals(Session.getSession().getThisDevice())) {
 
 				new Thread(new Runnable() {
 					public void run() {
@@ -124,7 +124,7 @@ public class ProtocolManagerP2P extends ProtocolManager {
 				//don't send
 			} else {
 				//do send
-				if(toDevice != Session.getThisDevice()) {
+				if(toDevice != Session.getSession().getThisDevice()) {
 					sendCoordsToPeer(toDevice, coords);
 				}
 			}

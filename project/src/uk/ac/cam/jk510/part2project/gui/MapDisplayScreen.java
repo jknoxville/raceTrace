@@ -17,12 +17,13 @@ import android.view.View;
 import android.widget.TextView;
 
 public class MapDisplayScreen extends Activity {
-	public MapDrawer mapDrawer;	//TODO not public
+	public MapDrawer mapDrawer;
+	@Deprecated
 	boolean testDataUsed = false;	//debug
 	public static MapDisplayScreen instance;
 	static NewSessionActivity sessionActivity;
 	private GPSDriver gpsDriver;
-	public static TextView debugInfo;	//debug
+	public static TextView Info;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,8 +34,8 @@ public class MapDisplayScreen extends Activity {
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		mapDrawer = (MapDrawer) findViewById(R.id.mapDrawer);
 		TextView info = (TextView) findViewById(R.id.mapScreenInfo);
-		debugInfo = (TextView) findViewById(R.id.debugInfo);
-		ProtocolManager.debugInfo = debugInfo;
+		Info = (TextView) findViewById(R.id.debugInfo);
+		ProtocolManager.debugInfo = Info;
 		gpsDriver = GPSDriver.init(locationManager, info);	//TODO do in seperate thread?
 		gpsDriver.sessionStarted();
 		instance = this;
@@ -75,6 +76,7 @@ public class MapDisplayScreen extends Activity {
 		return true;
 	}
 
+	@Deprecated
 	public void addTestData(View view) {
 		if(testDataUsed) {
 			//do nothing
@@ -85,7 +87,5 @@ public class MapDisplayScreen extends Activity {
 			//ProtocolManager.spawnRandomGPSThread();
 			//testDataUsed = true;
 		}
-
 	}
-
 }

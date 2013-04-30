@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 
+//Session Manager Bluetooth - Master or slave selection screen
 public class SMBTserverorclient extends Activity {
 
 	static final int GET_PLAYER_LIST = 1;

@@ -13,7 +13,7 @@ public class NewSessionActivitySingleUser extends NewSessionActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_new_session_activity_single_user);
 
-		setUpSessionThread(); //this starts a new thread which will set up the session
+		setUpSessionThread();
 	}
 
 	@Override
@@ -27,8 +27,7 @@ public class NewSessionActivitySingleUser extends NewSessionActivity {
 		// Create Session state:
 		SessionManager smgr = new SessionManagerSingleUser();
 		smgr.newSession(this);
-		System.err.println("Finished setUpSession()");	//debug
-		onSetupComplete();		//Added 7th Feb for testing
+		onSetupComplete();
 	}
 
 }

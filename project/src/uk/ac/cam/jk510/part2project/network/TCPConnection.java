@@ -2,8 +2,6 @@ package uk.ac.cam.jk510.part2project.network;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -50,9 +48,8 @@ public class TCPConnection extends DeviceConnection {
 	public ByteBuffer abstractReceiveData(byte[] data) throws IOException {
 
 		/*
-		 * Want to:
 		 * Receive quantised message into array.
-		 * Construct bytebuffer for it and set its limit
+		 * Construct bytebuffer for it
 		 */
 
 		int length = is.read();
@@ -67,7 +64,7 @@ public class TCPConnection extends DeviceConnection {
 	}
 
 	protected void sendEncrypted(byte[] data, int length) throws IOException {
-		//TODO
+		//Encrypt data here
 	}
 	@Override
 	protected void send(byte[] data, int length) throws IOException {
@@ -83,7 +80,6 @@ public class TCPConnection extends DeviceConnection {
 			if(device == myID) {continue;}
 			if(device<myID) {
 				final Socket sock = serv.accept();
-				System.out.println("accepted device: "+device);
 				new Thread(new Runnable() {
 
 					private void connect() throws IOException {
@@ -97,7 +93,7 @@ public class TCPConnection extends DeviceConnection {
 						try {
 							connect();
 						} catch (IOException e) {
-							// TODO add limit, may result in infnite recursion
+							//keep retrying until success
 							run();
 						}
 					}
@@ -107,7 +103,6 @@ public class TCPConnection extends DeviceConnection {
 			} else {
 				connections[device] = new TCPConnection(Session.getDevice(device));
 			}
-			System.out.println("opened all sockets");
 		}
 	}
 

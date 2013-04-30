@@ -4,10 +4,8 @@ import uk.ac.cam.jk510.part2project.R;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolManager;
 import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.session.SessionManager;
-import uk.ac.cam.jk510.part2project.session.StopThreadException;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 
@@ -17,7 +15,6 @@ public abstract class NewSessionActivity extends Activity {
 	 * This activity is always the predecessor of MapDisplayScreen.
 	 */
 
-	//Session session;
 	Exception exception;
 	static NewSessionActivity instance;
 	private static final int NEXT_SCREEN = 1;
@@ -45,10 +42,7 @@ public abstract class NewSessionActivity extends Activity {
 					recordException(e);
 					e.printStackTrace();
 				}
-				//onSetupComplete();
-				//commented out because currently called by UI TODO which is why it has View view in arguments.
 				catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -63,8 +57,6 @@ public abstract class NewSessionActivity extends Activity {
 
 	//called when session set-up is successful
 	public void onSetupComplete(View view) throws Exception {
-		
-		//TODO new thread?:
 		ProtocolManager.initialiseProtocolManager(Session.getSession());
 		Intent intent = new Intent(this, MapDisplayScreen.class);    	
 		startActivityForResult(intent, NEXT_SCREEN);
@@ -84,16 +76,15 @@ public abstract class NewSessionActivity extends Activity {
 	//destroy all state as if this activity was never created.
 	private void destroy() {
 		System.out.println("DESTROYING SESSION");
-		SessionManager.killThread();	//this will stop the session setup thread eventually.
+		SessionManager.killThread();	//this will stop the session setup thread safely and eventually.
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		ProtocolManager.destroy();
-		Session.destroy();		//TODO added on 14th jan (may break something)
+		Session.destroy();
 		instance = null;
 	}
 	

@@ -78,7 +78,7 @@ public abstract class ProtocolManager {
 			public void run() {
 				while(alive && index<Config.testDataSize()) {
 					if(timeOfLastGenerate + Config.fakeGPSPeriod() <= System.currentTimeMillis()) {
-						testInputData(Session.getThisDevice(), index);
+						testInputData(Session.getSession().getThisDevice(), index);
 						index++;
 						timeOfLastGenerate = System.currentTimeMillis();
 					}
@@ -309,8 +309,8 @@ public abstract class ProtocolManager {
 		case probability: 				return Math.random() <= 1.0/Session.getSession().numDevices();
 		case responseRatioThresh: 		return responseRatio<=0.5;
 		case responseRatioProbability:	return Math.random() <= responseRatio;
-		case youAreRequestee:		return requestArray[Session.getThisDevice().getDeviceID()].size() > 0;
-		case youAreLargestRequestee:		int mySize = requestArray[Session.getThisDevice().getDeviceID()].size();
+		case youAreRequestee:		return requestArray[Session.getSession().getThisDevice().getDeviceID()].size() > 0;
+		case youAreLargestRequestee:		int mySize = requestArray[Session.getSession().getThisDevice().getDeviceID()].size();
 		for(int i=0; i<requestArray.length; i++) {
 			if(requestArray[i].size() > mySize) {
 				return false;

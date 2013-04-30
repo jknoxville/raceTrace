@@ -15,7 +15,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
-import android.widget.TextView;
 
 public class GPSDriver implements LocationListener {
 
@@ -27,11 +26,9 @@ public class GPSDriver implements LocationListener {
 	private LocationManager lm;
 
 	private GPSDriver(LocationManager locationManager, View tv) {
-
-		//TODO: might want to add extra providers and use the logic on android guide site to select between them.
 		lm = locationManager;
 		if(Session.getSession() != null) {
-			thisDevice = Session.getThisDevice();
+			thisDevice = Session.getSession().getThisDevice();
 			boolean netLocPref = PreferenceManager.getDefaultSharedPreferences(tv.getContext()).getBoolean("net_loc", true);
 			if(netLocPref) {
 				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, Config.getGPSUpdateDistance(), this);
@@ -50,7 +47,7 @@ public class GPSDriver implements LocationListener {
 	
 	//to be called whenever the session has been created
 	public void sessionStarted() {
-		thisDevice = Session.getThisDevice();
+		thisDevice = Session.getSession().getThisDevice();
 		boolean netLocPref = PreferenceManager.getDefaultSharedPreferences(tv.getContext()).getBoolean("net_loc", true);
 		if(netLocPref) {
 			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10*1000, Config.getGPSUpdateDistance(), this);
@@ -108,9 +105,7 @@ public class GPSDriver implements LocationListener {
 		}
 		if(useThisLocation && Session.getSession()!=null) {
 
-
 			Coords coords = toCartesian(l);
-
 			//setText("Lat: "+coords.getCoord(0)+" Long: "+coords.getCoord(1)+" Accuracy: "+l.getAccuracy()+" Speed: "+l.getSpeed()+"m/s");
 
 			ProtocolManager.insertOriginalDataPoint(thisDevice, coords);
@@ -128,7 +123,6 @@ public class GPSDriver implements LocationListener {
 	}
 
 	private Coords toCartesian(Location location) {
-		//TODO maybe remove this library? See how much difference it makes.
 		double x = location.getLongitude();
 		double y = location.getLatitude();
 		double alt = location.getAltitude();
@@ -138,10 +132,11 @@ public class GPSDriver implements LocationListener {
 		UTMRef utmref = ll.toUTMRef();
 		Coords coords = null;
 		//String gcsPref = PreferenceManager.getDefaultSharedPreferences(tv.getContext()).getString("gcs", "0");
+		@SuppressWarnings("deprecation")
 		GCS gcs = Config.getGCS();
 		//GCS gcs = GCS.valueOf(gcsPref);
 		
-		int thisDevice = Session.getSession()==null?0:Session.getThisDevice().getDeviceID();
+		int thisDevice = Session.getSession()==null?0:Session.getSession().getThisDevice().getDeviceID();
 		
 		switch(gcs) {
 		case LL: coords = new CoordsTXYA(thisDevice, useLogicalTime(), (float)x, (float)y, (float)alt); break;
@@ -150,7 +145,6 @@ public class GPSDriver implements LocationListener {
 		default: try {
 			throw new Exception();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		}
@@ -171,19 +165,12 @@ public class GPSDriver implements LocationListener {
 		 */
 		//ask user to switch it on again, but will continue if they dont want to
 		//probably not because user must have switched it off themself.
-
-
-
 	}
 
 	public void onProviderEnabled(String arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-
 	}
 	
 	public GPSDriver getInstance() {

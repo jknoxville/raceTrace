@@ -124,7 +124,7 @@ public class Logger {
 
 	public Logger(Session session) {
 		devices = session.numDevices();
-		thisDevice = Session.getThisDevice().getDeviceID();
+		thisDevice = Session.getSession().getThisDevice().getDeviceID();
 		timeOfLastReceipt = new long[devices];
 		receiptTimes = new ArrayList[devices];
 		for(int i=0; i<devices; i++) {

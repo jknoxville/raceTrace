@@ -48,8 +48,8 @@ public class Session {
 		return session;
 	}
 
-	public static synchronized Device getThisDevice() {
-		return session.getDevice(session.meNumber);
+	public synchronized Device getThisDevice() {
+		return getDevice(session.meNumber);
 	}
 
 	public static synchronized Device getDevice(int n) {

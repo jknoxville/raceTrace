@@ -1,13 +1,11 @@
 package uk.ac.cam.jk510.part2project.network;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import uk.ac.cam.jk510.part2project.protocol.Logger;
 import uk.ac.cam.jk510.part2project.session.Device;
-import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
 
 public abstract class DeviceConnection {
@@ -16,8 +14,8 @@ public abstract class DeviceConnection {
 	//use null device to create server connection
 	public static DeviceConnection newConnection(Device device) throws UnknownHostException, IOException {
 		switch(Config.transportProtocol()) {
-		case UDP: System.err.println("UDP"); return new UDPConnection(device);
-		case TCP: System.err.println("TCP"); return new TCPConnection(device);
+		case UDP: System.out.println("UDP"); return new UDPConnection(device);
+		case TCP: System.out.println("TCP"); return new TCPConnection(device);
 		default: System.err.println("Unknown transport protocol"); return null;
 		}
 	}
@@ -40,7 +38,6 @@ public abstract class DeviceConnection {
 			try {
 				send(data, length);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {

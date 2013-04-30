@@ -42,7 +42,7 @@ public class NewOldSession extends Activity {
     		 * some NewSessionActivity has been started.
     		 */
     		public void run() {
-    			final Class newSessionActivity;
+    			final Class<?> newSessionActivity;
     			SessionEnum sesh = Config.getSesh();
     			switch(sesh) {
     			case singleUser: newSessionActivity = NewSessionActivitySingleUser.class;
@@ -160,7 +160,7 @@ public class NewOldSession extends Activity {
     	finish();	//TODO check this is right. May be the case that calling finish here exits too early sometimes.
     }
     
-    
+    //overridden so that GPSDriver can be restarted when you go back to the menu.
     public void onResume() {
     	super.onResume();
     	View view = findViewById(R.id.logo);
