@@ -30,26 +30,29 @@ public class ServerSession implements PositionStoreSubscriber {
 	//one linkedlist for each device to send to.
 	protected LinkedList<Coords>[] coordsToSend;
 	private PositionStore posStore;
-	
+
 	private ArrayList<LinkedList<Integer>> globalNewPoints = new ArrayList<LinkedList<Integer>>();
 	private long timeOfLastSend=0;
 	private int numNewPoints=0;
 	private SessionDeviceConnection[] sessionSetupConnections;
 	private DeviceConnection[] connections;
 	private boolean alive = true;
-	
+	private static boolean alive2 = true;
+	private static LinkedList<ServerSession> serverSessions = new LinkedList<ServerSession>();
+	private static DeviceConnection singleConnection;
+
 	public PositionStore getStore() {
 		return posStore;
 	}
-	
+
 	private static int sizeOfDataPoint = 4*4;	//4 times size of int, as in CoordsTXYA. TODO change it to use char or something.
-	
+
 	private ArrayList<Device> devices;
 	private Keys keys;
 	private int meNumber = -1;
 	private int deviceCount = 0;
 
-	public void processData(ByteBuffer bb) {
+	public static void processData(ByteBuffer bb) {
 		//System.arraycopy(datagram.getData(), datagram.getOffset(), data, 0, datagram.getLength()); not needed as offset = 0
 		//byte[] data = datagram.getData();	//this is larger than necessary. data.length >= datagram.getLength()
 
@@ -71,9 +74,11 @@ public class ServerSession implements PositionStoreSubscriber {
 		}
 	}
 
-	public void processDatapointDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
-		
+	public static void processDatapointDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
+
 		int fromDeviceID = bb.getInt();
+		ServerSession sesh = ServerDriver.dev2sesh.get(fromDeviceID);
+		PositionStore store = sesh.posStore;
 
 		int numDataPoints = (bb.limit()-8)/(5*4);	//type header, fromID
 
@@ -85,22 +90,24 @@ public class ServerSession implements PositionStoreSubscriber {
 			float alt = bb.getFloat();
 			//System.out.println("receiving from "+datagram.getAddress().getHostName()+":"+datagram.getPort()+" device "+aboutDeviceID+" lClock "+lTime+" x "+x+" y "+y+" alt "+alt);
 			CoordsTXYA coords = new CoordsTXYA(aboutDeviceID, lTime, x, y, alt);
-			posStore.insert(aboutDeviceID, coords);
+			store.insert(aboutDeviceID, coords);
 			if(Config.serverDuplicationTest() && aboutDeviceID == 0) {
 				System.out.println("Adding dupe");
 				CoordsTXYA coords2 = new CoordsTXYA(fromDeviceID, lTime, x+10, y, alt);
-				posStore.insert(aboutDeviceID+1, coords2);
+				store.insert(aboutDeviceID+1, coords2);
 			}
 		}
-		sendIfReady();	//This is in server variant.
+		sesh.sendIfReady();	//This is in server variant.
 	}
-	
 
-	public void processRequestDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
-		
+
+	public static void processRequestDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
+
 		int fromDeviceID = bb.getInt();
-		
-		LinkedList<Integer>[] requestArray = new LinkedList[numDevices()];
+		ServerSession sesh = ServerDriver.dev2sesh.get(fromDeviceID);
+		PositionStore store = sesh.posStore;
+
+		LinkedList<Integer>[] requestArray = new LinkedList[sesh.numDevices()];
 		for(int dev = 0; dev<requestArray.length; dev++) {
 			requestArray[dev] = new LinkedList<Integer>();
 		}
@@ -116,9 +123,9 @@ public class ServerSession implements PositionStoreSubscriber {
 				requestArray[currentDevice].add(i);
 			}
 		}
-		
-		serviceRequest(fromDeviceID, requestArray);
-		
+
+		sesh.serviceRequest(fromDeviceID, requestArray);
+
 	}
 
 	private void updatePort(int fromDeviceID, DatagramPacket datagram) {
@@ -129,7 +136,7 @@ public class ServerSession implements PositionStoreSubscriber {
 			System.out.println("Device port changed from "+oldPort+" to "+newPort);
 		}
 	}
-	
+
 	public DatagramPacket createRequestMessageWithAddress(final InetSocketAddress socketAddress, LinkedList<Integer>[] requestArray) throws SocketException {
 
 		int size = 0;	//total number of absent points
@@ -168,7 +175,7 @@ public class ServerSession implements PositionStoreSubscriber {
 		DatagramPacket datagram = new DatagramPacket(data, data.length, socketAddress);
 		return datagram;
 	}
-	
+
 	public ServerSession(ArrayList<Device> devices, Keys keys, SessionDeviceConnection[] connections) {
 		super();
 		this.devices = devices;
@@ -181,8 +188,11 @@ public class ServerSession implements PositionStoreSubscriber {
 				System.out.println("I am device "+meNumber+" / "+devices.size());
 				break;
 			}
-			
+
 			deviceCount++;
+
+
+			ServerDriver.addDevice(d.getDeviceID(), this);
 		}
 		for(int i=0; i<numDevices(); i++) {	//initialise lists
 			globalNewPoints.add(new LinkedList<Integer>());
@@ -196,8 +206,9 @@ public class ServerSession implements PositionStoreSubscriber {
 		for(int i=0; i<coordsToSend.length; i++) {
 			coordsToSend[i] = new LinkedList<Coords>();
 		}
+		serverSessions.add(this);
 	}
-	
+
 	public Device getDevice(int n) {
 		return devices.get(n);
 	}
@@ -223,7 +234,7 @@ public class ServerSession implements PositionStoreSubscriber {
 	public int getIndex(Device device) {
 		return devices.indexOf(device);
 	}
-	
+
 	public synchronized void sendIfReady() {
 		//init();	//init moved to Server.main
 		if(ready()) {
@@ -286,7 +297,7 @@ public class ServerSession implements PositionStoreSubscriber {
 		//Note ready is always false when there is just one device in session.
 		return (timeOfLastSend + Config.getServerResendPeriodMillis() <= System.currentTimeMillis()) || (numNewPoints>=Config.getServerNewPointsThreshold()) && numDevices()>1;
 	}
-	
+
 	public void addNewSessionDeviceConnection(SessionDeviceConnection conn, int thisConnection, int numDevices) {
 		if(sessionSetupConnections == null) {
 			sessionSetupConnections = new SessionDeviceConnection[numDevices];
@@ -307,26 +318,26 @@ public class ServerSession implements PositionStoreSubscriber {
 		//LinkedList<Coords> response = PositionStore.fulfillRequest(requestArray);
 		List<Coords> coordsList = Response.getCoordsList(responses);
 		respondToNetwork(fromID, coordsList);
-		
+
 		/*
 		 * This is server code, so since server doesnt have the "remainder" data,
 		 * only the generator of it does, so send each device a request asking
 		 * for just their contribution.
 		 */
-		
+
 		//initialise array with empty lists
 		LinkedList<Integer>[] newRequestArray = new LinkedList[numDevices()];
 		for(int i=0; i<numDevices(); i++) {
 			newRequestArray[i] = new LinkedList<Integer>();
 		}
-		
+
 		//clear all lists so only send one devices request:
 		for(int i=0; i<numDevices(); i++) {
 			for(int j=0; j<numDevices(); j++) {
 				newRequestArray[j].clear();
 			}
 			newRequestArray[i] = responses[i].remainingPoints;
-			
+
 			//issue new request to culprit to get the remaining points.
 			Device toDevice = getDevice(i);
 			InetSocketAddress sockAdd = new InetSocketAddress(((DeviceHandleIP) toDevice.getHandle()).getIP().getHostName(), ((DeviceHandleIP) toDevice.getHandle()).getPort());
@@ -352,7 +363,7 @@ public class ServerSession implements PositionStoreSubscriber {
 		coordsToSend[fromID].addAll(response);
 		sendCoordsInQueue();
 	}
-	
+
 	public void startMainProcessing(Session session) {
 
 		//TODO spawn periodic sending thread
@@ -374,45 +385,98 @@ public class ServerSession implements PositionStoreSubscriber {
 		initDataSockets();
 		for(final Device device: getDevices()) {
 
-				new Thread(new Runnable() {
-					public void run() {
+			new Thread(new Runnable() {
+				public void run() {
 
-						byte[] receivingData = new byte[1024];
-						
-						while(alive) {
-							try {
-								ByteBuffer bb = DataConnectionManager.receive(connections[getIndex(device)], receivingData);
-								System.out.println("Recieved datagram");
-								processData(bb);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+					byte[] receivingData = new byte[1024];
+
+					while(alive) {
+						try {
+							ByteBuffer bb = DataConnectionManager.receive(connections[getIndex(device)], receivingData);
+							System.out.println("Recieved datagram");
+							processData(bb);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
 					}
-				}).start();
+				}
+			}).start();
 		}
 
 		//listen for incoming data and process it:
-//		while(true) {
-//			ServerMessage.processDatagram(net.receiveDatagram());
-//		}
+		//		while(true) {
+		//			ServerMessage.processDatagram(net.receiveDatagram());
+		//		}
 	}
-	
+
+	public static void startMainProcessing2() {
+
+		//TODO spawn periodic sending thread
+		new Thread(new Runnable() {
+			public void run() {
+				while(alive2) {
+					try {
+						Thread.sleep(Config.getServerResendPeriodMillis()+100);
+						for(ServerSession servSesh: serverSessions) {
+							servSesh.sendIfReady();
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+
+		//listen for incoming data and process it:
+		//		while(true) {
+		//			ServerMessage.processDatagram(net.receiveDatagram());
+		//		}
+	}
+
+	public static void listen() {
+		System.out.println("Now listening for data");	//debug
+		for(ServerSession servSesh: serverSessions) {
+			servSesh.initDataSockets();
+		}
+
+		byte[] receivingData = new byte[1024];
+
+		while(alive2) {
+			try {
+				ByteBuffer bb = DataConnectionManager.receive(singleConnection, receivingData);
+				System.out.println("Recieved datagram");
+				processUnidentifiedData(bb);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private static void processUnidentifiedData(ByteBuffer bb) {
+		// TODO Auto-generated method stub
+
+	}
+
 	public synchronized void initDataSockets() {
 		if(connections == null) {
 			connections = new DeviceConnection[numDevices()];
-			//TODO make it ProtocolManager.numConnections instead or make it do it or something for server and all.
-			for(Device device: getDevices()) {
-				try {
-					System.out.println("device");
-					connections[getIndex(device)] = DeviceConnection.newConnection(device);
-				} catch (SocketException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		}
+		//TODO make it ProtocolManager.numConnections instead or make it do it or something for server and all.
+		for(Device device: getDevices()) {
+			System.out.println("connection "+device.getDeviceID());
+			try {
+				System.out.println("index "+getIndex(device));
+				connections[getIndex(device)] = DeviceConnection.newConnection(device);
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
+		singleConnection = connections[0];
+
 	}
 
 }

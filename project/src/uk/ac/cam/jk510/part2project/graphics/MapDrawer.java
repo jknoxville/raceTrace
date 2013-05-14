@@ -1,8 +1,8 @@
 package uk.ac.cam.jk510.part2project.graphics;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.Session;
@@ -33,7 +33,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 	float oldScale;
 	float oldpTop;
 	float oldpLeft;
-	String[] names;
+	//String[] names;
 	Session session = Session.getSession();
 	Paint vertices = new Paint();
 	boolean atLeastOnePointIsOnScreen = false;
@@ -66,12 +66,12 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 	//Resets all state to new state GCing the old state, should be called whenever a new session starts.
 	public synchronized void reset() {
 		session = Session.getSession();
-		List<Device> devices = session.getDevices();
+		Collection<Device> devices = session.getDevices();
 		pathsToDraw = new Path[devices.size()];
 		pathIsNew = new boolean[devices.size()];
 		lines = new Paint[devices.size()];
 		labels = new Paint[devices.size()];
-		names = session.getDeviceNames();
+		//names = session.getDeviceNames();
 		for(int device=0; device<devices.size(); device++) {
 			lines[device] = new Paint();
 			labels[device] = new Paint();

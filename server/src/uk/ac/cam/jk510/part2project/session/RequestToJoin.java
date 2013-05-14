@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.cam.jk510.part2project.server.ServerDriver;
 import uk.ac.cam.jk510.part2project.server.SessionDeviceConnection;
 
 public class RequestToJoin implements Processable {

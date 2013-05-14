@@ -9,21 +9,18 @@ import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
 
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
-import uk.ac.cam.jk510.part2project.session.Grid;
-import uk.ac.cam.jk510.part2project.session.GridIterator;
-import uk.ac.cam.jk510.part2project.session.Point;
 import uk.ac.cam.jk510.part2project.session.RequestToJoin;
-import uk.ac.cam.jk510.part2project.session.ServerSessionCreator;
 import uk.ac.cam.jk510.part2project.settings.Config;
+import uk.ac.cam.jk510.part2project.store.PositionStore;
 
 public class ServerDriver {
+	
+	static HashMap<Integer, ServerSession> dev2sesh = new HashMap<Integer, ServerSession>();
 
 	/**
 	 * @param args
@@ -38,6 +35,11 @@ public class ServerDriver {
 		 * 	just does the grid searching and grouping.
 		 * 	when it groups, it spawns a new thread: some method in serverSession that processes it.
 		 */
+		
+		//for sending packets
+		ServerSession.startMainProcessing2();
+		
+		//open setup socket
 		ServerSocket serverSock = null;
 		try{
 			serverSock = new ServerSocket(60000);
@@ -106,6 +108,10 @@ public class ServerDriver {
 			}
 		}
 
+	}
+
+	public static void addDevice(int deviceID, ServerSession session) {
+		dev2sesh.put(deviceID, session);
 	}
 
 }

@@ -1,7 +1,9 @@
 package uk.ac.cam.jk510.part2project.session;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import uk.ac.cam.jk510.part2project.protocol.Logger;
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
@@ -11,21 +13,25 @@ public class Session {
 
 	private static Session session;
 
-	private ArrayList<Device> devices;
+	private HashMap<Integer, Device> devices;
 	private Keys keys;
 	private int meNumber = -1;
 
 	protected Session(ArrayList<Device> devices, Keys keys) {
 		super();
 		synchronized(this) {
-			this.devices = devices;
+			this.devices = new HashMap<Integer, Device>();
+			//make new device list with IDs 1,2,3...
+			for(Device d: devices) {
+				this.devices.put(d.getDeviceID(), d);
+			}
 			this.keys = keys;
 			int deviceCount = 0;
-			for(Device d: devices) {
+			for(Device d: this.devices.values()) {
 				System.out.println(d.getName()+" and "+Config.getName());
 				//TODO use bluetooth MAC address instead of name.
 				if(d.getName().equals(Config.getName())) {
-					meNumber = deviceCount;
+					meNumber = d.getDeviceID();
 					System.out.println("I am device "+meNumber+" / "+devices.size());
 					break;
 				}
@@ -56,16 +62,16 @@ public class Session {
 		return session.devices.get(n);
 	}
 
-	public String[] getDeviceNames() {
-		String[] names = new String[devices.size()];
-		for(Device d: devices) {
-			names[d.getDeviceID()] = d.getName();
-		}
-		return names;
-	}
+//	public String[] getDeviceNames() {
+//		String[] names = new String[devices.size()];
+//		for(Device d: devices) {
+//			names[d.getDeviceID()] = d.getName();
+//		}
+//		return names;
+//	}
 
-	public synchronized ArrayList<Device> getDevices() {
-		return devices;
+	public synchronized Collection<Device> getDevices() {
+		return devices.values();
 	}
 	public Keys getKeys() {
 		return keys;
@@ -109,8 +115,13 @@ public class Session {
 	}
 
 	public static synchronized int getIndex(Device device) {
-
-		return session.devices.indexOf(device);
+		for(Entry<Integer, Device> e: session.devices.entrySet()) {
+			if(e.getValue()==device) {
+				return e.getKey();
+			}
+		}
+		//not found
+		return -2;
 	}
 
 	public static synchronized void updateDevicePort(int device, int newPort) {

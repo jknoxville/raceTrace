@@ -1,20 +1,14 @@
 package uk.ac.cam.jk510.part2project.protocol;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 
-import android.widget.TextView;
-
-import uk.ac.cam.jk510.part2project.gui.MapDisplayScreen;
-import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.ClientMessage;
+import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.DeviceConnection;
 import uk.ac.cam.jk510.part2project.network.DroppedPacketException;
 import uk.ac.cam.jk510.part2project.network.TCPConnection;
@@ -235,12 +229,12 @@ public class ProtocolManagerP2P extends ProtocolManager {
 		}
 	}
 	@Override
-	protected List<Device> requestablePeers() {
+	protected Collection<Device> requestablePeers() {
 		//TODO use setting from config to decide which peers you can request from. e.g have a request circle / tree etc.
 		return Session.getSession().getDevices();
 	}
 	@Override
-	protected List<Device> relientPeers() {
+	protected Collection<Device> relientPeers() {
 		//TODO use setting from config to decide which peers you can request from. e.g have a request circle / tree etc.
 		return Session.getSession().getDevices();
 	}

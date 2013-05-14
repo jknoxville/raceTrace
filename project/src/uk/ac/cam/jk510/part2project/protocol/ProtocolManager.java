@@ -327,8 +327,8 @@ public abstract class ProtocolManager {
 	protected abstract void connectToPeers() throws UnknownHostException, IOException;
 	protected abstract void flushToNetwork(int device);
 	protected abstract void respondToNetwork(int requester, List<Coords> coordsList);
-	protected abstract List<Device> requestablePeers();
-	protected abstract List<Device> relientPeers();
+	protected abstract Collection<Device> requestablePeers();
+	protected abstract Collection<Device> relientPeers();
 	public abstract void spawnReceivingThread();
 	protected abstract void sendMissingRequest();
 	protected abstract void protocolSpecificDestroy();

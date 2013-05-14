@@ -1,16 +1,15 @@
 package uk.ac.cam.jk510.part2project.protocol;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 
-import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.ClientMessage;
+import uk.ac.cam.jk510.part2project.network.DataConnectionManager;
 import uk.ac.cam.jk510.part2project.network.DeviceConnection;
 import uk.ac.cam.jk510.part2project.network.DroppedPacketException;
 import uk.ac.cam.jk510.part2project.session.Device;
@@ -164,11 +163,11 @@ public class ProtocolManagerClientServer extends ProtocolManager {
 
 	//TODO these arent strictly correct since in strict c/s protocol, only peer is the server.
 	@Override
-	protected List<Device> requestablePeers() {
+	protected Collection<Device> requestablePeers() {
 		return Session.getSession().getDevices();
 	}
 	@Override
-	protected List<Device> relientPeers() {
+	protected Collection<Device> relientPeers() {
 		return Session.getSession().getDevices();
 	}
 }

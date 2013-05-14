@@ -8,7 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Block {
 
 	private static long width = 100000;
-	private static long radius = 20;
+	private static long radius = 300;
 	//todo better initial cap:
 	private static HashMap<Long, Block> blocks = new HashMap<Long, Block>();
 
@@ -42,7 +42,6 @@ public class Block {
 							b.remove(r);
 						}
 					}
-
 				}
 				a.getBlock().remove(a);
 				//spawn a new thread to take care of this session from now on

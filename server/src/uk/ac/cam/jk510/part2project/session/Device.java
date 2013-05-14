@@ -8,13 +8,13 @@ public class Device {
 	private static int deviceCount = 0;
 
 	private String name;
-	//private int deviceID;
+	private int deviceID;
 	private DeviceHandle handle;
 	private DeviceHistory history;
 	
 	public Device(String name, DeviceHandle handle, Protocol protocol) throws IllegalAccessException, InstantiationException {
 		this.name = name;
-		//this.deviceID = deviceCount;
+		this.deviceID = deviceCount;
 		
 		this.handle = handle;
 		//this.history = (DeviceHistory) (protocol.deviceHistoryClass).newInstance();
@@ -32,6 +32,9 @@ public class Device {
 	}
 	public DeviceHandle getHandle() {
 		return handle;
+	}
+	public int getDeviceID() {
+		return deviceID;
 	}
 
 }
