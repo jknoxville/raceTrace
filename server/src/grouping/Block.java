@@ -8,7 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Block {
 
 	private static long width = 100000;
-	private static long radius = 300;
+	private static long radius = 100;
 	//todo better initial cap:
 	private static HashMap<Long, Block> blocks = new HashMap<Long, Block>();
 
@@ -35,7 +35,9 @@ public class Block {
 					Thread.sleep(timeout-(System.currentTimeMillis()-a.birthtime));
 				} catch (InterruptedException e) {/*continue*/}
 				for(Block b: a.getBlock().getNeighbours()) {
+					System.out.println("neighbouring block "+b.x+", "+b.y+" found containing "+b.requests.size());
 					for(Request r: b.requests) {
+						System.out.println("found neighbour");
 						if(a.distanceTo(r)<=getRadius()) {
 							a.addToParty(r);
 							Request.allRequests.remove(r);
@@ -95,5 +97,8 @@ public class Block {
 		return radius;
 	}
 
+	public int getSize() {
+		return requests.size();
+	}
 
 }

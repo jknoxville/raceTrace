@@ -84,6 +84,7 @@ public class ServerSession implements PositionStoreSubscriber {
 
 		for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
 			int aboutDeviceID = bb.getInt();
+			System.out.println("processing datapoint from device "+aboutDeviceID);
 			int lTime = bb.getInt();
 			float x = bb.getFloat();
 			float y = bb.getFloat();
@@ -245,6 +246,7 @@ public class ServerSession implements PositionStoreSubscriber {
 				Device fromDevice = getDevice(deviceNumber);
 
 				for(int index: list) {
+					System.out.println("point to send");
 					Coords coords = posStore.getCoord(fromDevice, index);
 					for(Device toDevice: getDevices()) {
 
@@ -269,6 +271,8 @@ public class ServerSession implements PositionStoreSubscriber {
 			sendCoordsInQueue();
 
 			numNewPoints = 0;
+		} else {
+			System.out.println("not ready to send");
 		}
 	}
 
@@ -447,17 +451,12 @@ public class ServerSession implements PositionStoreSubscriber {
 			try {
 				ByteBuffer bb = DataConnectionManager.receive(singleConnection, receivingData);
 				System.out.println("Recieved datagram");
-				processUnidentifiedData(bb);
+				processData(bb);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-	}
-
-	private static void processUnidentifiedData(ByteBuffer bb) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public synchronized void initDataSockets() {

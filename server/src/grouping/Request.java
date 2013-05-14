@@ -24,8 +24,9 @@ public class Request<T extends Processable> {
 		Block block = Block.getBlock(i, j);
 		if(block == null) {
 			block = new Block(i,j);
-			block.add(this);
 		}
+		block.add(this);
+		System.out.println("adding to block "+i+", "+j+". now contains: "+block.getSize());
 		this.block = block;
 		allRequests.add(this);
 	}
