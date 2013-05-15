@@ -16,8 +16,9 @@ public class Session {
 	private HashMap<Integer, Device> devices;
 	private Keys keys;
 	private int meNumber = -1;
+	private int sessionID;
 
-	protected Session(ArrayList<Device> devices, Keys keys) {
+	protected Session(ArrayList<Device> devices, Keys keys, int sessionID) {
 		super();
 		synchronized(this) {
 			this.devices = new HashMap<Integer, Device>();
@@ -26,6 +27,7 @@ public class Session {
 				this.devices.put(d.getDeviceID(), d);
 			}
 			this.keys = keys;
+			this.sessionID = sessionID;
 			int deviceCount = 0;
 			for(Device d: this.devices.values()) {
 				System.out.println(d.getName()+" and "+Config.getName());
@@ -76,6 +78,9 @@ public class Session {
 	public Keys getKeys() {
 		return keys;
 	}
+	public int getSessionID() {
+		return sessionID;
+	}
 	public synchronized int numDevices() {
 		return devices.size();
 	}
@@ -98,7 +103,8 @@ public class Session {
 				e.printStackTrace();
 			}
 		}
-		Session session = new Session(devices, pack.keys);
+		int sessionID = pack.sessionID;
+		Session session = new Session(devices, pack.keys, sessionID);
 		for(Device d: session.getDevices()) {
 			if(d.devicePath != null) {
 				System.out.println("devicePath not null");	//debug

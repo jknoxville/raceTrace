@@ -9,8 +9,9 @@ public class SessionPackage implements Serializable {
 	public String[] deviceNames;
 	public DeviceHandle[] deviceHandles;
 	public Keys keys;
+	public int sessionID;
 
-	public SessionPackage(Session session) {
+	public SessionPackage(Session session, int sessionID) {
 		int devices = session.numDevices();
 		deviceNames = new String[devices];
 		deviceHandles = new DeviceHandle[devices];
@@ -20,6 +21,7 @@ public class SessionPackage implements Serializable {
 			deviceHandles[i] = d.getHandle();
 		}
 		keys = session.getKeys();
+		this.sessionID = sessionID;
 	}
 
 }

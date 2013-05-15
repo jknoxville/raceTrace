@@ -214,15 +214,15 @@ public class SessionManagerBluetooth extends SessionManager {
 						if(selectedList.size()==0) {
 							//							(new SessionManagerSingleUser()).newSession(null);
 
-							session = new Session(devices, keys);
+							session = new Session(devices, keys, -1);
 						} else {
-							session = new Session(devices, keys);	//now for master, session setup is complete
+							session = new Session(devices, keys, -1);	//now for master, session setup is complete
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 					checkIfAlive();
-					SessionPackage pack = new SessionPackage(session);
+					SessionPackage pack = new SessionPackage(session, -1);	//session id not yet allocated so -1
 
 					//TODO the following sending of session isnt necessary in client server model, server could send them the session. So should be moved to protocolmanager.
 					for(BluetoothDevice bluetoothDevice: selectedList) {

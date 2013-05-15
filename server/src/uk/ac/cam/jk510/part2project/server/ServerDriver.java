@@ -9,18 +9,20 @@ import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
 import uk.ac.cam.jk510.part2project.session.Device;
 import uk.ac.cam.jk510.part2project.session.DeviceHandleIP;
 import uk.ac.cam.jk510.part2project.session.RequestToJoin;
+import uk.ac.cam.jk510.part2project.session.Session;
 import uk.ac.cam.jk510.part2project.settings.Config;
-import uk.ac.cam.jk510.part2project.store.PositionStore;
 
 public class ServerDriver {
 	
 	static HashMap<Integer, ServerSession> dev2sesh = new HashMap<Integer, ServerSession>();
+	public static ArrayList<ServerSession> sessions = new ArrayList<ServerSession>();
 
 	/**
 	 * @param args
@@ -112,6 +114,12 @@ public class ServerDriver {
 
 	public static void addDevice(int deviceID, ServerSession session) {
 		dev2sesh.put(deviceID, session);
+	}
+
+	//adds session to list and returns its ID
+	public static int putSession(ServerSession servSesh) {
+		sessions.add(servSesh);
+		return sessions.size()-1;
 	}
 
 }

@@ -19,7 +19,7 @@ public class SessionManagerSingleUser extends SessionManager {
 		//Using null for keys since its single user and no comms needed.
 		
 		//this constructor saves static link to this instance from Session class
-		new Session(devices, null);
+		new Session(devices, null, -1);
 		System.out.println("1st device: "+Session.getDevice(0));
 
 	}

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import uk.ac.cam.jk510.part2project.protocol.ProtocolXYA;
+import uk.ac.cam.jk510.part2project.server.ServerDriver;
 import uk.ac.cam.jk510.part2project.server.ServerSession;
 import uk.ac.cam.jk510.part2project.server.SessionDeviceConnection;
 import uk.ac.cam.jk510.part2project.settings.Config;
@@ -17,7 +18,8 @@ public class ServerSessionCreator {
 		System.out.println("List complete, devices: "+devices.size());
 		Session session = new Session(devices, null);
 		ServerSession servSesh = new ServerSession(devices, null, connections);
-		servSesh.sendSessionToAllDevices(session);
+		int sessionID = ServerDriver.putSession(servSesh);
+		servSesh.sendSessionToAllDevices(session, sessionID);
 		//servSesh.startMainProcessing();
 		if(!listening) {
 			ServerSession.listen();

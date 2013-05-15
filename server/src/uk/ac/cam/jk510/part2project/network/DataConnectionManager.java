@@ -62,15 +62,15 @@ public class DataConnectionManager {
 		return null;
 	}
 
-	public static void sendSessionToServer(Session session) throws UnknownHostException, IOException {
-		SessionPackage pack = new SessionPackage(session);
-		System.out.println("Initiating connection with server");	//debug
-		Socket sock = new Socket(Config.getServerIP(), Config.getServerPort());
-		System.out.println("Connected to server");	//debug
-		ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
-		oos.writeObject(pack);
-		updateLastSendTime(0);
-	}
+//	public static void sendSessionToServer(Session session) throws UnknownHostException, IOException {
+//		SessionPackage pack = new SessionPackage(session);
+//		System.out.println("Initiating connection with server");	//debug
+//		Socket sock = new Socket(Config.getServerIP(), Config.getServerPort());
+//		System.out.println("Connected to server");	//debug
+//		ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
+//		oos.writeObject(pack);
+//		updateLastSendTime(0);
+//	}
 
 	public static ByteBuffer receive(DeviceConnection conn, byte[] data) throws IOException {
 		ByteBuffer bb = conn.receiveData(data);

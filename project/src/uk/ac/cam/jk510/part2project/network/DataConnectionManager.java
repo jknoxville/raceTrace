@@ -46,7 +46,7 @@ public class DataConnectionManager {
 	}
 
 	public static void sendSessionToServer(Session session) throws UnknownHostException, IOException {
-		SessionPackage pack = new SessionPackage(session);
+		SessionPackage pack = new SessionPackage(session, -1);	//put -1 for sessionID since we dont know it locally
 		Socket sock = new Socket(Config.getServerIP(), Config.getServerPort());
 		System.out.println("Connected to server");
 		ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
@@ -86,11 +86,12 @@ public class DataConnectionManager {
 
 		int fromDeviceID = Session.getSession().getThisDevice().getDeviceID();	//used to identify sender to the recipent.
 
-		byte[] data = new byte[(1+1+5*coordsList.size())*4];	//1 int for coords header, 1 int for fromID, plus 5 (int|float)s for each coord
+		byte[] data = new byte[(1+2+5*coordsList.size())*4];	//1 int for coords header, 2 ints for fromID, sessionID plus 5 (int|float)s for each coord
 		ByteBuffer bb = ByteBuffer.wrap(data);
 
 		bb.putInt(MessageType.datapoints.ordinal());	//put message header
 		bb.putInt(fromDeviceID);	//
+		bb.putInt(Session.getSession().getSessionID());
 		//							This are to go at the start of each packet, not each coordinate (if >1 coord per packet)
 
 		for(Coords coords: coordsList) {
@@ -124,16 +125,18 @@ public class DataConnectionManager {
 			}
 		}
 		if(numMissingDevices == 0) {return null;}	//no need to make empty datagram
-		byte[] data = new byte[4+4+4*size+8*numMissingDevices];
+		byte[] data = new byte[4+4+4+4*size+8*numMissingDevices];
 		/*
 		 * 4 byte int header to identify the request message
 		 * 4 byte int fromID
+		 * 4 byte session id
 		 * 4 byte int for each missing point, of which there are size
 		 * 2 4 byte ints preceeding each list of missing points for those devices that have any. thats a -1 marker, and then device ID
 		 */
 		ByteBuffer bb = ByteBuffer.wrap(data);
 		bb.putInt(MessageType.request.ordinal());	//first 4 bytes: request header
 		bb.putInt(Session.getSession().getThisDevice().getDeviceID());	//put fromID
+		bb.putInt(Session.getSession().getSessionID());
 
 		for(int device = 0; device<Session.getSession().numDevices(); device++) {
 			if(requestArray[device].size() > 0) {

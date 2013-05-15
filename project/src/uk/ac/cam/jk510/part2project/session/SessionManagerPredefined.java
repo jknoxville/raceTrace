@@ -48,7 +48,7 @@ public class SessionManagerPredefined extends SessionManager {
 		//Using null for keys since its single user and no comms needed.
 		
 		//this constructor saves static link to this instance from Session class
-		Session session = new Session(devices, null);
+		Session session = new Session(devices, null, -1);
 		try {
 			
 		DataConnectionManager.sendSessionToServer(session);

@@ -77,10 +77,13 @@ public class ServerSession implements PositionStoreSubscriber {
 	public static void processDatapointDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
 
 		int fromDeviceID = bb.getInt();
-		ServerSession sesh = ServerDriver.dev2sesh.get(fromDeviceID);
+		int sessionID = bb.getInt();
+		System.out.println("session id: "+sessionID);
+		//ServerSession sesh = ServerDriver.dev2sesh.get(fromDeviceID);
+		ServerSession sesh = ServerDriver.sessions.get(sessionID);
 		PositionStore store = sesh.posStore;
 
-		int numDataPoints = (bb.limit()-8)/(5*4);	//type header, fromID
+		int numDataPoints = (bb.limit()-12)/(5*4);	//type header, fromID, sessionID
 
 		for(int dataPoint=0; dataPoint<numDataPoints; dataPoint++) {
 			int aboutDeviceID = bb.getInt();
@@ -105,6 +108,8 @@ public class ServerSession implements PositionStoreSubscriber {
 	public static void processRequestDatagram(ByteBuffer bb) throws IncompatibleCoordsException {
 
 		int fromDeviceID = bb.getInt();
+		int sessionID = bb.getInt();
+		System.out.println("session id: "+sessionID);
 		ServerSession sesh = ServerDriver.dev2sesh.get(fromDeviceID);
 		PositionStore store = sesh.posStore;
 
@@ -248,6 +253,7 @@ public class ServerSession implements PositionStoreSubscriber {
 				for(int index: list) {
 					System.out.println("point to send");
 					Coords coords = posStore.getCoord(fromDevice, index);
+					System.out.println("COOOORDS "+coords.getDevice()+" from device: "+fromDevice);
 					for(Device toDevice: getDevices()) {
 
 						if(Config.dontSendPointsToOwner() && (coords.getDevice() == getIndex(toDevice))) {
@@ -309,8 +315,8 @@ public class ServerSession implements PositionStoreSubscriber {
 		sessionSetupConnections[thisConnection] = conn;
 	}
 
-	public void sendSessionToAllDevices(Session session) {
-		SessionPackage pack = new SessionPackage(session);
+	public void sendSessionToAllDevices(Session session, int sessionID) {
+		SessionPackage pack = new SessionPackage(session, sessionID);
 		for(SessionDeviceConnection conn: sessionSetupConnections) {
 			conn.sendSessionPackage(pack);
 		}
