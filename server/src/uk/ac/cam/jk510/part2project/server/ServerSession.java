@@ -253,7 +253,11 @@ public class ServerSession implements PositionStoreSubscriber {
 				for(int index: list) {
 					System.out.println("point to send");
 					Coords coords = posStore.getCoord(fromDevice, index);
-					System.out.println("COOOORDS "+coords.getDevice()+" from device: "+fromDevice);
+					System.out.println("COOOORDS "+coords.getDevice()+" from device: "+deviceNumber);
+					
+					//set coords from global ID to local ID
+					coords.setDevice(deviceNumber);
+					
 					for(Device toDevice: getDevices()) {
 
 						if(Config.dontSendPointsToOwner() && (coords.getDevice() == getIndex(toDevice))) {

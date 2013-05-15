@@ -33,6 +33,7 @@ public class PositionStore {
 
 	public void insert(int fromDevice, Coords coords) {
 		//note fromDevice not used. might want it for logger though.
+		System.out.println("inserting coords:"+coords.aboutDevice);
 
 		try {
 			Device aboutDevice = servSesh.getDevice(coords.getDevice());

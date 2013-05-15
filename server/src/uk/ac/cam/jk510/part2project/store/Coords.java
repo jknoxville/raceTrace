@@ -21,5 +21,9 @@ public abstract class Coords {
 	public int getDevice() {
 		return aboutDevice;
 	}
+
+	public void setDevice(int deviceNumber) {
+		aboutDevice=deviceNumber;
+	}
 	
 }
