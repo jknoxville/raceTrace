@@ -114,8 +114,7 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 		int pathNumber = 0;
 		for(Path path: pathsToDraw) {
 
-			if(path == null || path.isEmpty()) {	//dont want empty paths to influence bounds
-				System.err.println("In pathsToDraw this path is null");	//debug
+			if(path == null || path.isEmpty()) {	//Empty paths should not influence bounds
 				continue;
 			}
 
@@ -129,11 +128,10 @@ public class MapDrawer extends View implements PositionStoreSubscriber {
 			float l = bounds.left;
 			float r = bounds.right;
 			//pTop should be the smallest non zero value of t. If pTop is 0, then have just started, so initialise it.
-			pTop = (t<pTop) ? t : pTop;
-			pBottom = b>pBottom ? b : pBottom;
-			pLeft = (l<pLeft) ? l : pLeft;
-			pRight = r>pRight ? r : pRight;
-			System.out.println("PathsToDraw["+pathNumber+"] t: "+t+"b: "+b);	//debug
+			pTop = 		(t<pTop)	? t : pTop;
+			pBottom = 	(b>pBottom)	? b : pBottom;
+			pLeft = 	(l<pLeft)	? l : pLeft;
+			pRight = 	(r>pRight)	? r : pRight;
 			pathNumber++;
 		}
 
