@@ -1,4 +1,4 @@
-GitNote is an Android application that uses a remote Git repository to synchronise a collection of notes.
+raceTrace is an Android app that tracks the physical location of members of a group, showing their realtive locations on screen.
     
     Copyright (C) 2013  John Knox
 
