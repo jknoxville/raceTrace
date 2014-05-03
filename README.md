@@ -8,5 +8,7 @@ A real-time group tracking app for android, created by John Knox, 2013
 * Java server application is included.*
 * App can operate using the server or completely peer-to-peer.
 
-*Server groups participants by location before starting, but this feature is not yet complete. It currently only works 
+*Server groups participants by location before starting, but this feature is buggy. It currently only works 
 for one session at a time.
+
+This was a final year university project, the dissertation is available at www.jknoxville.com/res/racetrace.pdf
